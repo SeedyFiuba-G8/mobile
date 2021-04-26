@@ -1,3 +1,0 @@
-// Configuration file
-
-export default {};
