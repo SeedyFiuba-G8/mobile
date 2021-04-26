@@ -4,18 +4,25 @@
  */
 
 export type RootStackParamList = {
-	Root: undefined;
+	// Root DrawerNavigator
+	Drawer: undefined;
+
+	// Modals
+	Profile: undefined;
+	Messages: undefined;
+	Settings: undefined;
+
+	// Error
 	NotFound: undefined;
 };
 
 export type DrawerParamList = {
+	// Root Dashboard
 	Dashboard: undefined;
-	Profile: undefined;
-	Messages: undefined;
-	Settings: undefined;
 };
 
 export type TopTabsParamList = {
+	// Tabs for Root Dashboard
 	Magic: undefined;
 	Popular: undefined;
 	Newest: undefined;

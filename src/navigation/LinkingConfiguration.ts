@@ -10,7 +10,7 @@ export default {
 	prefixes: [Linking.makeUrl('/')],
 	config: {
 		screens: {
-			Root: {
+			Drawer: {
 				screens: {
 					Dashboard: {
 						screens: {
@@ -20,11 +20,11 @@ export default {
 							EndingSoon: 'ending-soon',
 						},
 					},
-					Profile: 'profile',
-					Messages: 'messages',
-					Settings: 'settings',
 				},
 			},
+			Profile: 'profile',
+			Messages: 'messages',
+			Settings: 'settings',
 			NotFound: '*',
 		},
 	},
