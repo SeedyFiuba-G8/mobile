@@ -10,7 +10,7 @@ import DrawerNavigator from './DrawerNavigator';
 import NotFoundScreen from '../screens/NotFoundScreen';
 
 // Ts types
-import { RootStackParamList } from '../constants/types';
+import { RootStackParamList } from '../types';
 
 export default function Navigation() {
 	return (

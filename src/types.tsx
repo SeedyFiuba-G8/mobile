@@ -10,8 +10,9 @@ export type RootStackParamList = {
 
 export type DrawerParamList = {
 	Dashboard: undefined;
-	Settings: undefined;
 	Profile: undefined;
+	Messages: undefined;
+	Settings: undefined;
 };
 
 export type TopTabsParamList = {

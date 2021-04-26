@@ -10,7 +10,7 @@ import NewestScreen from '../screens/tabs/NewestScreen';
 import EndingSoonScreen from '../screens/tabs/EndingSoonScreen';
 
 // Ts types
-import { TopTabsParamList } from '../constants/types';
+import { TopTabsParamList } from '../types';
 import colors from '../constants/colors';
 
 const DashboardTabs = createMaterialTopTabNavigator<TopTabsParamList>();
