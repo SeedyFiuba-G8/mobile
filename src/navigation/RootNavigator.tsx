@@ -13,13 +13,24 @@ import SettingsScreen from '../screens/SettingsScreen';
 // Ts types
 import { RootStackParamList } from '../types';
 
+// Constants
+import colors from '../constants/colors';
+
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
 const RootStack = createStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
 	return (
-		<RootStack.Navigator mode="modal" initialRouteName="Drawer">
+		<RootStack.Navigator
+			mode="modal"
+			initialRouteName="Drawer"
+			screenOptions={{
+				headerShown: true,
+				headerTintColor: colors.white,
+				headerStyle: { backgroundColor: colors.primary },
+			}}
+		>
 			<RootStack.Screen
 				name="Drawer"
 				component={DrawerNavigator}

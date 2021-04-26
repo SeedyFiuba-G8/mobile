@@ -14,10 +14,10 @@ export default {
 				screens: {
 					Dashboard: {
 						screens: {
-							Magic: 'magic',
-							Popular: 'popular',
-							Newest: 'newest',
-							EndingSoon: 'ending-soon',
+							Magic: 'dashboard/magic',
+							Popular: 'dashboard/popular',
+							Newest: 'dashboard/newest',
+							EndingSoon: 'dashboard/ending-soon',
 						},
 					},
 				},
