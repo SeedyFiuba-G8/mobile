@@ -1,12 +1,12 @@
-import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import * as React from "react";
+import { StyleSheet, View } from "react-native";
+import { Paragraph, Text } from "react-native-paper";
 
 export default function ProfileScreen() {
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>ProfileScreen</Text>
-			<View style={styles.separator} />
-			<Text>ProfileScreen info should go here.</Text>
+			<Text style={styles.title}>Profile Screen with Paper</Text>
+			<Paragraph>Some info about the profile.</Paragraph>
 		</View>
 	);
 }
@@ -14,17 +14,17 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
+		alignItems: "center",
+		justifyContent: "center",
 	},
 	title: {
 		fontSize: 20,
-		fontWeight: 'bold',
+		fontWeight: "bold",
 	},
 	separator: {
 		marginVertical: 30,
 		height: 1,
-		width: '80%',
-		backgroundColor: '#eee',
+		width: "80%",
+		backgroundColor: "#eee",
 	},
 });
