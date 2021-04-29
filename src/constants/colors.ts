@@ -1,6 +1,6 @@
 export default {
 	primary: 'teal',
-	darker: '',
+	secondary: 'coral',
 
 	// Components
 	drawer: {
