@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Paragraph, Text } from 'react-native-paper';
 
 export default function MessagesScreen() {
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>MessagesScreen</Text>
-			<View style={styles.separator} />
-			<Text>MessagesScreen info should go here.</Text>
+			<Text style={styles.title}>Messages Screen with Paper</Text>
+			<Paragraph>Some messages.</Paragraph>
 		</View>
 	);
 }

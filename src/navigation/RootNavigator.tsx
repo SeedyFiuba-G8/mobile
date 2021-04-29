@@ -29,6 +29,7 @@ export default function RootNavigator() {
 				headerShown: true,
 				headerTintColor: colors.white,
 				headerStyle: { backgroundColor: colors.primary },
+				headerBackTitleVisible: false,
 			}}
 		>
 			<RootStack.Screen
