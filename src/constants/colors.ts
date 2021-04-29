@@ -1,5 +1,6 @@
 export default {
-	primary: '#05ce78',
+	primary: 'teal',
+	darker: '',
 
 	// Components
 	drawer: {
