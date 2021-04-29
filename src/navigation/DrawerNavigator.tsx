@@ -4,10 +4,14 @@ import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import TopTabNavigator from './TopTabNavigator';
 
+// Components
+import DrawerContent from '../components/DrawerContent';
+
 // Ts types
 import { DrawerParamList } from '../types';
+
+// Constants
 import colors from '../constants/colors';
-import DrawerContent from '../components/DrawerContent';
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 

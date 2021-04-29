@@ -1,6 +1,6 @@
 export default {
 	// Components
 	drawer: {
-		separatorWidth: 0.45,
+		separatorWeight: 0.3,
 	},
 };
