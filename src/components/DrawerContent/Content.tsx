@@ -1,13 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Drawer, Text, TouchableRipple, Switch } from 'react-native-paper';
+import { Drawer } from 'react-native-paper';
 
 // Navigation
 import {
 	DrawerContentComponentProps,
 	DrawerContentScrollView,
-	DrawerItem,
 } from '@react-navigation/drawer';
 
 // Contents
@@ -40,11 +38,4 @@ export default function Content({ ...props }: DrawerContentComponentProps) {
 	);
 }
 
-const styles = StyleSheet.create({
-	preference: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		paddingVertical: 12,
-		paddingHorizontal: 16,
-	},
-});
+const styles = StyleSheet.create({});
