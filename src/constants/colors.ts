@@ -1,10 +1,12 @@
 export default {
-	primary: 'teal',
-	secondary: 'coral',
+	primary: { light: 'teal', dark: 'coral' },
+	secondary: { light: 'coral', dark: 'teal' },
+	accent: { light: 'yellow', dark: 'yellow' },
 
 	// Components
-	drawer: {
-		separator: '#dbdbdb',
+	separator: {
+		light: '#dbdbdb',
+		dark: '#dbdbdb',
 	},
 
 	// Basics

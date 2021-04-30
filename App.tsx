@@ -1,13 +1,12 @@
 import React from 'react';
-import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
-// Navigation
-import Navigation from './src/navigation';
+import { AppearanceProvider } from 'react-native-appearance';
 
 // Hooks
-import ThemeProvider from './src/hooks/useTheme';
 import useCachedResources from './src/hooks/useCachedResources';
+
+// Wrapper
+import Main from './src/Main';
 
 export default function App() {
 	const isLoadingComplete = useCachedResources();
@@ -16,12 +15,11 @@ export default function App() {
 		return null;
 	} else {
 		return (
-			<ThemeProvider>
-				<SafeAreaProvider>
-					<Navigation />
-					<StatusBar />
-				</SafeAreaProvider>
-			</ThemeProvider>
+			<SafeAreaProvider>
+				<AppearanceProvider>
+					<Main />
+				</AppearanceProvider>
+			</SafeAreaProvider>
 		);
 	}
 }

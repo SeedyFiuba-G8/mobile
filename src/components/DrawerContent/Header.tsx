@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
 	container: {
 		marginTop: 20,
 		paddingBottom: 20,
-		borderBottomColor: colors.drawer.separator,
+		borderBottomColor: colors.separator.light,
 		borderBottomWidth: values.drawer.separatorWeight,
 	},
 

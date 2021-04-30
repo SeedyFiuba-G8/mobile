@@ -9,13 +9,19 @@ import PopularScreen from '../screens/tabs/PopularScreen';
 import NewestScreen from '../screens/tabs/NewestScreen';
 import EndingSoonScreen from '../screens/tabs/EndingSoonScreen';
 
+// Theme
+import { useTheme } from '../contexts/ThemeContext';
+
+// Constants
+import colors from '../constants/colors';
+
 // Ts types
 import { TopTabsParamList } from '../types';
-import colors from '../constants/colors';
 
 const DashboardTabs = createMaterialTopTabNavigator<TopTabsParamList>();
 
 export default function DashboardTopTabs() {
+	const { theme } = useTheme();
 	return (
 		<DashboardTabs.Navigator
 			initialRouteName="Magic"
@@ -24,9 +30,18 @@ export default function DashboardTopTabs() {
 				tabStyle: {
 					// here we should try the labels not to wrap, maybe?
 				},
-				activeTintColor: colors.primary,
-				inactiveTintColor: colors.black,
-				indicatorStyle: { backgroundColor: colors.primary },
+				activeTintColor:
+					theme === 'dark'
+						? colors.primary.dark
+						: colors.primary.light,
+				inactiveTintColor:
+					theme === 'dark' ? colors.white : colors.black,
+				indicatorStyle: {
+					backgroundColor:
+						theme === 'dark'
+							? colors.primary.dark
+							: colors.primary.light,
+				},
 			}}
 		>
 			<DashboardTabs.Screen

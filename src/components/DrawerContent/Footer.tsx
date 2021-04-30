@@ -5,30 +5,23 @@ import { Ionicons } from '@expo/vector-icons';
 // Navigation
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
 
-// Hooks
-import { useTheme, useThemeUpdate } from '../../hooks/useTheme';
-
 // Constants
 import colors from '../../constants/colors';
 import values from '../../constants/values';
 
+// Contexts
+import { useTheme } from '../../contexts/ThemeContext';
+
 export default function Footer({ ...props }: DrawerContentComponentProps) {
-	const theme = useTheme();
-	const toggleTheme = useThemeUpdate();
+	const { theme, toggleTheme } = useTheme();
 
 	return (
 		<View style={styles.container}>
-			<TouchableOpacity
-				onPress={() => {
-					console.log('Prev theme: ', theme);
-					toggleTheme();
-				}}
-			>
-				{/* Lo ideal sería cambiar el icono según el tema */}
+			<TouchableOpacity onPress={() => toggleTheme()}>
 				<Ionicons
-					name="moon-outline"
+					name={theme === 'dark' ? 'sunny-outline' : 'moon-outline'}
 					size={40}
-					color="black"
+					color={theme === 'dark' ? colors.white : colors.black}
 					style={styles.icon}
 				/>
 			</TouchableOpacity>
@@ -39,7 +32,7 @@ export default function Footer({ ...props }: DrawerContentComponentProps) {
 const styles = StyleSheet.create({
 	container: {
 		alignItems: 'flex-end',
-		borderTopColor: colors.drawer.separator,
+		borderTopColor: colors.separator.light,
 		borderTopWidth: values.drawer.separatorWeight,
 	},
 	icon: {

@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 	},
 	fab: {
-		backgroundColor: colors.secondary,
+		backgroundColor: colors.secondary.light,
 		position: 'absolute',
 		bottom: 50,
 	},
