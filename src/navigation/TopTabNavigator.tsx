@@ -10,7 +10,7 @@ import NewestScreen from '../screens/tabs/NewestScreen';
 import EndingSoonScreen from '../screens/tabs/EndingSoonScreen';
 
 // Theme
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../contexts/ThemeProvider';
 
 // Constants
 import colors from '../constants/colors';

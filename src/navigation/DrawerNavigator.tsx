@@ -8,7 +8,7 @@ import TopTabNavigator from './TopTabNavigator';
 import DrawerContent from '../components/DrawerContent';
 
 // Theme
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../contexts/ThemeProvider';
 
 // Constants
 import colors from '../constants/colors';

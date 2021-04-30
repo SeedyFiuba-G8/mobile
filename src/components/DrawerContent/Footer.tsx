@@ -10,7 +10,7 @@ import colors from '../../constants/colors';
 import values from '../../constants/values';
 
 // Contexts
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../contexts/ThemeProvider';
 
 export default function Footer({ ...props }: DrawerContentComponentProps) {
 	const { theme, toggleTheme } = useTheme();

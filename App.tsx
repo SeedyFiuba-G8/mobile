@@ -1,25 +1,23 @@
 import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { AppearanceProvider } from 'react-native-appearance';
 
 // Hooks
 import useCachedResources from './src/hooks/useCachedResources';
 
+// Providers
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import ThemeProvider from './src/contexts/ThemeProvider';
+
 // Wrapper
-import Main from './src/Main';
+import Navigation from './src/navigation';
 
 export default function App() {
 	const isLoadingComplete = useCachedResources();
 
-	if (!isLoadingComplete) {
-		return null;
-	} else {
-		return (
-			<SafeAreaProvider>
-				<AppearanceProvider>
-					<Main />
-				</AppearanceProvider>
-			</SafeAreaProvider>
-		);
-	}
+	return (
+		<SafeAreaProvider>
+			<ThemeProvider>
+				{isLoadingComplete ? <Navigation /> : null}
+			</ThemeProvider>
+		</SafeAreaProvider>
+	);
 }
