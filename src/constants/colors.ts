@@ -1,7 +1,6 @@
 export default {
 	primary: { light: 'teal', dark: 'coral' },
-	secondary: { light: 'coral', dark: 'teal' },
-	accent: { light: 'yellow', dark: 'yellow' },
+	accent: { light: 'coral', dark: 'teal' },
 
 	// Components
 	separator: {
