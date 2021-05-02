@@ -19,7 +19,7 @@ import { DrawerParamList } from '../types';
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
 export default function DrawerNavigator() {
-	const { theme } = useTheme();
+	const { isDarkTheme } = useTheme();
 
 	return (
 		<Drawer.Navigator
@@ -28,10 +28,9 @@ export default function DrawerNavigator() {
 				headerShown: true,
 				headerTintColor: colors.white,
 				headerStyle: {
-					backgroundColor:
-						theme === 'dark'
-							? colors.primary.dark
-							: colors.primary.light,
+					backgroundColor: isDarkTheme
+						? colors.primary.dark
+						: colors.primary.light,
 				},
 			}}
 			drawerContent={(props) => <DrawerContent {...props} />}
