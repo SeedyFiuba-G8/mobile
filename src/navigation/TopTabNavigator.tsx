@@ -21,7 +21,8 @@ import { TopTabsParamList } from '../types';
 const DashboardTabs = createMaterialTopTabNavigator<TopTabsParamList>();
 
 export default function DashboardTopTabs() {
-	const { theme } = useTheme();
+	const { isDarkTheme } = useTheme();
+
 	return (
 		<DashboardTabs.Navigator
 			initialRouteName="Magic"
@@ -30,17 +31,14 @@ export default function DashboardTopTabs() {
 				tabStyle: {
 					// here we should try the labels not to wrap, maybe?
 				},
-				activeTintColor:
-					theme === 'dark'
+				activeTintColor: isDarkTheme
+					? colors.primary.dark
+					: colors.primary.light,
+				inactiveTintColor: isDarkTheme ? colors.white : colors.black,
+				indicatorStyle: {
+					backgroundColor: isDarkTheme
 						? colors.primary.dark
 						: colors.primary.light,
-				inactiveTintColor:
-					theme === 'dark' ? colors.white : colors.black,
-				indicatorStyle: {
-					backgroundColor:
-						theme === 'dark'
-							? colors.primary.dark
-							: colors.primary.light,
 				},
 			}}
 		>

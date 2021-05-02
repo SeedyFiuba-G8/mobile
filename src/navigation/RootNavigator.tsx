@@ -22,7 +22,7 @@ import { useTheme } from '../contexts/ThemeProvider';
 const RootStack = createStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
-	const { theme } = useTheme();
+	const { isDarkTheme } = useTheme();
 
 	return (
 		<RootStack.Navigator
@@ -32,10 +32,9 @@ export default function RootNavigator() {
 				headerShown: true,
 				headerTintColor: colors.white,
 				headerStyle: {
-					backgroundColor:
-						theme === 'dark'
-							? colors.primary.dark
-							: colors.primary.light,
+					backgroundColor: isDarkTheme
+						? colors.primary.dark
+						: colors.primary.light,
 				},
 				headerBackTitleVisible: false,
 			}}

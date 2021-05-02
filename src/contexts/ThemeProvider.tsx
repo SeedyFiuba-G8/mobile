@@ -12,15 +12,13 @@ import colors from '../constants/colors';
 // Context
 
 type ThemeContextType = {
-	theme: 'light' | 'dark';
-	toggleTheme: () => void;
 	isDarkTheme: boolean;
+	toggleTheme: () => void;
 };
 
 const ThemeContext = React.createContext<ThemeContextType>({
-	theme: 'light',
-	toggleTheme: () => {},
 	isDarkTheme: false,
+	toggleTheme: () => {},
 });
 
 export function useTheme() {
@@ -34,23 +32,20 @@ export default function ThemeProvider({
 }) {
 	const colorScheme = useColorScheme();
 
-	const [theme, setTheme] = React.useState<'light' | 'dark'>(
-		colorScheme === 'dark' ? 'dark' : 'light'
+	const [isDarkTheme, setIsDarkTheme] = React.useState<boolean>(
+		colorScheme === 'dark' ? true : false
 	);
 
 	function toggleTheme() {
-		setTheme((theme) => (theme === 'light' ? 'dark' : 'light'));
+		setIsDarkTheme((prevState) => !prevState);
 	}
-
-	const isDarkTheme = theme === 'dark';
 
 	const preferences = React.useMemo(
 		() => ({
-			theme,
-			toggleTheme,
 			isDarkTheme,
+			toggleTheme,
 		}),
-		[theme]
+		[isDarkTheme]
 	);
 
 	return (

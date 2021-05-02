@@ -13,15 +13,15 @@ import values from '../../constants/values';
 import { useTheme } from '../../contexts/ThemeProvider';
 
 export default function Footer({ ...props }: DrawerContentComponentProps) {
-	const { theme, toggleTheme } = useTheme();
+	const { isDarkTheme, toggleTheme } = useTheme();
 
 	return (
 		<View style={styles.container}>
 			<TouchableOpacity onPress={() => toggleTheme()}>
 				<Ionicons
-					name={theme === 'dark' ? 'sunny-outline' : 'moon-outline'}
+					name={isDarkTheme ? 'sunny-outline' : 'moon-outline'}
 					size={40}
-					color={theme === 'dark' ? colors.white : colors.black}
+					color={isDarkTheme ? colors.white : colors.black}
 					style={styles.icon}
 				/>
 			</TouchableOpacity>
