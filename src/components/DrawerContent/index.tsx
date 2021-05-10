@@ -9,8 +9,6 @@ import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import Header from './Header';
 import Content from './Content';
 import Footer from './Footer';
-import values from '../../constants/values';
-import colors from '../../constants/colors';
 
 export default function DrawerContent({
 	...props
@@ -31,13 +29,3 @@ export default function DrawerContent({
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	separator: {
-		marginVertical: 10,
-		width: '80%',
-		height: values.drawer.separatorWeight,
-		backgroundColor: colors.separator.light,
-		alignSelf: 'center',
-	},
-});
