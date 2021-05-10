@@ -15,12 +15,15 @@ import { RootStackParamList } from '../types';
 
 // Constants
 import colors from '../constants/colors';
+import { useTheme } from '../contexts/ThemeProvider';
 
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
 const RootStack = createStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
+	const { isDarkTheme } = useTheme();
+
 	return (
 		<RootStack.Navigator
 			mode="modal"
@@ -28,7 +31,11 @@ export default function RootNavigator() {
 			screenOptions={{
 				headerShown: true,
 				headerTintColor: colors.white,
-				headerStyle: { backgroundColor: colors.primary },
+				headerStyle: {
+					backgroundColor: isDarkTheme
+						? colors.primary.dark
+						: colors.primary.light,
+				},
 				headerBackTitleVisible: false,
 			}}
 		>

@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
 		marginVertical: 10,
 		width: '80%',
 		height: values.drawer.separatorWeight,
-		backgroundColor: colors.drawer.separator,
+		backgroundColor: colors.separator.light,
 		alignSelf: 'center',
 	},
 });

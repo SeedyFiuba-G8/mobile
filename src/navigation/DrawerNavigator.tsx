@@ -7,22 +7,31 @@ import TopTabNavigator from './TopTabNavigator';
 // Components
 import DrawerContent from '../components/DrawerContent';
 
-// Ts types
-import { DrawerParamList } from '../types';
+// Theme
+import { useTheme } from '../contexts/ThemeProvider';
 
 // Constants
 import colors from '../constants/colors';
 
+// Ts types
+import { DrawerParamList } from '../types';
+
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
 export default function DrawerNavigator() {
+	const { isDarkTheme } = useTheme();
+
 	return (
 		<Drawer.Navigator
 			initialRouteName="Dashboard"
 			screenOptions={{
 				headerShown: true,
 				headerTintColor: colors.white,
-				headerStyle: { backgroundColor: colors.primary },
+				headerStyle: {
+					backgroundColor: isDarkTheme
+						? colors.primary.dark
+						: colors.primary.light,
+				},
 			}}
 			drawerContent={(props) => <DrawerContent {...props} />}
 		>

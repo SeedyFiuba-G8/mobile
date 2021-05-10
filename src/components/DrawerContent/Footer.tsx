@@ -9,19 +9,19 @@ import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import colors from '../../constants/colors';
 import values from '../../constants/values';
 
+// Contexts
+import { useTheme } from '../../contexts/ThemeProvider';
+
 export default function Footer({ ...props }: DrawerContentComponentProps) {
+	const { isDarkTheme, toggleTheme } = useTheme();
+
 	return (
 		<View style={styles.container}>
-			<TouchableOpacity
-				onPress={() => {
-					console.log('Toggle theme');
-				}}
-			>
-				{/* Lo ideal sería cambiar el icono según el tema */}
+			<TouchableOpacity onPress={() => toggleTheme()}>
 				<Ionicons
-					name="moon-outline"
+					name={isDarkTheme ? 'sunny-outline' : 'moon-outline'}
 					size={40}
-					color="black"
+					color={isDarkTheme ? colors.white : colors.black}
 					style={styles.icon}
 				/>
 			</TouchableOpacity>
@@ -32,7 +32,7 @@ export default function Footer({ ...props }: DrawerContentComponentProps) {
 const styles = StyleSheet.create({
 	container: {
 		alignItems: 'flex-end',
-		borderTopColor: colors.drawer.separator,
+		borderTopColor: colors.separator.light,
 		borderTopWidth: values.drawer.separatorWeight,
 	},
 	icon: {
