@@ -4,10 +4,7 @@ import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 // Screens
-import MagicScreen from '../screens/tabs/MagicScreen';
-import PopularScreen from '../screens/tabs/PopularScreen';
-import NewestScreen from '../screens/tabs/NewestScreen';
-import EndingSoonScreen from '../screens/tabs/EndingSoonScreen';
+import DashboardScreen from '../screens/DashboardScreen';
 
 // Theme
 import { useTheme } from '../contexts/ThemeProvider';
@@ -44,22 +41,22 @@ export default function DashboardTopTabs() {
 		>
 			<DashboardTabs.Screen
 				name="Magic"
-				component={MagicScreen}
+				component={DashboardScreen}
 				options={{ title: 'Magic' }}
 			/>
 			<DashboardTabs.Screen
 				name="Popular"
-				component={PopularScreen}
+				component={DashboardScreen}
 				options={{ title: 'Popular' }}
 			/>
 			<DashboardTabs.Screen
 				name="Newest"
-				component={NewestScreen}
+				component={DashboardScreen}
 				options={{ title: 'Newest' }}
 			/>
 			<DashboardTabs.Screen
 				name="EndingSoon"
-				component={EndingSoonScreen}
+				component={DashboardScreen}
 				options={{ title: 'Ending Soon' }}
 			/>
 		</DashboardTabs.Navigator>
