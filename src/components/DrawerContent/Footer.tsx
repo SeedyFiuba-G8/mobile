@@ -15,6 +15,10 @@ import { useTheme } from '../../contexts/ThemeProvider';
 export default function Footer({ ...props }: DrawerContentComponentProps) {
 	const { isDarkTheme, toggleTheme } = useTheme();
 
+	const styles = React.useMemo(() => createThemedStyles(isDarkTheme), [
+		isDarkTheme,
+	]);
+
 	return (
 		<View style={styles.container}>
 			<TouchableOpacity onPress={() => toggleTheme()}>
@@ -29,14 +33,20 @@ export default function Footer({ ...props }: DrawerContentComponentProps) {
 	);
 }
 
-const styles = StyleSheet.create({
-	container: {
-		alignItems: 'flex-end',
-		borderTopColor: colors.separator.light,
-		borderTopWidth: values.drawer.separatorWeight,
-	},
-	icon: {
-		paddingRight: 20,
-		paddingVertical: 10,
-	},
-});
+const createThemedStyles = (isDarkTheme: boolean) => {
+	const styles = StyleSheet.create({
+		container: {
+			alignItems: 'flex-end',
+			borderTopColor: isDarkTheme
+				? colors.separator.dark
+				: colors.separator.light,
+			borderTopWidth: values.drawer.separatorWeight,
+		},
+		icon: {
+			paddingRight: 20,
+			paddingVertical: 10,
+		},
+	});
+
+	return styles;
+};

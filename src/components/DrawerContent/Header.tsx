@@ -9,7 +9,16 @@ import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import colors from '../../constants/colors';
 import values from '../../constants/values';
 
+// Contexts
+import { useTheme } from '../../contexts/ThemeProvider';
+
 export default function Header({ ...props }: DrawerContentComponentProps) {
+	const { isDarkTheme } = useTheme();
+
+	const styles = React.useMemo(() => createThemedStyles(isDarkTheme), [
+		isDarkTheme,
+	]);
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.userInfo}>
@@ -27,30 +36,36 @@ export default function Header({ ...props }: DrawerContentComponentProps) {
 	);
 }
 
-const styles = StyleSheet.create({
-	caption: {
-		fontSize: 14,
-		lineHeight: 14,
-	},
+const createThemedStyles = (isDarkTheme: boolean) => {
+	const styles = StyleSheet.create({
+		caption: {
+			fontSize: 14,
+			lineHeight: 14,
+		},
 
-	container: {
-		marginTop: 20,
-		paddingBottom: 20,
-		borderBottomColor: colors.separator.light,
-		borderBottomWidth: values.drawer.separatorWeight,
-	},
+		container: {
+			marginTop: 20,
+			paddingBottom: 20,
+			borderBottomColor: isDarkTheme
+				? colors.separator.dark
+				: colors.separator.light,
+			borderBottomWidth: values.drawer.separatorWeight,
+		},
 
-	title: {
-		fontSize: 16,
-		fontWeight: 'bold',
-	},
+		title: {
+			fontSize: 16,
+			fontWeight: 'bold',
+		},
 
-	userInfo: {
-		alignItems: 'center',
-	},
+		userInfo: {
+			alignItems: 'center',
+		},
 
-	userName: {
-		marginTop: 10,
-		flexDirection: 'column',
-	},
-});
+		userName: {
+			marginTop: 10,
+			flexDirection: 'column',
+		},
+	});
+
+	return styles;
+};

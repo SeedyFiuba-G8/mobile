@@ -5,7 +5,7 @@ export default {
 	// Components
 	separator: {
 		light: '#dbdbdb',
-		dark: '#dbdbdb',
+		dark: '#303030',
 	},
 
 	// Basics

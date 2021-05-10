@@ -1,5 +1,4 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 import { Drawer } from 'react-native-paper';
 
 // Navigation
@@ -37,5 +36,3 @@ export default function Content({ ...props }: DrawerContentComponentProps) {
 		</DrawerContentScrollView>
 	);
 }
-
-const styles = StyleSheet.create({});
