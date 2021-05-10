@@ -1,10 +1,12 @@
 {
   "expo": {
-    "name": "Seedy Fiuba",
-    "slug": "Seedy Fiuba",
+    "name": "SeedyFiuba",
+    "slug": "SeedyFiuba",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/icons/icon.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./src/assets/images/splash.png",
       "resizeMode": "contain",
@@ -22,7 +24,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/icons/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#ffffff"
       }
     },
     "web": {
