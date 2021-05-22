@@ -9,6 +9,7 @@ import NotFoundScreen from '../screens/NotFoundScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import SingInScreen from '../screens/SignInScreen';
 
 // Ts types
 import { RootStackParamList } from '../types';
@@ -22,38 +23,38 @@ import { useTheme } from '../contexts/ThemeProvider';
 const RootStack = createStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
-	const { isDarkTheme } = useTheme();
+    const { isDarkTheme } = useTheme();
 
-	return (
-		<RootStack.Navigator
-			mode="modal"
-			initialRouteName="Drawer"
-			screenOptions={{
-				headerShown: true,
-				headerTintColor: colors.white,
-				headerStyle: {
-					backgroundColor: isDarkTheme
-						? colors.primary.dark
-						: colors.primary.light,
-				},
-				headerBackTitleVisible: false,
-			}}
-		>
-			<RootStack.Screen
-				name="Drawer"
-				component={DrawerNavigator}
-				options={{ headerShown: false }}
-			/>
+    return (
+        <RootStack.Navigator
+            mode="modal"
+            initialRouteName="Drawer"
+            screenOptions={{
+                headerShown: true,
+                headerTintColor: colors.white,
+                headerStyle: {
+                    backgroundColor: isDarkTheme
+                        ? colors.primary.dark
+                        : colors.primary.light,
+                },
+                headerBackTitleVisible: false,
+            }}
+        >
+            <RootStack.Screen
+                name="Drawer"
+                component={DrawerNavigator}
+                options={{ headerShown: false }}
+            />
 
-			<RootStack.Screen name="Profile" component={ProfileScreen} />
-			<RootStack.Screen name="Messages" component={MessagesScreen} />
-			<RootStack.Screen name="Settings" component={SettingsScreen} />
+            <RootStack.Screen name="Profile" component={ProfileScreen} />
+            <RootStack.Screen name="Messages" component={MessagesScreen} />
+            <RootStack.Screen name="Settings" component={SettingsScreen} />
 
-			<RootStack.Screen
-				name="NotFound"
-				component={NotFoundScreen}
-				options={{ title: 'Oops!' }}
-			/>
-		</RootStack.Navigator>
-	);
+            <RootStack.Screen
+                name="NotFound"
+                component={NotFoundScreen}
+                options={{ title: 'Oops!' }}
+            />
+        </RootStack.Navigator>
+    );
 }

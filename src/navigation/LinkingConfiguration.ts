@@ -7,25 +7,26 @@
 import * as Linking from 'expo-linking';
 
 export default {
-	prefixes: [Linking.makeUrl('/')],
-	config: {
-		screens: {
-			Drawer: {
-				screens: {
-					Dashboard: {
-						screens: {
-							Magic: 'dashboard/magic',
-							Popular: 'dashboard/popular',
-							Newest: 'dashboard/newest',
-							EndingSoon: 'dashboard/ending-soon',
-						},
-					},
-				},
-			},
-			Profile: 'profile',
-			Messages: 'messages',
-			Settings: 'settings',
-			NotFound: '*',
-		},
-	},
+    prefixes: [Linking.makeUrl('/')],
+    config: {
+        screens: {
+            Drawer: {
+                screens: {
+                    Dashboard: {
+                        screens: {
+                            Magic: 'dashboard/magic',
+                            Popular: 'dashboard/popular',
+                            Newest: 'dashboard/newest',
+                            EndingSoon: 'dashboard/ending-soon',
+                        },
+                    },
+                },
+            },
+            Profile: 'profile',
+            Messages: 'messages',
+            Settings: 'settings',
+            NotFound: '*',
+            SingIn: 'singin',
+        },
+    },
 };
