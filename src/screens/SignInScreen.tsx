@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
-import { Text, Button } from 'react-native-paper';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Text, Button, TextInput } from 'react-native-paper';
 
 // Contexts
 import { useTheme } from '../contexts/ThemeProvider';
@@ -9,7 +9,7 @@ import { useTheme } from '../contexts/ThemeProvider';
 import { useDispatch, useSelector } from 'react-redux';
 
 //Actions
-import { loginAction } from '../actions/LoginAction';
+import { updateLoginStatusAction } from '../actions/UpdateLoginStatusAction';
 import { LoggingInFlowState } from '../reducers/LoginReducer';
 
 // Constants
@@ -29,12 +29,21 @@ export default function SignInScreen(): React.ReactNode {
 
     const dispatch = useDispatch();
 
+    const onLoginButtonClick = () => {
+        console.log('Sending log in request. Data:', loginData);
+        dispatch(
+            updateLoginStatusAction({
+                username: loginData.username,
+                password: loginData.password,
+            })
+        );
+    };
+
     const loginState = useSelector((state) => state.login.loggedInState);
     return (
         <View style={styles.container}>
             <Text style={styles.logo}>¡Log In!</Text>
 
-            <Text style={styles.inputText}>Username:</Text>
             <TextInput
                 style={styles.input}
                 onChangeText={(text) => {
@@ -43,9 +52,10 @@ export default function SignInScreen(): React.ReactNode {
                         username: text,
                     });
                 }}
+                mode="outlined"
+                label="Username"
             />
 
-            <Text style={styles.inputText}>Password:</Text>
             <TextInput
                 style={styles.input}
                 secureTextEntry={true}
@@ -55,19 +65,13 @@ export default function SignInScreen(): React.ReactNode {
                         password: text,
                     });
                 }}
+                mode="outlined"
+                label="Password"
             />
 
             <Button
                 style={styles.button}
-                onPress={() => {
-                    console.log('Sending log in request. Data:', loginData);
-                    dispatch(
-                        loginAction({
-                            username: loginData.username,
-                            password: loginData.password,
-                        })
-                    );
-                }}
+                onPress={onLoginButtonClick}
                 loading={
                     loginState === LoggingInFlowState.WaitingForAuthResponse
                 }
@@ -119,14 +123,13 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             color: colors.primary.dark,
         },
         input: {
-            borderWidth: 1,
-            borderColor: colors.primary.light,
+            //borderWidth: 1,
+            //borderColor: colors.primary.light,
             alignSelf: 'stretch',
             margin: 32,
             marginTop: 0,
             height: 64,
-            borderRadius: 6,
-            paddingHorizontal: 16,
+            //paddingHorizontal: 16,
             fontSize: 24,
             fontWeight: '300',
         },

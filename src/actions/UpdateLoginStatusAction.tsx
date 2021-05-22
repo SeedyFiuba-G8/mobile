@@ -11,7 +11,9 @@ export type loginActionType = {
     };
 };
 
-export const loginAction = (loginInfo: loginInfoType): loginActionType => {
+export const updateLoginStatusAction = (
+    loginInfo: loginInfoType
+): loginActionType => {
     return {
         type: 'LOGIN',
         payload: {
