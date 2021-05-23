@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import { Text, Button, TextInput } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Text, Button, TextInput, DarkTheme } from 'react-native-paper';
 
 // Contexts
 import { useTheme } from '../contexts/ThemeProvider';
@@ -9,8 +9,10 @@ import { useTheme } from '../contexts/ThemeProvider';
 import { useDispatch, useSelector } from 'react-redux';
 
 //Actions
-import { updateLoginStatusAction } from '../actions/UpdateLoginStatusAction';
-import { LoggingInFlowState } from '../reducers/LoginReducer';
+import {
+    updateLoginStatusAction,
+    LoggingInFlowState,
+} from '../actions/UpdateLoginStatusAction';
 
 // Constants
 import colors from '../constants/colors';
@@ -32,17 +34,14 @@ export default function SignInScreen(): React.ReactNode {
     const onLoginButtonClick = () => {
         console.log('Sending log in request. Data:', loginData);
         dispatch(
-            updateLoginStatusAction({
-                username: loginData.username,
-                password: loginData.password,
-            })
+            updateLoginStatusAction(LoggingInFlowState.WaitingForAuthResponse)
         );
     };
 
     const loginState = useSelector((state) => state.login.loggedInState);
     return (
         <View style={styles.container}>
-            <Text style={styles.logo}>¡Log In!</Text>
+            <Text style={styles.logo}>SeedyFiuba</Text>
 
             <TextInput
                 style={styles.input}
@@ -52,8 +51,8 @@ export default function SignInScreen(): React.ReactNode {
                         username: text,
                     });
                 }}
-                mode="outlined"
                 label="Username"
+                theme={textInputTheme}
             />
 
             <TextInput
@@ -65,8 +64,8 @@ export default function SignInScreen(): React.ReactNode {
                         password: text,
                     });
                 }}
-                mode="outlined"
                 label="Password"
+                theme={textInputTheme}
             />
 
             <Button
@@ -81,16 +80,15 @@ export default function SignInScreen(): React.ReactNode {
             >
                 <Text style={{ color: 'white' }}>Entrar</Text>
             </Button>
+            <Text style={styles.loginOptionSeparator}>or</Text>
 
-            <View style={styles.debug}>
-                <Text style={{ fontStyle: 'italic', marginBottom: 12 }}>
-                    Debug
-                </Text>
-                <Text style={{ fontWeight: 'bold' }}>Nombre de usuario:</Text>
-                <Text>{loginData.username}</Text>
-                <Text style={{ fontWeight: 'bold' }}>Contraseña:</Text>
-                <Text>{loginData.password}</Text>
-            </View>
+            <Button style={styles.facebookLoginButton}>
+                <Text style={{ color: 'white' }}>Sign in with Facebook</Text>
+            </Button>
+
+            <Button style={styles.googleLoginButton}>
+                <Text style={{ color: 'grey' }}>Sign in with Google</Text>
+            </Button>
         </View>
     );
 }
@@ -99,20 +97,38 @@ const createThemedStyles = (isDarkTheme: boolean) => {
     const styles = StyleSheet.create({
         container: {
             flex: 1,
-            backgroundColor: colors.white,
             alignItems: 'center',
             justifyContent: 'center',
         },
 
         // COPY PASTED FROM PROJECT
         button: {
-            backgroundColor: colors.primary.light,
-            alignItems: 'center',
+            backgroundColor: colors.primary.dark,
             justifyContent: 'center',
             alignSelf: 'stretch',
             paddingVertical: 12,
             paddingHorizontal: 32,
-            marginTop: 32,
+            marginTop: 10,
+            marginHorizontal: 32,
+            borderRadius: 6,
+        },
+        facebookLoginButton: {
+            backgroundColor: '#3b5998',
+            justifyContent: 'center',
+            alignSelf: 'stretch',
+            paddingVertical: 12,
+            paddingHorizontal: 32,
+            marginTop: 10,
+            marginHorizontal: 32,
+            borderRadius: 6,
+        },
+        googleLoginButton: {
+            backgroundColor: '#FFFFFF',
+            justifyContent: 'center',
+            alignSelf: 'stretch',
+            paddingVertical: 12,
+            paddingHorizontal: 32,
+            marginTop: 10,
             marginHorizontal: 32,
             borderRadius: 6,
         },
@@ -130,6 +146,7 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             marginTop: 0,
             height: 64,
             //paddingHorizontal: 16,
+            backgroundColor: colors.white,
             fontSize: 24,
             fontWeight: '300',
         },
@@ -138,11 +155,26 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             fontWeight: '200',
         },
         logo: {
-            fontSize: 24,
+            fontSize: 40,
             fontWeight: '300',
             margin: 32,
+            color: colors.white,
+        },
+        loginOptionSeparator: {
+            fontSize: 20,
+            fontWeight: '200',
+            marginTop: 16,
+            marginBottom: 16,
+            color: colors.white,
         },
     });
 
     return styles;
+};
+
+const textInputTheme = {
+    colors: {
+        placeholder: colors.black,
+        text: colors.black,
+    },
 };

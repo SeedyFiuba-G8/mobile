@@ -12,7 +12,7 @@ import AuthRootNavigator from '../auth/RootNavigator';
 import { useSelector } from 'react-redux';
 
 // Types
-import { LoggingInFlowState } from '../reducers/LoginReducer';
+import { LoggingInFlowState } from '../actions/UpdateLoginStatusAction';
 
 export default function Navigation(): React.ReactNode {
     const { isDarkTheme } = useTheme();

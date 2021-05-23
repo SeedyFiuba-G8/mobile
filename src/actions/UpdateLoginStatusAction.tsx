@@ -1,24 +1,24 @@
-export type loginInfoType = {
-    username: string;
-    password: string;
-};
+export enum LoggingInFlowState {
+    NotLoggedIn,
+    WaitingForAuthResponse,
+    LoggedIn,
+    CredentialsError,
+}
 
 export type loginActionType = {
     type: string;
     payload: {
-        username: string;
-        password: string;
+        loginState: LoggingInFlowState;
     };
 };
 
 export const updateLoginStatusAction = (
-    loginInfo: loginInfoType
+    newLoginState: LoggingInFlowState
 ): loginActionType => {
     return {
         type: 'LOGIN',
         payload: {
-            username: loginInfo.username,
-            password: loginInfo.password,
+            loginState: newLoginState,
         },
     };
 };

@@ -1,14 +1,18 @@
 export default {
-	primary: { light: 'teal', dark: 'coral' },
-	accent: { light: 'coral', dark: 'teal' },
+    primary: { light: 'teal', dark: 'coral' },
+    accent: { light: 'coral', dark: 'teal' },
 
-	// Components
-	separator: {
-		light: '#dbdbdb',
-		dark: '#303030',
-	},
+    // Components
+    separator: {
+        light: '#dbdbdb',
+        dark: '#303030',
+    },
 
-	// Basics
-	white: '#fff',
-	black: '#000',
+    // Basics
+    white: '#fff',
+    black: '#000',
+
+    loginScreen: {
+        background: '#e5f2f2',
+    },
 };

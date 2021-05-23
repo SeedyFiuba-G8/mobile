@@ -1,15 +1,9 @@
-import type { loginActionType } from '../actions/LoginAction';
+import type { loginActionType } from '../actions/UpdateLoginStatusAction';
+import { LoggingInFlowState } from '../actions/UpdateLoginStatusAction';
 
 type loginStatusType = {
-    isLogged: boolean;
+    loggedInState: LoggingInFlowState;
 };
-
-export enum LoggingInFlowState {
-    NotLoggedIn,
-    WaitingForAuthResponse,
-    LoggedIn,
-    CredentialsError,
-}
 
 const loginReducer = (
     state = initialState,
@@ -17,19 +11,8 @@ const loginReducer = (
 ): loginStatusType => {
     switch (action.type) {
         case 'LOGIN':
-            // Esta lógica es temporaria. No debería hacerse la request desde este reducer.
-            if (
-                action.payload.username === 'nicomatex' &&
-                action.payload.password === '1234'
-            ) {
-                console.log('Validation successful!');
-                return {
-                    loggedInState: LoggingInFlowState.LoggedIn,
-                };
-            }
-            console.log('Validation WRONG');
             return {
-                loggedInState: LoggingInFlowState.WaitingForAuthResponse,
+                loggedInState: action.payload.loginState,
             };
         default:
             return state;
