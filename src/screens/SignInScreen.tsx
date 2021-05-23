@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Text, Button, TextInput, DarkTheme } from 'react-native-paper';
+import {
+    Text,
+    Button,
+    TextInput,
+    DarkTheme,
+    HelperText,
+} from 'react-native-paper';
 
 // Contexts
 import { useTheme } from '../contexts/ThemeProvider';
@@ -16,6 +22,7 @@ import {
 
 // Constants
 import colors from '../constants/colors';
+import { loginApi } from '../api/loginApi';
 
 export default function SignInScreen(): React.ReactNode {
     const { isDarkTheme } = useTheme();
@@ -31,14 +38,28 @@ export default function SignInScreen(): React.ReactNode {
 
     const dispatch = useDispatch();
 
-    const onLoginButtonClick = () => {
-        console.log('Sending log in request. Data:', loginData);
+    const onLoginButtonClick = async () => {
         dispatch(
             updateLoginStatusAction(LoggingInFlowState.WaitingForAuthResponse)
+        );
+        const loginResult = await loginApi.logIn(
+            loginData.username,
+            loginData.password
+        );
+        console.log(loginResult.loginSuccessful);
+        dispatch(
+            updateLoginStatusAction(
+                loginResult.loginSuccessful
+                    ? LoggingInFlowState.LoggedIn
+                    : LoggingInFlowState.CredentialsError
+            )
         );
     };
 
     const loginState = useSelector((state) => state.login.loggedInState);
+    const loginWasNotSuccesful = () => {
+        return loginState === LoggingInFlowState.CredentialsError;
+    };
     return (
         <View style={styles.container}>
             <Text style={styles.logo}>SeedyFiuba</Text>
@@ -53,6 +74,7 @@ export default function SignInScreen(): React.ReactNode {
                 }}
                 label="Username"
                 theme={textInputTheme}
+                error={loginWasNotSuccesful()}
             />
 
             <TextInput
@@ -66,8 +88,11 @@ export default function SignInScreen(): React.ReactNode {
                 }}
                 label="Password"
                 theme={textInputTheme}
+                error={loginWasNotSuccesful()}
             />
-
+            <HelperText type="error" visible={loginWasNotSuccesful()}>
+                Invalid username or password.
+            </HelperText>
             <Button
                 style={styles.button}
                 onPress={onLoginButtonClick}
@@ -78,7 +103,7 @@ export default function SignInScreen(): React.ReactNode {
                     loginState === LoggingInFlowState.WaitingForAuthResponse
                 }
             >
-                <Text style={{ color: 'white' }}>Entrar</Text>
+                <Text style={{ color: 'white' }}>Sign in</Text>
             </Button>
             <Text style={styles.loginOptionSeparator}>or</Text>
 

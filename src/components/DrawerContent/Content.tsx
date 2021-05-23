@@ -15,9 +15,23 @@ import collections from './Contents/collections';
 import categories from './Contents/categories';
 import other from './Contents/other';
 
+//Hooks
+import { useDispatch } from 'react-redux';
+
+//Actions
+import {
+    updateLoginStatusAction,
+    LoggingInFlowState,
+} from '../../actions/UpdateLoginStatusAction';
+
 export default function Content({
     ...props
 }: DrawerContentComponentProps): React.ReactNode {
+    const dispatch = useDispatch();
+    const onLogoutClick = () => {
+        dispatch(updateLoginStatusAction(LoggingInFlowState.NotLoggedIn));
+    };
+
     return (
         <DrawerContentScrollView
             {...props}
@@ -44,6 +58,7 @@ export default function Content({
                     icon={({ color, size }) => (
                         <Ionicons name={'log-out'} color={color} size={size} />
                     )}
+                    onPress={onLogoutClick}
                 />
             </Drawer.Section>
         </DrawerContentScrollView>

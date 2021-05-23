@@ -18,7 +18,6 @@ export default function Navigation(): React.ReactNode {
     const { isDarkTheme } = useTheme();
     const navigationTheme = isDarkTheme ? DarkTheme : DefaultTheme;
     const loginState = useSelector((state) => state.login.loggedInState);
-    console.log('loginState is: ', loginState);
     return (
         <NavigationContainer
             theme={navigationTheme}
