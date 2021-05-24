@@ -15,4 +15,5 @@ export function handleError(error) {
         return error.data;
     }
     return error;
+    console.log(error);
 }

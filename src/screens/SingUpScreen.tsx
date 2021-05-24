@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, View, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Text, Button, TextInput, HelperText } from 'react-native-paper';
-import { StackNavigationProp } from '@react-navigation/stack';
 
 // Contexts
 import { useTheme } from '../contexts/ThemeProvider';
@@ -19,27 +18,19 @@ import {
 import colors from '../constants/colors';
 import { loginApi } from '../api/loginApi';
 
-// Types
-import { AuthStackParamList } from '../types';
-
-type SignInScreenNavigationProp = StackNavigationProp<
-    AuthStackParamList,
-    'SignIn'
->;
-
-type Props = {
-    navigation: SignInScreenNavigationProp;
-};
-export default function SignInScreen(props: Props): React.ReactNode {
+export default function SignInScreen(): React.ReactNode {
     const { isDarkTheme } = useTheme();
     const styles = React.useMemo(
         () => createThemedStyles(isDarkTheme),
         [isDarkTheme]
     );
 
-    const [loginData, setLoginData] = React.useState({
-        username: '',
+    const [signUpData, setSignUpData] = React.useState({
+        email: '',
+        firstname: '',
+        lastname: '',
         password: '',
+        confirmPassword: '',
     });
 
     const dispatch = useDispatch();
@@ -62,70 +53,88 @@ export default function SignInScreen(props: Props): React.ReactNode {
         );
     };
 
-    const onCreateNewAccountClick = () => {
-        props.navigation.navigate('SignUp');
+    const passwordsMatch = () => {
+        return signUpData.password === signUpData.confirmPassword;
     };
-
-    const loginState = useSelector((state) => state.login.loggedInState);
-    const loginWasNotSuccesful = () => {
-        return loginState === LoggingInFlowState.CredentialsError;
-    };
+    const loginWasNotSuccesful = () => false;
     return (
         <View style={styles.container}>
-            <Text style={styles.logo}>SeedyFiuba</Text>
+            <Text style={styles.logo}>Register</Text>
 
             <TextInput
                 style={styles.input}
                 onChangeText={(text) => {
-                    setLoginData({
-                        ...loginData,
-                        username: text,
+                    setSignUpData({
+                        ...signUpData,
+                        email: text,
                     });
                 }}
                 label="Email"
                 theme={createThemedTextInputTheme(isDarkTheme)}
-                error={loginWasNotSuccesful()}
+                error={false}
             />
 
             <TextInput
                 style={styles.input}
+                onChangeText={(text) => {
+                    setSignUpData({
+                        ...signUpData,
+                        firstname: text,
+                    });
+                }}
+                label="First name"
+                theme={createThemedTextInputTheme(isDarkTheme)}
+                error={loginWasNotSuccesful()}
+            />
+            <TextInput
+                style={styles.input}
+                onChangeText={(text) => {
+                    setSignUpData({
+                        ...signUpData,
+                        lastname: text,
+                    });
+                }}
+                label="Last name"
+                theme={createThemedTextInputTheme(isDarkTheme)}
+                error={loginWasNotSuccesful()}
+            />
+            <TextInput
+                style={styles.input}
                 secureTextEntry={true}
                 onChangeText={(text) => {
-                    setLoginData({
-                        ...loginData,
+                    setSignUpData({
+                        ...signUpData,
                         password: text,
                     });
                 }}
                 label="Password"
                 theme={createThemedTextInputTheme(isDarkTheme)}
-                error={loginWasNotSuccesful()}
+                error={!passwordsMatch()}
             />
-            <HelperText type="error" visible={loginWasNotSuccesful()}>
-                Invalid username or password.
-            </HelperText>
-            <Button
-                style={styles.button}
-                onPress={onLoginButtonClick}
-                loading={
-                    loginState === LoggingInFlowState.WaitingForAuthResponse
-                }
-                disabled={
-                    loginState === LoggingInFlowState.WaitingForAuthResponse
-                }
-            >
-                <Text style={{ color: 'white' }}>Sign in</Text>
-            </Button>
-            <Text style={styles.loginOptionSeparator}>or</Text>
-
-            <Button style={styles.button} onPress={onCreateNewAccountClick}>
-                <Text style={{ color: 'white' }}>Create new account</Text>
-            </Button>
-            <Button style={styles.facebookLoginButton}>
-                <Text style={{ color: 'white' }}>Sign in with Facebook</Text>
-            </Button>
-
-            <Button style={styles.googleLoginButton}>
-                <Text style={{ color: 'grey' }}>Sign in with Google</Text>
+            <View style={styles.inputWithHelperTextView}>
+                <TextInput
+                    style={styles.input}
+                    secureTextEntry={true}
+                    onChangeText={(text) => {
+                        setSignUpData({
+                            ...signUpData,
+                            confirmPassword: text,
+                        });
+                    }}
+                    label="Confirm password"
+                    theme={createThemedTextInputTheme(isDarkTheme)}
+                    error={!passwordsMatch()}
+                />
+                <HelperText
+                    type="error"
+                    visible={!passwordsMatch()}
+                    style={styles.helperText}
+                >
+                    Passwords do not mach.
+                </HelperText>
+            </View>
+            <Button style={styles.button} onPress={onLoginButtonClick}>
+                <Text style={{ color: 'white' }}>Create account</Text>
             </Button>
         </View>
     );
@@ -147,44 +156,19 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             alignSelf: 'stretch',
             paddingVertical: 12,
             paddingHorizontal: 32,
-            height: 50,
-            marginHorizontal: 32,
-            borderRadius: 6,
-        },
-        facebookLoginButton: {
-            backgroundColor: '#3b5998',
-            justifyContent: 'center',
-            alignSelf: 'stretch',
-            paddingVertical: 12,
-            paddingHorizontal: 32,
             marginTop: 10,
             marginHorizontal: 32,
-            height: 50,
             borderRadius: 6,
-        },
-        googleLoginButton: {
-            backgroundColor: isDarkTheme ? colors.white : '#EEEEEE',
-            justifyContent: 'center',
-            alignSelf: 'stretch',
-            paddingVertical: 12,
-            paddingHorizontal: 32,
-            marginTop: 10,
-            marginHorizontal: 32,
-            height: 50,
-            borderRadius: 6,
-        },
-        debug: {
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: 64,
-            color: colors.primary.dark,
         },
         input: {
             alignSelf: 'stretch',
-            margin: 32,
-            marginTop: 0,
+            marginHorizontal: 32,
+            marginTop: 20,
             backgroundColor: isDarkTheme ? colors.white : '#EEEEEE',
             fontWeight: '300',
+        },
+        inputWithHelperTextView: {
+            alignSelf: 'stretch',
         },
         inputText: {
             fontSize: 20,
@@ -196,12 +180,8 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             margin: 32,
             color: isDarkTheme ? colors.white : colors.black,
         },
-        loginOptionSeparator: {
-            fontSize: 20,
-            fontWeight: '200',
-            marginTop: 16,
-            marginBottom: 16,
-            color: isDarkTheme ? colors.white : colors.black,
+        helperText: {
+            marginHorizontal: 20,
         },
     });
     return styles;

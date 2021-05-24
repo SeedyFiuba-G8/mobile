@@ -27,6 +27,7 @@ export default {
             Settings: 'settings',
             NotFound: '*',
             SingIn: 'singin',
+            SingUp: 'singup',
         },
     },
 };

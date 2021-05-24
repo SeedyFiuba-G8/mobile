@@ -13,7 +13,6 @@ import DrawerList from './DrawerList';
 import general from './Contents/general';
 import collections from './Contents/collections';
 import categories from './Contents/categories';
-import other from './Contents/other';
 
 //Hooks
 import { useDispatch } from 'react-redux';
@@ -36,8 +35,6 @@ export default function Content({
         <DrawerContentScrollView
             {...props}
             contentContainerStyle={{
-                //flex: 1,
-
                 paddingTop: 0,
             }}
         >
