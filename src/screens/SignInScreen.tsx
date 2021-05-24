@@ -1,12 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
-import {
-    Text,
-    Button,
-    TextInput,
-    DarkTheme,
-    HelperText,
-} from 'react-native-paper';
+import { Text, Button, TextInput, HelperText } from 'react-native-paper';
 
 // Contexts
 import { useTheme } from '../contexts/ThemeProvider';
@@ -73,7 +67,7 @@ export default function SignInScreen(): React.ReactNode {
                     });
                 }}
                 label="Username"
-                theme={textInputTheme}
+                theme={createThemedTextInputTheme(isDarkTheme)}
                 error={loginWasNotSuccesful()}
             />
 
@@ -87,7 +81,7 @@ export default function SignInScreen(): React.ReactNode {
                     });
                 }}
                 label="Password"
-                theme={textInputTheme}
+                theme={createThemedTextInputTheme(isDarkTheme)}
                 error={loginWasNotSuccesful()}
             />
             <HelperText type="error" visible={loginWasNotSuccesful()}>
@@ -124,11 +118,12 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             flex: 1,
             alignItems: 'center',
             justifyContent: 'center',
+            backgroundColor: isDarkTheme ? colors.black : colors.white,
         },
-
-        // COPY PASTED FROM PROJECT
         button: {
-            backgroundColor: colors.primary.dark,
+            backgroundColor: isDarkTheme
+                ? colors.primary.dark
+                : colors.primary.light,
             justifyContent: 'center',
             alignSelf: 'stretch',
             paddingVertical: 12,
@@ -148,7 +143,7 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             borderRadius: 6,
         },
         googleLoginButton: {
-            backgroundColor: '#FFFFFF',
+            backgroundColor: isDarkTheme ? colors.white : '#EEEEEE',
             justifyContent: 'center',
             alignSelf: 'stretch',
             paddingVertical: 12,
@@ -164,15 +159,10 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             color: colors.primary.dark,
         },
         input: {
-            //borderWidth: 1,
-            //borderColor: colors.primary.light,
             alignSelf: 'stretch',
             margin: 32,
             marginTop: 0,
-            height: 64,
-            //paddingHorizontal: 16,
-            backgroundColor: colors.white,
-            fontSize: 24,
+            backgroundColor: isDarkTheme ? colors.white : '#EEEEEE',
             fontWeight: '300',
         },
         inputText: {
@@ -183,23 +173,26 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             fontSize: 40,
             fontWeight: '300',
             margin: 32,
-            color: colors.white,
+            color: isDarkTheme ? colors.white : colors.black,
         },
         loginOptionSeparator: {
             fontSize: 20,
             fontWeight: '200',
             marginTop: 16,
             marginBottom: 16,
-            color: colors.white,
+            color: isDarkTheme ? colors.white : colors.black,
         },
     });
-
     return styles;
 };
 
-const textInputTheme = {
-    colors: {
-        placeholder: colors.black,
-        text: colors.black,
-    },
+const createThemedTextInputTheme = (isDarkTheme: boolean) => {
+    const theme = {
+        colors: {
+            placeholder: colors.grey,
+            primary: isDarkTheme ? colors.primary.dark : colors.primary.light,
+            text: colors.black,
+        },
+    };
+    return theme;
 };

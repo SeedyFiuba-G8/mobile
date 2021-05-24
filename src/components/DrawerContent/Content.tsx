@@ -36,7 +36,8 @@ export default function Content({
         <DrawerContentScrollView
             {...props}
             contentContainerStyle={{
-                flex: 1,
+                //flex: 1,
+
                 paddingTop: 0,
             }}
         >
