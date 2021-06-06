@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Text, Button, TextInput, HelperText } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
 
@@ -21,6 +21,9 @@ import { loginApi } from '../api/loginApi';
 
 // Types
 import { AuthStackParamList } from '../types';
+
+// Facebook
+import * as Facebook from 'expo-facebook';
 
 type SignInScreenNavigationProp = StackNavigationProp<
     AuthStackParamList,
@@ -62,6 +65,39 @@ export default function SignInScreen(props: Props): React.ReactNode {
         );
     };
 
+    const onLoginWithFacebookButtonClick = async () => {
+        await Facebook.initializeAsync({
+            appId: '513914706402789',
+            appName: 'SeedyFiubaG8',
+        });
+        try {
+            const { token } = await Facebook.logInWithReadPermissionsAsync({
+                permissions: ['public_profile', 'email'],
+            });
+            const response = await fetch(
+                `https://graph.facebook.com/me?fields=email,first_name,last_name&access_token=${token}`
+            );
+            console.log(await response.json());
+        } catch (e) {
+            console.log(e);
+        }
+    };
+
+    /*
+    const onLoginWithGoogleButtonclick = async () => {
+        const config = {
+            clientId:
+                '198325952836-223r0ekt91strnpik2kf68831tt6rtle.apps.googleusercontent.com',
+        };
+        try {
+            const { type, accessToken, user } = await Google.logInAsync(
+                config
+            );
+        } catch (e) {
+            console.log(e);
+        }
+    };*/
+
     const onCreateNewAccountClick = () => {
         props.navigation.navigate('SignUp');
     };
@@ -70,6 +106,7 @@ export default function SignInScreen(props: Props): React.ReactNode {
     const loginWasNotSuccesful = () => {
         return loginState === LoggingInFlowState.CredentialsError;
     };
+
     return (
         <View style={styles.container}>
             <Text style={styles.logo}>SeedyFiuba</Text>
@@ -120,13 +157,20 @@ export default function SignInScreen(props: Props): React.ReactNode {
             <Button style={styles.button} onPress={onCreateNewAccountClick}>
                 <Text style={{ color: 'white' }}>Create new account</Text>
             </Button>
-            <Button style={styles.facebookLoginButton}>
+            <Button
+                style={styles.facebookLoginButton}
+                onPress={onLoginWithFacebookButtonClick}
+            >
                 <Text style={{ color: 'white' }}>Sign in with Facebook</Text>
             </Button>
-
-            <Button style={styles.googleLoginButton}>
-                <Text style={{ color: 'grey' }}>Sign in with Google</Text>
-            </Button>
+            {/*
+                <Button
+                    style={styles.googleLoginButton}
+                    onPress={onLoginWithGoogleButtonclick}
+                >
+                    <Text style={{ color: 'grey' }}>Sign in with Google</Text>
+                </Button>
+            */}
         </View>
     );
 }

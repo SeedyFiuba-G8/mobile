@@ -6,7 +6,7 @@ import { Text, Button, TextInput, HelperText } from 'react-native-paper';
 import { useTheme } from '../contexts/ThemeProvider';
 
 // Hooks
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 //Actions
 import {
