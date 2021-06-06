@@ -29,6 +29,9 @@
     },
     "web": {
       "favicon": "./src/assets/icons/favicon.png"
-    }
+    },
+    "facebookScheme": "fb513914706402789",
+    "facebookAppId": "513914706402789",
+    "facebookDisplayName": "SeedyFiubaG8"
   }
 }

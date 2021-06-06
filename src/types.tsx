@@ -3,6 +3,16 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
+// Auth
+export type AuthStackParamList = {
+	SignIn: undefined;
+	SignUp: undefined;
+
+	// Error
+	NotFound: undefined;
+};
+
+// Main
 export type RootStackParamList = {
 	// Root DrawerNavigator
 	Drawer: undefined;
