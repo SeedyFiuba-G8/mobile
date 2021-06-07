@@ -15,6 +15,8 @@ import {
     LoggingInFlowState,
 } from '../actions/UpdateLoginStatusAction';
 
+import { updateSessionCredentialsAction } from '../actions/UpdateSessionCredentialsAction';
+
 // Constants
 import colors from '../constants/colors';
 import { loginApi } from '../api/loginApi';
@@ -24,6 +26,9 @@ import { AuthStackParamList } from '../types';
 
 // Facebook
 import * as Facebook from 'expo-facebook';
+
+// Other
+import { persistSessionData } from '../session/SessionUtil';
 
 type SignInScreenNavigationProp = StackNavigationProp<
     AuthStackParamList,
@@ -55,14 +60,22 @@ export default function SignInScreen(props: Props): React.ReactNode {
             loginData.username,
             loginData.password
         );
-        console.log(loginResult.loginSuccessful);
-        dispatch(
-            updateLoginStatusAction(
-                loginResult.loginSuccessful
-                    ? LoggingInFlowState.LoggedIn
-                    : LoggingInFlowState.CredentialsError
-            )
-        );
+
+        if (loginResult.loginSuccessful) {
+            await persistSessionData(
+                loginResult.response?.id,
+                loginResult.response?.token
+            );
+            dispatch(
+                updateSessionCredentialsAction(
+                    loginResult.response?.id,
+                    loginResult.response?.token
+                )
+            );
+            dispatch(updateLoginStatusAction(LoggingInFlowState.LoggedIn));
+            return;
+        }
+        dispatch(updateLoginStatusAction(LoggingInFlowState.CredentialsError));
     };
 
     const onLoginWithFacebookButtonClick = async () => {

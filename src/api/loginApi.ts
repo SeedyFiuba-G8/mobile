@@ -1,32 +1,42 @@
+import { AxiosError } from 'axios';
 import { apiProvider } from './utilities/provider';
+
+type sessionCreationResponseType = {
+    id: string;
+    token: string;
+};
 
 type loginResult = {
     loginSuccessful: boolean;
-    token: string | null;
+    response?: sessionCreationResponseType;
 };
 
 const logIn = async (
-    username: string,
+    email: string,
     password: string
 ): Promise<loginResult> => {
-    const apiResponse = await apiProvider.post('login', {
-        username: username,
-        password: password,
-    });
-    console.log(`Api response is ${apiResponse}`);
-    console.log(username);
-    console.log(password);
-    if (username === 'nicomatex' && password === '1234') {
-        console.log('Log in succesful!');
+    try {
+        const apiResponse =
+            await apiProvider.post<sessionCreationResponseType>(
+                'user/session',
+                {
+                    email: email,
+                    password: password,
+                }
+            );
+        console.log('Login succesful!');
         return {
             loginSuccessful: true,
-            token: '123456789',
+            response: apiResponse,
+        };
+    } catch (error: AxiosError) {
+        if (error.response) {
+            console.log(error.response.status);
+        }
+        return {
+            loginSuccessful: false,
         };
     }
-    return {
-        loginSuccessful: false,
-        token: null,
-    };
 };
 
 export const loginApi = {
