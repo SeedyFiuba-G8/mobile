@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import { apiProvider } from './utilities/provider';
 
 type sessionCreationResponseType = {
@@ -11,7 +10,7 @@ type loginResult = {
     response?: sessionCreationResponseType;
 };
 
-const logIn = async (
+const createSession = async (
     email: string,
     password: string
 ): Promise<loginResult> => {
@@ -39,6 +38,4 @@ const logIn = async (
     }
 };
 
-export const loginApi = {
-    logIn,
-};
+export { createSession };

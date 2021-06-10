@@ -2,6 +2,8 @@ import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, Button, TextInput, HelperText } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { DeviceEventEmitter } from 'react-native';
 
 // Contexts
 import { useTheme } from '../contexts/ThemeProvider';
@@ -15,11 +17,8 @@ import {
     LoggingInFlowState,
 } from '../actions/UpdateLoginStatusAction';
 
-import { updateSessionCredentialsAction } from '../actions/UpdateSessionCredentialsAction';
-
 // Constants
 import colors from '../constants/colors';
-import { loginApi } from '../api/loginApi';
 
 // Types
 import { AuthStackParamList } from '../types';
@@ -35,9 +34,13 @@ type SignInScreenNavigationProp = StackNavigationProp<
     'SignIn'
 >;
 
+type SignInScreenRouteProp = RouteProp<AuthStackParamList, 'SignIn'>;
+
 type Props = {
     navigation: SignInScreenNavigationProp;
+    route: SignInScreenRouteProp;
 };
+
 export default function SignInScreen(props: Props): React.ReactNode {
     const { isDarkTheme } = useTheme();
     const styles = React.useMemo(
@@ -46,17 +49,17 @@ export default function SignInScreen(props: Props): React.ReactNode {
     );
 
     const [loginData, setLoginData] = React.useState({
-        username: '',
+        email: '',
         password: '',
     });
 
-    const dispatch = useDispatch();
-
     const onLoginButtonClick = async () => {
+        DeviceEventEmitter.emit('login', loginData.email, loginData.password);
+        /*
         dispatch(
             updateLoginStatusAction(LoggingInFlowState.WaitingForAuthResponse)
         );
-        const loginResult = await loginApi.logIn(
+        const loginResult = await createSession(
             loginData.username,
             loginData.password
         );
@@ -75,7 +78,7 @@ export default function SignInScreen(props: Props): React.ReactNode {
             dispatch(updateLoginStatusAction(LoggingInFlowState.LoggedIn));
             return;
         }
-        dispatch(updateLoginStatusAction(LoggingInFlowState.CredentialsError));
+        dispatch(updateLoginStatusAction(LoggingInFlowState.CredentialsError));*/
     };
 
     const onLoginWithFacebookButtonClick = async () => {
@@ -96,21 +99,6 @@ export default function SignInScreen(props: Props): React.ReactNode {
         }
     };
 
-    /*
-    const onLoginWithGoogleButtonclick = async () => {
-        const config = {
-            clientId:
-                '198325952836-223r0ekt91strnpik2kf68831tt6rtle.apps.googleusercontent.com',
-        };
-        try {
-            const { type, accessToken, user } = await Google.logInAsync(
-                config
-            );
-        } catch (e) {
-            console.log(e);
-        }
-    };*/
-
     const onCreateNewAccountClick = () => {
         props.navigation.navigate('SignUp');
     };
@@ -129,7 +117,7 @@ export default function SignInScreen(props: Props): React.ReactNode {
                 onChangeText={(text) => {
                     setLoginData({
                         ...loginData,
-                        username: text,
+                        email: text,
                     });
                 }}
                 label="Email"
@@ -151,7 +139,7 @@ export default function SignInScreen(props: Props): React.ReactNode {
                 error={loginWasNotSuccesful()}
             />
             <HelperText type="error" visible={loginWasNotSuccesful()}>
-                Invalid username or password.
+                Invalid email or password.
             </HelperText>
             <Button
                 style={styles.button}
@@ -176,14 +164,6 @@ export default function SignInScreen(props: Props): React.ReactNode {
             >
                 <Text style={{ color: 'white' }}>Sign in with Facebook</Text>
             </Button>
-            {/*
-                <Button
-                    style={styles.googleLoginButton}
-                    onPress={onLoginWithGoogleButtonclick}
-                >
-                    <Text style={{ color: 'grey' }}>Sign in with Google</Text>
-                </Button>
-            */}
         </View>
     );
 }
@@ -210,17 +190,6 @@ const createThemedStyles = (isDarkTheme: boolean) => {
         },
         facebookLoginButton: {
             backgroundColor: '#3b5998',
-            justifyContent: 'center',
-            alignSelf: 'stretch',
-            paddingVertical: 12,
-            paddingHorizontal: 32,
-            marginTop: 10,
-            marginHorizontal: 32,
-            height: 50,
-            borderRadius: 6,
-        },
-        googleLoginButton: {
-            backgroundColor: isDarkTheme ? colors.white : '#EEEEEE',
             justifyContent: 'center',
             alignSelf: 'stretch',
             paddingVertical: 12,

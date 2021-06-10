@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // Navigation
 import { createStackNavigator } from '@react-navigation/stack';
@@ -11,13 +11,60 @@ import NotFoundScreen from '../screens/NotFoundScreen';
 // Ts types
 import { AuthStackParamList } from '../types';
 
-// Constants
-import { useTheme } from '../contexts/ThemeProvider';
+// Redux
+import { useDispatch } from 'react-redux';
+
+// API
+import { createSession } from '../api/sessionApi';
+
+// Actions
+import {
+    updateLoginStatusAction,
+    LoggingInFlowState,
+} from '../actions/UpdateLoginStatusAction';
+
+import { updateSessionCredentialsAction } from '../actions/UpdateSessionCredentialsAction';
+
+// Util
+import { persistSessionData } from '../session/SessionUtil';
+
+import { DeviceEventEmitter } from 'react-native';
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
 
-export default function RootNavigator() {
-    const { isDarkTheme } = useTheme();
+export default function RootNavigator(): React.ReactNode {
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        DeviceEventEmitter.addListener(
+            'login',
+            (email: string, password: string) => loginFunction(email, password)
+        );
+        return () => DeviceEventEmitter.removeAllListeners('login');
+    });
+
+    const loginFunction = async (email: string, password: string) => {
+        dispatch(
+            updateLoginStatusAction(LoggingInFlowState.WaitingForAuthResponse)
+        );
+        const loginResult = await createSession(email, password);
+
+        if (loginResult.loginSuccessful) {
+            await persistSessionData(
+                loginResult.response?.id,
+                loginResult.response?.token
+            );
+            dispatch(
+                updateSessionCredentialsAction(
+                    loginResult.response?.id,
+                    loginResult.response?.token
+                )
+            );
+            dispatch(updateLoginStatusAction(LoggingInFlowState.LoggedIn));
+            return;
+        }
+        dispatch(updateLoginStatusAction(LoggingInFlowState.CredentialsError));
+    };
 
     return (
         <AuthStack.Navigator
