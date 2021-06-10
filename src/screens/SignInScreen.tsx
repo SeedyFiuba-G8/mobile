@@ -2,20 +2,17 @@ import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, Button, TextInput, HelperText } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
 import { DeviceEventEmitter } from 'react-native';
 
 // Contexts
 import { useTheme } from '../contexts/ThemeProvider';
 
 // Hooks
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 //Actions
-import {
-    updateLoginStatusAction,
-    LoggingInFlowState,
-} from '../actions/UpdateLoginStatusAction';
+import { LoggingInFlowState } from '../actions/UpdateLoginStatusAction';
 
 // Constants
 import colors from '../constants/colors';
@@ -25,9 +22,6 @@ import { AuthStackParamList } from '../types';
 
 // Facebook
 import * as Facebook from 'expo-facebook';
-
-// Other
-import { persistSessionData } from '../session/SessionUtil';
 
 type SignInScreenNavigationProp = StackNavigationProp<
     AuthStackParamList,
