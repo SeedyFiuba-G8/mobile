@@ -1,22 +1,14 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+
+import { StyleSheet, View, DeviceEventEmitter } from 'react-native';
 import { Text, Button, TextInput, HelperText } from 'react-native-paper';
+import { register } from '../api/registerApi';
 
 // Contexts
 import { useTheme } from '../contexts/ThemeProvider';
 
-// Hooks
-import { useDispatch } from 'react-redux';
-
-//Actions
-import {
-    updateLoginStatusAction,
-    LoggingInFlowState,
-} from '../actions/UpdateLoginStatusAction';
-
 // Constants
 import colors from '../constants/colors';
-import { loginApi } from '../api/loginApi';
 
 export default function SignInScreen(): React.ReactNode {
     const { isDarkTheme } = useTheme();
@@ -33,47 +25,64 @@ export default function SignInScreen(): React.ReactNode {
         confirmPassword: '',
     });
 
-    const dispatch = useDispatch();
+    const [emailAlreadyUsed, setEmailAlreadyUsed] = React.useState(false);
 
-    const onLoginButtonClick = async () => {
-        dispatch(
-            updateLoginStatusAction(LoggingInFlowState.WaitingForAuthResponse)
+    const onSignUpButtonClick = async () => {
+        setEmailAlreadyUsed(false);
+        const registerResult = await register(
+            signUpData.email,
+            signUpData.password,
+            signUpData.firstname,
+            signUpData.lastname
         );
-        const loginResult = await loginApi.logIn(
-            loginData.username,
-            loginData.password
-        );
-        console.log(loginResult.loginSuccessful);
-        dispatch(
-            updateLoginStatusAction(
-                loginResult.loginSuccessful
-                    ? LoggingInFlowState.LoggedIn
-                    : LoggingInFlowState.CredentialsError
-            )
-        );
+        if (registerResult) {
+            console.log(
+                `User ${signUpData.firstname} ${signUpData.lastname} was registered successfully.`
+            );
+
+            // Log the user in automatically after successful register
+            DeviceEventEmitter.emit(
+                'login',
+                signUpData.email,
+                signUpData.password
+            );
+        } else {
+            console.log('Error en el registro.');
+            setEmailAlreadyUsed(true);
+        }
     };
 
     const passwordsMatch = () => {
         return signUpData.password === signUpData.confirmPassword;
     };
+
     const loginWasNotSuccesful = () => false;
     return (
         <View style={styles.container}>
             <Text style={styles.logo}>Register</Text>
 
-            <TextInput
-                style={styles.input}
-                onChangeText={(text) => {
-                    setSignUpData({
-                        ...signUpData,
-                        email: text,
-                    });
-                }}
-                label="Email"
-                theme={createThemedTextInputTheme(isDarkTheme)}
-                error={false}
-            />
+            <View style={styles.inputWithHelperTextView}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={(text) => {
+                        setSignUpData({
+                            ...signUpData,
+                            email: text,
+                        });
+                    }}
+                    label="Email"
+                    theme={createThemedTextInputTheme(isDarkTheme)}
+                    error={emailAlreadyUsed}
+                />
 
+                <HelperText
+                    type="error"
+                    visible={emailAlreadyUsed}
+                    style={styles.helperText}
+                >
+                    Email already in use.
+                </HelperText>
+            </View>
             <TextInput
                 style={styles.input}
                 onChangeText={(text) => {
@@ -133,7 +142,7 @@ export default function SignInScreen(): React.ReactNode {
                     Passwords do not mach.
                 </HelperText>
             </View>
-            <Button style={styles.button} onPress={onLoginButtonClick}>
+            <Button style={styles.button} onPress={onSignUpButtonClick}>
                 <Text style={{ color: 'white' }}>Create account</Text>
             </Button>
         </View>

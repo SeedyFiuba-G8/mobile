@@ -5,36 +5,36 @@
 
 // Auth
 export type AuthStackParamList = {
-	SignIn: undefined;
-	SignUp: undefined;
+    SignIn: { loginFunction: (email: string, password: string) => void };
+    SignUp: { loginFunction: (email: string, password: string) => void };
 
-	// Error
-	NotFound: undefined;
+    // Error
+    NotFound: undefined;
 };
 
 // Main
 export type RootStackParamList = {
-	// Root DrawerNavigator
-	Drawer: undefined;
+    // Root DrawerNavigator
+    Drawer: undefined;
 
-	// Modals
-	Profile: undefined;
-	Messages: undefined;
-	Settings: undefined;
+    // Modals
+    Profile: undefined;
+    Messages: undefined;
+    Settings: undefined;
 
-	// Error
-	NotFound: undefined;
+    // Error
+    NotFound: undefined;
 };
 
 export type DrawerParamList = {
-	// Root Dashboard
-	Dashboard: undefined;
+    // Root Dashboard
+    Dashboard: undefined;
 };
 
 export type TopTabsParamList = {
-	// Tabs for Root Dashboard
-	Magic: undefined;
-	Popular: undefined;
-	Newest: undefined;
-	EndingSoon: undefined;
+    // Tabs for Root Dashboard
+    Magic: undefined;
+    Popular: undefined;
+    Newest: undefined;
+    EndingSoon: undefined;
 };
