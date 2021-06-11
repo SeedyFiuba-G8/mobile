@@ -49,30 +49,6 @@ export default function SignInScreen(props: Props): React.ReactNode {
 
     const onLoginButtonClick = async () => {
         DeviceEventEmitter.emit('login', loginData.email, loginData.password);
-        /*
-        dispatch(
-            updateLoginStatusAction(LoggingInFlowState.WaitingForAuthResponse)
-        );
-        const loginResult = await createSession(
-            loginData.username,
-            loginData.password
-        );
-
-        if (loginResult.loginSuccessful) {
-            await persistSessionData(
-                loginResult.response?.id,
-                loginResult.response?.token
-            );
-            dispatch(
-                updateSessionCredentialsAction(
-                    loginResult.response?.id,
-                    loginResult.response?.token
-                )
-            );
-            dispatch(updateLoginStatusAction(LoggingInFlowState.LoggedIn));
-            return;
-        }
-        dispatch(updateLoginStatusAction(LoggingInFlowState.CredentialsError));*/
     };
 
     const onLoginWithFacebookButtonClick = async () => {
@@ -84,10 +60,7 @@ export default function SignInScreen(props: Props): React.ReactNode {
             const { token } = await Facebook.logInWithReadPermissionsAsync({
                 permissions: ['public_profile', 'email'],
             });
-            const response = await fetch(
-                `https://graph.facebook.com/me?fields=email,first_name,last_name&access_token=${token}`
-            );
-            console.log(await response.json());
+            DeviceEventEmitter.emit('loginFacebook', token);
         } catch (e) {
             console.log(e);
         }

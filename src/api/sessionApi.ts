@@ -38,4 +38,30 @@ const createSession = async (
     }
 };
 
-export { createSession };
+const createSessionFacebook = async (
+    fbToken: string
+): Promise<loginResult> => {
+    try {
+        const apiResponse =
+            await apiProvider.post<sessionCreationResponseType>(
+                'user/session',
+                {
+                    fbToken: fbToken,
+                }
+            );
+        console.log('Login succesful!');
+        return {
+            loginSuccessful: true,
+            response: apiResponse,
+        };
+    } catch (error: AxiosError) {
+        if (error.response) {
+            console.log(error.response.status);
+        }
+        return {
+            loginSuccessful: false,
+        };
+    }
+};
+
+export { createSession, createSessionFacebook };
