@@ -2,7 +2,6 @@ import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, Button, TextInput, HelperText } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
 import { DeviceEventEmitter } from 'react-native';
 
 // Contexts
@@ -19,6 +18,7 @@ import colors from '../constants/colors';
 
 // Types
 import { AuthStackParamList } from '../types';
+import type { RootState } from '../reducers/index';
 
 // Facebook
 import * as Facebook from 'expo-facebook';
@@ -28,14 +28,11 @@ type SignInScreenNavigationProp = StackNavigationProp<
     'SignIn'
 >;
 
-type SignInScreenRouteProp = RouteProp<AuthStackParamList, 'SignIn'>;
-
 type Props = {
     navigation: SignInScreenNavigationProp;
-    route: SignInScreenRouteProp;
 };
 
-export default function SignInScreen(props: Props): React.ReactNode {
+export default function SignInScreen(props: Props): React.ReactElement {
     const { isDarkTheme } = useTheme();
     const styles = React.useMemo(
         () => createThemedStyles(isDarkTheme),
@@ -48,7 +45,10 @@ export default function SignInScreen(props: Props): React.ReactNode {
     });
 
     const onLoginButtonClick = async () => {
-        DeviceEventEmitter.emit('login', loginData.email, loginData.password);
+        DeviceEventEmitter.emit('login', {
+            email: loginData.email,
+            password: loginData.password,
+        });
     };
 
     const onLoginWithFacebookButtonClick = async () => {
@@ -57,10 +57,13 @@ export default function SignInScreen(props: Props): React.ReactNode {
             appName: 'SeedyFiubaG8',
         });
         try {
-            const { token } = await Facebook.logInWithReadPermissionsAsync({
+            const loginResult = await Facebook.logInWithReadPermissionsAsync({
                 permissions: ['public_profile', 'email'],
             });
-            DeviceEventEmitter.emit('loginFacebook', token);
+            if (loginResult.type == 'success') {
+                const { token } = loginResult;
+                DeviceEventEmitter.emit('loginFacebook', token);
+            }
         } catch (e) {
             console.log(e);
         }
@@ -70,7 +73,9 @@ export default function SignInScreen(props: Props): React.ReactNode {
         props.navigation.navigate('SignUp');
     };
 
-    const loginState = useSelector((state) => state.login.loggedInState);
+    const loginState = useSelector(
+        (state: RootState) => state.login.loggedInState
+    );
     const loginWasNotSuccesful = () => {
         return loginState === LoggingInFlowState.CredentialsError;
     };
@@ -87,7 +92,7 @@ export default function SignInScreen(props: Props): React.ReactNode {
                         email: text,
                     });
                 }}
-                label="Email"
+                label='Email'
                 theme={createThemedTextInputTheme(isDarkTheme)}
                 error={loginWasNotSuccesful()}
             />
@@ -101,11 +106,11 @@ export default function SignInScreen(props: Props): React.ReactNode {
                         password: text,
                     });
                 }}
-                label="Password"
+                label='Password'
                 theme={createThemedTextInputTheme(isDarkTheme)}
                 error={loginWasNotSuccesful()}
             />
-            <HelperText type="error" visible={loginWasNotSuccesful()}>
+            <HelperText type='error' visible={loginWasNotSuccesful()}>
                 Invalid email or password.
             </HelperText>
             <Button

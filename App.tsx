@@ -1,7 +1,6 @@
 import React from 'react';
 
 // Hooks
-import useCachedResources from './src/hooks/useCachedResources';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
@@ -17,7 +16,7 @@ import rootReducer from './src/reducers';
 
 const store = createStore(rootReducer);
 
-export default function App() {
+export default function App(): React.ReactElement {
     return (
         <SafeAreaProvider>
             <ThemeProvider>

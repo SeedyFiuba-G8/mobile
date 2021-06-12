@@ -32,13 +32,14 @@ import { DeviceEventEmitter } from 'react-native';
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
 
-export default function RootNavigator(): React.ReactNode {
+export default function RootNavigator(): React.ReactElement {
     const dispatch = useDispatch();
 
     useEffect(() => {
         DeviceEventEmitter.addListener(
             'login',
-            (email: string, password: string) => loginFunction(email, password)
+            (data: { email: string; password: string }) =>
+                loginFunction(data.email, data.password)
         );
         DeviceEventEmitter.addListener('loginFacebook', (fbToken: string) =>
             loginFunctionFacebook(fbToken)
@@ -97,18 +98,18 @@ export default function RootNavigator(): React.ReactNode {
 
     return (
         <AuthStack.Navigator
-            mode="modal"
-            initialRouteName="SignIn"
+            mode='modal'
+            initialRouteName='SignIn'
             screenOptions={{
                 headerShown: false,
             }}
         >
-            <AuthStack.Screen name="SignIn" component={SignInScreen} />
+            <AuthStack.Screen name='SignIn' component={SignInScreen} />
 
-            <AuthStack.Screen name="SignUp" component={SignUpScreen} />
+            <AuthStack.Screen name='SignUp' component={SignUpScreen} />
 
             <AuthStack.Screen
-                name="NotFound"
+                name='NotFound'
                 component={NotFoundScreen}
                 options={{ headerShown: true, title: 'Oops!' }}
             />

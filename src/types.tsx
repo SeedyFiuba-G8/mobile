@@ -5,8 +5,8 @@
 
 // Auth
 export type AuthStackParamList = {
-    SignIn: { loginFunction: (email: string, password: string) => void };
-    SignUp: { loginFunction: (email: string, password: string) => void };
+    SignIn: undefined;
+    SignUp: undefined;
 
     // Error
     NotFound: undefined;
