@@ -12,7 +12,7 @@ const wait = (timeout) => {
 
 export default function DashboardScreen({
     navigation,
-}: MaterialTopTabBarProps): React.ReactNode {
+}: MaterialTopTabBarProps): React.ReactElement {
     const [refreshing, setRefreshing] = React.useState(false);
 
     const onRefresh = React.useCallback(() => {

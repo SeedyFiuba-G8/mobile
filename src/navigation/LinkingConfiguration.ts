@@ -22,6 +22,7 @@ export default {
                     },
                 },
             },
+            ProjectCreation: 'create',
             Profile: 'profile',
             Messages: 'messages',
             Settings: 'settings',

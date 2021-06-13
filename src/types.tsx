@@ -21,6 +21,7 @@ export type RootStackParamList = {
     Profile: undefined;
     Messages: undefined;
     Settings: undefined;
+    ProjectCreation: undefined;
 
     // Error
     NotFound: undefined;

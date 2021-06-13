@@ -17,12 +17,12 @@ import { TopTabsParamList } from '../types';
 
 const DashboardTabs = createMaterialTopTabNavigator<TopTabsParamList>();
 
-export default function DashboardTopTabs() {
+export default function DashboardTopTabs(): React.ReactElement {
     const { isDarkTheme } = useTheme();
 
     return (
         <DashboardTabs.Navigator
-            initialRouteName="Magic"
+            initialRouteName='Magic'
             tabBarOptions={{
                 scrollEnabled: true,
                 tabStyle: {
@@ -40,22 +40,22 @@ export default function DashboardTopTabs() {
             }}
         >
             <DashboardTabs.Screen
-                name="Magic"
+                name='Magic'
                 component={DashboardScreen}
                 options={{ title: 'Magic' }}
             />
             <DashboardTabs.Screen
-                name="Popular"
+                name='Popular'
                 component={DashboardScreen}
                 options={{ title: 'Popular' }}
             />
             <DashboardTabs.Screen
-                name="Newest"
+                name='Newest'
                 component={DashboardScreen}
                 options={{ title: 'Newest' }}
             />
             <DashboardTabs.Screen
-                name="EndingSoon"
+                name='EndingSoon'
                 component={DashboardScreen}
                 options={{ title: 'Ending Soon' }}
             />
