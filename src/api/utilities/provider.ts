@@ -4,6 +4,9 @@ import { handleError, handleResponse } from './response';
 const BASE_URL = 'https://sf-tdp2-gateway-dev.herokuapp.com';
 
 const post = async <T, P>(resource: string, payload: P): Promise<T> => {
+    console.log(
+        `Making request to ${BASE_URL}/${resource} with payload ${payload}`
+    );
     const response = await axios.post(`${BASE_URL}/${resource}`, payload);
     return handleResponse<T>(response);
 };

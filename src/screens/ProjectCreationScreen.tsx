@@ -1,18 +1,15 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import {
-    Menu,
-    Text,
-    TextInput,
-    Button,
-    Paragraph,
-    Dialog,
-    Portal,
-    Checkbox,
-} from 'react-native-paper';
+import { StyleSheet, View, ScrollView } from 'react-native';
+import { Text, TextInput, Button, Divider } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import colors from '../constants/colors';
+import { DatePickerModal } from 'react-native-paper-dates';
+
+//Components
+import TagAdder from '../components/Project/TagAdder';
+import FundDeadlineSelector from '../components/Project/FundDeadlineSelector';
+
 // Contexts
 import { useTheme } from '../contexts/ThemeProvider';
 
@@ -23,46 +20,102 @@ export default function SettingsScreen(): React.ReactElement {
         [isDarkTheme]
     );
     const [selectedLanguage, setSelectedLanguage] = useState();
+    const [tags, setTags] = useState<Array<string>>([]);
+    const [date, setDate] = React.useState<Date | undefined>(undefined);
+
     return (
         <View style={styles.container}>
-            <Text style={styles.logo}>New Project</Text>
+            <ScrollView>
+                <Text style={styles.logo}>Tell us about your project!</Text>
 
-            <TextInput
-                style={styles.input}
-                label='Title'
-                theme={createThemedTextInputTheme(isDarkTheme)}
-            />
-            <TextInput
-                style={styles.descriptionInput}
-                label='Description'
-                theme={createThemedTextInputTheme(isDarkTheme)}
-                multiline={true}
-            />
+                <TextInput
+                    style={styles.input}
+                    label='Title'
+                    theme={createThemedTextInputTheme(isDarkTheme)}
+                    mode='outlined'
+                />
+                <TextInput
+                    style={styles.descriptionInput}
+                    label='Description'
+                    theme={createThemedTextInputTheme(isDarkTheme)}
+                    multiline={true}
+                />
 
-            <View style={styles.categorySelectorSection}>
-                <View
-                    style={{ alignItems: 'center', justifyContent: 'center' }}
-                >
-                    <Text style={styles.categoryText}>Category</Text>
-                </View>
-                <View style={styles.categorySelectorDropdownSection}>
-                    <Picker
-                        style={styles.categorySelector}
-                        selectedValue={selectedLanguage}
-                        onValueChange={(itemValue, itemIndex) =>
-                            setSelectedLanguage(itemValue)
-                        }
-                        mode='dropdown'
-                        dropdownIconColor={colors.primary.light}
+                <Divider style={styles.divider} />
+
+                <View style={styles.titledSection}>
+                    <View
+                        style={{
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
                     >
-                        <Picker.Item label='Entretainment' value='java' />
-                        <Picker.Item label='Productivity' value='js' />
-                    </Picker>
+                        <Text style={styles.categoryText}>Category</Text>
+                    </View>
+                    <View style={styles.categorySelectorDropdownSection}>
+                        <Picker
+                            style={styles.categorySelector}
+                            selectedValue={selectedLanguage}
+                            onValueChange={(itemValue, itemIndex) =>
+                                setSelectedLanguage(itemValue)
+                            }
+                            mode='dropdown'
+                            dropdownIconColor={colors.primary.light}
+                        >
+                            <Picker.Item
+                                label='Entretainment'
+                                value='entretainment'
+                            />
+                            <Picker.Item
+                                label='Productivity'
+                                value='productivity'
+                            />
+                            <Picker.Item label='Other' value='other' />
+                        </Picker>
+                    </View>
                 </View>
-            </View>
-            <Button style={styles.button}>
-                <Text style={{ color: 'white' }}>Create</Text>
-            </Button>
+
+                <View style={styles.titledSection}>
+                    <View
+                        style={{
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Text style={styles.categoryText}>Tags</Text>
+                    </View>
+                    <View style={styles.categorySelectorDropdownSection}>
+                        <TagAdder tags={tags} setTags={setTags} />
+                    </View>
+                </View>
+
+                <Divider style={styles.divider} />
+
+                <TextInput
+                    style={styles.input}
+                    label='Fund target (ETH)'
+                    theme={createThemedTextInputTheme(isDarkTheme)}
+                    mode='outlined'
+                    keyboardType='numeric'
+                />
+
+                <View style={styles.titledSection}>
+                    <View
+                        style={{
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Text style={styles.categoryText}>Fund by</Text>
+                    </View>
+                    <View style={styles.categorySelectorDropdownSection}>
+                        <FundDeadlineSelector date={date} setDate={setDate} />
+                    </View>
+                </View>
+                <Button style={styles.button}>
+                    <Text style={{ color: 'white' }}>Create</Text>
+                </Button>
+            </ScrollView>
         </View>
     );
 }
@@ -82,10 +135,8 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             justifyContent: 'center',
             height: 50,
             borderRadius: 6,
-            position: 'absolute',
-            bottom: 10,
-            width: '80%',
-            margin: 10,
+            margin: 32,
+            alignSelf: 'stretch',
         },
         input: {
             alignSelf: 'stretch',
@@ -113,8 +164,11 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             fontWeight: '300',
             margin: 32,
             color: colors.primary.light,
+            alignSelf: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
         },
-        categorySelectorSection: {
+        titledSection: {
             flexDirection: 'row',
             alignSelf: 'stretch',
             marginHorizontal: 32,
@@ -133,6 +187,10 @@ const createThemedStyles = (isDarkTheme: boolean) => {
         categorySelector: {
             alignSelf: 'stretch',
             height: 50,
+        },
+        divider: {
+            marginHorizontal: 32,
+            marginVertical: 20,
         },
     });
     return styles;

@@ -48,7 +48,9 @@ const createSession = async (
     }
 };
 
-const createSessionFacebook = async (fbToken: string): Promise<loginResult> => {
+const createSessionFacebook = async (
+    fbToken: string
+): Promise<loginResult> => {
     try {
         const apiResponse = await apiProvider.post<
             sessionCreationResponseType,
@@ -64,6 +66,7 @@ const createSessionFacebook = async (fbToken: string): Promise<loginResult> => {
     } catch (error) {
         if (error.response) {
             console.log(error.response.status);
+            console.log(error.response);
         }
         return {
             loginSuccessful: false,
