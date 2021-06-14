@@ -13,21 +13,25 @@ import colors from '../../constants/colors';
 
 type Props = {
     title: string;
-    author: string;
+    city: string;
+    country: string;
     cover_image_uri: string;
     description: string;
     progress: number;
     backer_count: number;
 };
 
-export default function ProjectCard(props: Props): React.ReactNode {
+export default function ProjectCard(props: Props): React.ReactElement {
     return (
         <Card style={styles.card} onPress={() => console.log('Card pressed')}>
             <Card.Cover
                 style={styles.cover}
                 source={{ uri: props.cover_image_uri }}
             />
-            <Card.Title title={props.title} subtitle={props.author} />
+            <Card.Title
+                title={props.title}
+                subtitle={`${props.city}, ${props.country}`}
+            />
             <Card.Content>
                 <Text>{props.description}</Text>
             </Card.Content>

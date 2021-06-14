@@ -13,15 +13,48 @@ import FundDeadlineSelector from '../components/Project/FundDeadlineSelector';
 // Contexts
 import { useTheme } from '../contexts/ThemeProvider';
 
+// API
+import { createProject } from '../api/projectsApi';
+
+// Hooks
+import { useSelector } from 'react-redux';
+
+// Types
+import type { RootState } from '../reducers/index';
+
 export default function SettingsScreen(): React.ReactElement {
     const { isDarkTheme } = useTheme();
     const styles = React.useMemo(
         () => createThemedStyles(isDarkTheme),
         [isDarkTheme]
     );
-    const [selectedLanguage, setSelectedLanguage] = useState();
+    const [category, setCategory] = useState('');
     const [tags, setTags] = useState<Array<string>>([]);
     const [date, setDate] = React.useState<Date | undefined>(undefined);
+    const [title, setTitle] = React.useState('');
+    const [description, setDescription] = React.useState('');
+    const [goal, setGoal] = React.useState('');
+    const authToken = useSelector((state: RootState) => state.session.token);
+
+    const onCreateButtonPress = async () => {
+        if (date !== undefined) {
+            const projectResult = await createProject(
+                title,
+                description,
+                category,
+                'Objetivo',
+                'Argentina',
+                'Buenos Aires',
+                date.toString(),
+                authToken
+            );
+            if (projectResult.successful) {
+                console.log(
+                    `Success creating project with id ${projectResult.id}`
+                );
+            }
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -33,12 +66,16 @@ export default function SettingsScreen(): React.ReactElement {
                     label='Title'
                     theme={createThemedTextInputTheme(isDarkTheme)}
                     mode='outlined'
+                    onChangeText={(newTitle) => setTitle(newTitle)}
                 />
                 <TextInput
                     style={styles.descriptionInput}
                     label='Description'
                     theme={createThemedTextInputTheme(isDarkTheme)}
                     multiline={true}
+                    onChangeText={(newDescription) =>
+                        setDescription(newDescription)
+                    }
                 />
 
                 <Divider style={styles.divider} />
@@ -55,9 +92,9 @@ export default function SettingsScreen(): React.ReactElement {
                     <View style={styles.categorySelectorDropdownSection}>
                         <Picker
                             style={styles.categorySelector}
-                            selectedValue={selectedLanguage}
+                            selectedValue={category}
                             onValueChange={(itemValue, itemIndex) =>
-                                setSelectedLanguage(itemValue)
+                                setCategory(itemValue)
                             }
                             mode='dropdown'
                             dropdownIconColor={colors.primary.light}
@@ -93,10 +130,11 @@ export default function SettingsScreen(): React.ReactElement {
 
                 <TextInput
                     style={styles.input}
-                    label='Fund target (ETH)'
+                    label='Fund goal (ETH)'
                     theme={createThemedTextInputTheme(isDarkTheme)}
                     mode='outlined'
                     keyboardType='numeric'
+                    onChangeText={(newGoal) => setGoal(newGoal)}
                 />
 
                 <View style={styles.titledSection}>
@@ -112,7 +150,7 @@ export default function SettingsScreen(): React.ReactElement {
                         <FundDeadlineSelector date={date} setDate={setDate} />
                     </View>
                 </View>
-                <Button style={styles.button}>
+                <Button style={styles.button} onPress={onCreateButtonPress}>
                     <Text style={{ color: 'white' }}>Create</Text>
                 </Button>
             </ScrollView>

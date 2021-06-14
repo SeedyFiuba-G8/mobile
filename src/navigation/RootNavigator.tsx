@@ -10,6 +10,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ProjectCreationScreen from '../screens/ProjectCreationScreen';
+import MyProjectsScreen from '../screens/MyProjectsScreen';
 
 // Ts types
 import { RootStackParamList } from '../types';
@@ -53,6 +54,11 @@ export default function RootNavigator(): React.ReactElement {
                 name='ProjectCreation'
                 component={ProjectCreationScreen}
                 options={{ title: 'Create' }}
+            />
+            <RootStack.Screen
+                name='MyProjects'
+                component={MyProjectsScreen}
+                options={{ title: 'My projects' }}
             />
             <RootStack.Screen
                 name='NotFound'

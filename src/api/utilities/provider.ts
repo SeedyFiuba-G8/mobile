@@ -1,19 +1,27 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { handleError, handleResponse } from './response';
 
 const BASE_URL = 'https://sf-tdp2-gateway-dev.herokuapp.com';
 
-const post = async <T, P>(resource: string, payload: P): Promise<T> => {
-    console.log(
-        `Making request to ${BASE_URL}/${resource} with payload ${payload}`
-    );
-    const response = await axios.post(`${BASE_URL}/${resource}`, payload);
+const post = async <T, P>(
+    resource: string,
+    payload: P,
+    options?: AxiosRequestConfig
+): Promise<T> => {
+    const response = await axios.post(`${BASE_URL}/${resource}`, payload, {
+        ...options,
+    });
     return handleResponse<T>(response);
 };
 
-const get = async <T>(resource: string, params: JSON): Promise<T> => {
+const get = async <T, P>(
+    resource: string,
+    params: P,
+    options?: AxiosRequestConfig
+): Promise<T> => {
     const response = await axios.get(`${BASE_URL}/${resource}`, {
         params: params,
+        ...options,
     });
     return handleResponse<T>(response);
 };

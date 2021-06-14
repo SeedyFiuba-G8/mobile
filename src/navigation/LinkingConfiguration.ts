@@ -26,6 +26,7 @@ export default {
             Profile: 'profile',
             Messages: 'messages',
             Settings: 'settings',
+            MyProjects: 'projects',
             NotFound: '*',
             SingIn: 'singin',
             SingUp: 'singup',
