@@ -1,4 +1,7 @@
 import { apiProvider } from './utilities/provider';
+import store from '../stores/MainStore';
+import { useSelector } from 'react-redux';
+import { RootState } from '../reducers';
 
 export type Project = {
     id: string;
@@ -37,9 +40,8 @@ type ProjectCreationRequestPayload = {
     city: string;
     finalizedBy: string;
 };
-const getAllProjects = async (
-    authToken: string
-): Promise<GetProjectsApiResponse> => {
+const getAllProjects = async (): Promise<GetProjectsApiResponse> => {
+    const authToken = store.getState().session.token;
     try {
         const apiResponse = apiProvider.get<
             GetProjectsApiResponse,
@@ -57,9 +59,9 @@ const getAllProjects = async (
 };
 
 const getUserProjects = async (
-    id: string,
-    authToken: string
+    id: string
 ): Promise<GetProjectsApiResponse> => {
+    const authToken = store.getState().session.token;
     try {
         const apiResponse = apiProvider.get<
             GetProjectsApiResponse,

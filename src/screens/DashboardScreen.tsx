@@ -28,7 +28,7 @@ export default function DashboardScreen({
 
     const onRefresh = async () => {
         setRefreshing(true);
-        const projects = await getAllProjects(authToken);
+        const projects = await getAllProjects();
         setProjects(projects.projects);
         setRefreshing(false);
     };

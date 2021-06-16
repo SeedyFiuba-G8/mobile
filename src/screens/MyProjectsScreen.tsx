@@ -21,13 +21,12 @@ export default function DashboardScreen({
     navigation,
 }: MaterialTopTabBarProps): React.ReactElement {
     const [refreshing, setRefreshing] = React.useState(false);
-    const authToken = useSelector((state: RootState) => state.session.token);
     const userId = useSelector((state: RootState) => state.session.id);
     const [projects, setProjects] = React.useState<Array<Project>>([]);
 
     const onRefresh = async () => {
         setRefreshing(true);
-        const projects = await getUserProjects(userId, authToken);
+        const projects = await getUserProjects(userId);
         setProjects(projects.projects);
         setRefreshing(false);
     };
