@@ -11,19 +11,16 @@ import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 
 // Types
 import type { Project } from '../api/projectsApi';
-import type { RootState } from '../reducers/index';
 
 // APIs
 import { getAllProjects } from '../api/projectsApi';
 
 // Hooks
-import { useSelector } from 'react-redux';
 
 export default function DashboardScreen({
     navigation,
 }: MaterialTopTabBarProps): React.ReactElement {
     const [refreshing, setRefreshing] = React.useState(false);
-    const authToken = useSelector((state: RootState) => state.session.token);
     const [projects, setProjects] = React.useState<Array<Project>>([]);
 
     const onRefresh = async () => {

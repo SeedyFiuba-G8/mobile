@@ -1,24 +1,136 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Paragraph, Text } from 'react-native-paper';
+import { Button, Divider, Paragraph, Text } from 'react-native-paper';
+import { Avatar, Caption, Title, IconButton } from 'react-native-paper';
+import colors from '../constants/colors';
+import ProfileInfoSection from '../components/Profile/ProfileInfoSection';
+import Picker from '../components/Picker';
 
 export default function ProfileScreen(): React.ReactElement {
+    const [interestPickerVisible, setInterestPickerVisible] = useState(false);
+
+    const categoriesWithState = categories.map((category, index) => {
+        const [interested, setInterested] = useState(category.interested);
+        return {
+            tag: category.tag,
+            interested: interested,
+            setInterested: setInterested,
+        };
+    });
+
+    const generateInterestsString = () => {
+        const interested_categories = categoriesWithState.filter(
+            (category, index) => category.interested
+        );
+
+        const interested_categories_tags = interested_categories.map(
+            (category, index) => category.tag
+        );
+        return interested_categories_tags.join(', ');
+    };
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Profile Screen with Paper</Text>
-            <Paragraph>Some info about the profile.</Paragraph>
+            <View style={styles.profilePictureView}>
+                <Avatar.Image
+                    source={require('../assets/images/dummy_avatar.jpg')}
+                    size={200}
+                />
+                <IconButton
+                    style={styles.changePictureButton}
+                    icon='camera'
+                    size={30}
+                    color={'white'}
+                    onPress={() => console.log('Pressed')}
+                />
+            </View>
+            <ProfileInfoSection
+                title='Personal information'
+                icon='account'
+            ></ProfileInfoSection>
+
+            <Divider style={styles.divider} />
+
+            <ProfileInfoSection
+                title='Interests'
+                icon='cards-heart'
+                editable={true}
+                onEditPress={() => setInterestPickerVisible(true)}
+            >
+                <Picker
+                    visible={interestPickerVisible}
+                    setVisible={setInterestPickerVisible}
+                    categories={categoriesWithState}
+                    onOkClick={() => setInterestPickerVisible(false)}
+                    onCancelClick={() => setInterestPickerVisible(false)}
+                />
+                <View style={styles.interestsListView}>
+                    <Text>{generateInterestsString()}</Text>
+                </View>
+            </ProfileInfoSection>
+
+            <Divider style={styles.divider} />
+
+            <ProfileInfoSection
+                title='Location'
+                icon='map-marker'
+                editable={true}
+            ></ProfileInfoSection>
         </View>
     );
 }
 
+const categories = [
+    { tag: 'Entretainment', interested: true },
+    { tag: 'Production', interested: true },
+    { tag: 'Games', interested: false },
+    { tag: 'Home', interested: false },
+    { tag: 'Office', interested: true },
+    { tag: 'Technology', interested: false },
+    { tag: 'Writing', interested: false },
+];
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
     },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
+    },
+    profilePictureView: {
+        alignItems: 'center',
+        margin: 20,
+    },
+    personalInformationView: {
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        marginVertical: 45,
+        marginHorizontal: 40,
+    },
+    text: {
+        fontSize: 18,
+        alignSelf: 'center',
+        color: colors.darkGrey,
+    },
+    changePictureButton: {
+        position: 'absolute',
+        bottom: 0,
+        right: 75,
+        backgroundColor: colors.primary.light,
+    },
+    personalInformationTextView: {
+        marginLeft: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    personalInformationIcon: {
+        backgroundColor: 'transparent',
+    },
+    divider: {
+        marginHorizontal: 20,
+    },
+    interestsListView: {
+        margin: 10,
     },
 });
