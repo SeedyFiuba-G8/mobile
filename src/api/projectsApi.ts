@@ -47,7 +47,7 @@ const getAllProjects = async (): Promise<GetProjectsApiResponse> => {
             GetProjectsApiResponse,
             ProjectRequestPayload
         >(
-            'project',
+            'projects',
             {},
             { headers: { Authorization: `Bearer ${authToken}` } }
         );
@@ -67,7 +67,7 @@ const getUserProjects = async (
             GetProjectsApiResponse,
             ProjectRequestPayload
         >(
-            'project',
+            'projects',
             { userId: id },
             { headers: { Authorization: `Bearer ${authToken}` } }
         );
@@ -93,7 +93,7 @@ const createProject = async (
             ProjectCreationApiResponse,
             ProjectCreationRequestPayload
         >(
-            'project',
+            'projects',
             {
                 title: title,
                 description: description,
