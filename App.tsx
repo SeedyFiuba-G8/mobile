@@ -1,7 +1,6 @@
 import React from 'react';
 
 // Hooks
-import useCachedResources from './src/hooks/useCachedResources';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
@@ -14,10 +13,21 @@ import Navigation from './src/navigation';
 
 // Reducers
 import rootReducer from './src/reducers';
+import 'intl';
+import { Platform } from 'react-native';
+import 'intl/locale-data/jsonp/en';
 
-const store = createStore(rootReducer);
+// Stores
+import store from './src/stores/MainStore';
 
-export default function App() {
+if (Platform.OS === 'android') {
+    // See https://github.com/expo/expo/issues/6536 for this issue.
+    if (typeof (Intl as any).__disableRegExpRestore === 'function') {
+        (Intl as any).__disableRegExpRestore();
+    }
+}
+
+export default function App(): React.ReactElement {
     return (
         <SafeAreaProvider>
             <ThemeProvider>

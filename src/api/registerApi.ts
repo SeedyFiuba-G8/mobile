@@ -16,7 +16,7 @@ const register = async (
         console.log('Registered successfully!');
         return true;
     } catch (error) {
-        console.log(error);
+        console.log(error.response);
         return false;
     }
 };

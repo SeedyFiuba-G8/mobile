@@ -1,31 +1,32 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native';
-import { Text, Card, Paragraph } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
 
 // Components
 import ProjectList from '../components/Project/ProjectList';
-import ProjectCard from '../components/Project/ProjectCard';
 
 // Navigation
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 
 // Types
 import type { Project } from '../api/projectsApi';
+import type { RootState } from '../reducers/index';
 
 // APIs
-import { getAllProjects } from '../api/projectsApi';
+import { getUserProjects } from '../api/projectsApi';
 
 // Hooks
+import { useSelector } from 'react-redux';
 
 export default function DashboardScreen({
     navigation,
 }: MaterialTopTabBarProps): React.ReactElement {
     const [refreshing, setRefreshing] = React.useState(false);
+    const userId = useSelector((state: RootState) => state.session.id);
     const [projects, setProjects] = React.useState<Array<Project>>([]);
 
     const onRefresh = async () => {
         setRefreshing(true);
-        const projects = await getAllProjects();
+        const projects = await getUserProjects(userId);
         setProjects(projects.projects);
         setRefreshing(false);
     };

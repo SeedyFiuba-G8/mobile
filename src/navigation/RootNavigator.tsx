@@ -9,7 +9,8 @@ import NotFoundScreen from '../screens/NotFoundScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import SingInScreen from '../screens/SignInScreen';
+import ProjectCreationScreen from '../screens/ProjectCreationScreen';
+import MyProjectsScreen from '../screens/MyProjectsScreen';
 
 // Ts types
 import { RootStackParamList } from '../types';
@@ -22,13 +23,13 @@ import { useTheme } from '../contexts/ThemeProvider';
 // Read more here: https://reactnavigation.org/docs/modal
 const RootStack = createStackNavigator<RootStackParamList>();
 
-export default function RootNavigator() {
+export default function RootNavigator(): React.ReactElement {
     const { isDarkTheme } = useTheme();
 
     return (
         <RootStack.Navigator
-            mode="modal"
-            initialRouteName="Drawer"
+            mode='modal'
+            initialRouteName='Drawer'
             screenOptions={{
                 headerShown: true,
                 headerTintColor: colors.white,
@@ -41,17 +42,26 @@ export default function RootNavigator() {
             }}
         >
             <RootStack.Screen
-                name="Drawer"
+                name='Drawer'
                 component={DrawerNavigator}
                 options={{ headerShown: false }}
             />
 
-            <RootStack.Screen name="Profile" component={ProfileScreen} />
-            <RootStack.Screen name="Messages" component={MessagesScreen} />
-            <RootStack.Screen name="Settings" component={SettingsScreen} />
-
+            <RootStack.Screen name='Profile' component={ProfileScreen} />
+            <RootStack.Screen name='Messages' component={MessagesScreen} />
+            <RootStack.Screen name='Settings' component={SettingsScreen} />
             <RootStack.Screen
-                name="NotFound"
+                name='ProjectCreation'
+                component={ProjectCreationScreen}
+                options={{ title: 'Create' }}
+            />
+            <RootStack.Screen
+                name='MyProjects'
+                component={MyProjectsScreen}
+                options={{ title: 'My projects' }}
+            />
+            <RootStack.Screen
+                name='NotFound'
                 component={NotFoundScreen}
                 options={{ title: 'Oops!' }}
             />

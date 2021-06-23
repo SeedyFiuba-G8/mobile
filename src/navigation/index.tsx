@@ -9,15 +9,20 @@ import LinkingConfiguration from './LinkingConfiguration';
 import { NavigationContainer } from '@react-navigation/native';
 import MainRootNavigator from './RootNavigator';
 import AuthRootNavigator from '../auth/RootNavigator';
+
+// Redux
 import { useSelector } from 'react-redux';
 
 // Types
 import { LoggingInFlowState } from '../actions/UpdateLoginStatusAction';
+import type { RootState } from '../reducers/index';
 
-export default function Navigation(): React.ReactNode {
+export default function Navigation(): React.ReactElement {
     const { isDarkTheme } = useTheme();
     const navigationTheme = isDarkTheme ? DarkTheme : DefaultTheme;
-    const loginState = useSelector((state) => state.login.loggedInState);
+    const loginState = useSelector(
+        (state: RootState) => state.login.loggedInState
+    );
     return (
         <NavigationContainer
             theme={navigationTheme}

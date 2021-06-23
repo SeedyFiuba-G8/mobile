@@ -10,7 +10,7 @@ import { useTheme } from '../contexts/ThemeProvider';
 // Constants
 import colors from '../constants/colors';
 
-export default function SignInScreen(): React.ReactNode {
+export default function SignInScreen(): React.ReactElement {
     const { isDarkTheme } = useTheme();
     const styles = React.useMemo(
         () => createThemedStyles(isDarkTheme),
@@ -41,11 +41,10 @@ export default function SignInScreen(): React.ReactNode {
             );
 
             // Log the user in automatically after successful register
-            DeviceEventEmitter.emit(
-                'login',
-                signUpData.email,
-                signUpData.password
-            );
+            DeviceEventEmitter.emit('login', {
+                email: signUpData.email,
+                password: signUpData.password,
+            });
         } else {
             console.log('Error en el registro.');
             setEmailAlreadyUsed(true);
@@ -70,13 +69,13 @@ export default function SignInScreen(): React.ReactNode {
                             email: text,
                         });
                     }}
-                    label="Email"
+                    label='Email'
                     theme={createThemedTextInputTheme(isDarkTheme)}
                     error={emailAlreadyUsed}
                 />
 
                 <HelperText
-                    type="error"
+                    type='error'
                     visible={emailAlreadyUsed}
                     style={styles.helperText}
                 >
@@ -91,7 +90,7 @@ export default function SignInScreen(): React.ReactNode {
                         firstname: text,
                     });
                 }}
-                label="First name"
+                label='First name'
                 theme={createThemedTextInputTheme(isDarkTheme)}
                 error={loginWasNotSuccesful()}
             />
@@ -103,7 +102,7 @@ export default function SignInScreen(): React.ReactNode {
                         lastname: text,
                     });
                 }}
-                label="Last name"
+                label='Last name'
                 theme={createThemedTextInputTheme(isDarkTheme)}
                 error={loginWasNotSuccesful()}
             />
@@ -116,7 +115,7 @@ export default function SignInScreen(): React.ReactNode {
                         password: text,
                     });
                 }}
-                label="Password"
+                label='Password'
                 theme={createThemedTextInputTheme(isDarkTheme)}
                 error={!passwordsMatch()}
             />
@@ -130,12 +129,12 @@ export default function SignInScreen(): React.ReactNode {
                             confirmPassword: text,
                         });
                     }}
-                    label="Confirm password"
+                    label='Confirm password'
                     theme={createThemedTextInputTheme(isDarkTheme)}
                     error={!passwordsMatch()}
                 />
                 <HelperText
-                    type="error"
+                    type='error'
                     visible={!passwordsMatch()}
                     style={styles.helperText}
                 >

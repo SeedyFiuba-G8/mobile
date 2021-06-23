@@ -2,46 +2,37 @@ import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, Button, TextInput, HelperText } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp, useRoute } from '@react-navigation/native';
 import { DeviceEventEmitter } from 'react-native';
 
 // Contexts
 import { useTheme } from '../contexts/ThemeProvider';
 
 // Hooks
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 //Actions
-import {
-    updateLoginStatusAction,
-    LoggingInFlowState,
-} from '../actions/UpdateLoginStatusAction';
+import { LoggingInFlowState } from '../actions/UpdateLoginStatusAction';
 
 // Constants
 import colors from '../constants/colors';
 
 // Types
 import { AuthStackParamList } from '../types';
+import type { RootState } from '../reducers/index';
 
 // Facebook
 import * as Facebook from 'expo-facebook';
-
-// Other
-import { persistSessionData } from '../session/SessionUtil';
 
 type SignInScreenNavigationProp = StackNavigationProp<
     AuthStackParamList,
     'SignIn'
 >;
 
-type SignInScreenRouteProp = RouteProp<AuthStackParamList, 'SignIn'>;
-
 type Props = {
     navigation: SignInScreenNavigationProp;
-    route: SignInScreenRouteProp;
 };
 
-export default function SignInScreen(props: Props): React.ReactNode {
+export default function SignInScreen(props: Props): React.ReactElement {
     const { isDarkTheme } = useTheme();
     const styles = React.useMemo(
         () => createThemedStyles(isDarkTheme),
@@ -54,31 +45,10 @@ export default function SignInScreen(props: Props): React.ReactNode {
     });
 
     const onLoginButtonClick = async () => {
-        DeviceEventEmitter.emit('login', loginData.email, loginData.password);
-        /*
-        dispatch(
-            updateLoginStatusAction(LoggingInFlowState.WaitingForAuthResponse)
-        );
-        const loginResult = await createSession(
-            loginData.username,
-            loginData.password
-        );
-
-        if (loginResult.loginSuccessful) {
-            await persistSessionData(
-                loginResult.response?.id,
-                loginResult.response?.token
-            );
-            dispatch(
-                updateSessionCredentialsAction(
-                    loginResult.response?.id,
-                    loginResult.response?.token
-                )
-            );
-            dispatch(updateLoginStatusAction(LoggingInFlowState.LoggedIn));
-            return;
-        }
-        dispatch(updateLoginStatusAction(LoggingInFlowState.CredentialsError));*/
+        DeviceEventEmitter.emit('login', {
+            email: loginData.email,
+            password: loginData.password,
+        });
     };
 
     const onLoginWithFacebookButtonClick = async () => {
@@ -87,13 +57,13 @@ export default function SignInScreen(props: Props): React.ReactNode {
             appName: 'SeedyFiubaG8',
         });
         try {
-            const { token } = await Facebook.logInWithReadPermissionsAsync({
+            const loginResult = await Facebook.logInWithReadPermissionsAsync({
                 permissions: ['public_profile', 'email'],
             });
-            const response = await fetch(
-                `https://graph.facebook.com/me?fields=email,first_name,last_name&access_token=${token}`
-            );
-            console.log(await response.json());
+            if (loginResult.type == 'success') {
+                const { token } = loginResult;
+                DeviceEventEmitter.emit('loginFacebook', token);
+            }
         } catch (e) {
             console.log(e);
         }
@@ -103,7 +73,9 @@ export default function SignInScreen(props: Props): React.ReactNode {
         props.navigation.navigate('SignUp');
     };
 
-    const loginState = useSelector((state) => state.login.loggedInState);
+    const loginState = useSelector(
+        (state: RootState) => state.login.loggedInState
+    );
     const loginWasNotSuccesful = () => {
         return loginState === LoggingInFlowState.CredentialsError;
     };
@@ -120,7 +92,7 @@ export default function SignInScreen(props: Props): React.ReactNode {
                         email: text,
                     });
                 }}
-                label="Email"
+                label='Email'
                 theme={createThemedTextInputTheme(isDarkTheme)}
                 error={loginWasNotSuccesful()}
             />
@@ -134,11 +106,11 @@ export default function SignInScreen(props: Props): React.ReactNode {
                         password: text,
                     });
                 }}
-                label="Password"
+                label='Password'
                 theme={createThemedTextInputTheme(isDarkTheme)}
                 error={loginWasNotSuccesful()}
             />
-            <HelperText type="error" visible={loginWasNotSuccesful()}>
+            <HelperText type='error' visible={loginWasNotSuccesful()}>
                 Invalid email or password.
             </HelperText>
             <Button

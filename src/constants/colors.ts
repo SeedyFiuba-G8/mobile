@@ -12,6 +12,7 @@ export default {
     white: '#fff',
     black: '#000',
     grey: '#aaa',
+    darkGrey: '#888',
     loginScreen: {
         background: '#e5f2f2',
     },

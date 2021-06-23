@@ -15,7 +15,7 @@ import { AuthStackParamList } from '../types';
 import { useDispatch } from 'react-redux';
 
 // API
-import { createSession } from '../api/sessionApi';
+import { createSession, createSessionFacebook } from '../api/sessionApi';
 
 // Actions
 import {
@@ -32,15 +32,22 @@ import { DeviceEventEmitter } from 'react-native';
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
 
-export default function RootNavigator(): React.ReactNode {
+export default function RootNavigator(): React.ReactElement {
     const dispatch = useDispatch();
 
     useEffect(() => {
         DeviceEventEmitter.addListener(
             'login',
-            (email: string, password: string) => loginFunction(email, password)
+            (data: { email: string; password: string }) =>
+                loginFunction(data.email, data.password)
         );
-        return () => DeviceEventEmitter.removeAllListeners('login');
+        DeviceEventEmitter.addListener('loginFacebook', (fbToken: string) =>
+            loginFunctionFacebook(fbToken)
+        );
+        return () => {
+            DeviceEventEmitter.removeAllListeners('login');
+            DeviceEventEmitter.removeAllListeners('loginFacebook');
+        };
     });
 
     const loginFunction = async (email: string, password: string) => {
@@ -66,20 +73,43 @@ export default function RootNavigator(): React.ReactNode {
         dispatch(updateLoginStatusAction(LoggingInFlowState.CredentialsError));
     };
 
+    const loginFunctionFacebook = async (fbToken: string) => {
+        dispatch(
+            updateLoginStatusAction(LoggingInFlowState.WaitingForAuthResponse)
+        );
+        const loginResult = await createSessionFacebook(fbToken);
+
+        if (loginResult.loginSuccessful) {
+            await persistSessionData(
+                loginResult.response?.id,
+                loginResult.response?.token
+            );
+            dispatch(
+                updateSessionCredentialsAction(
+                    loginResult.response?.id,
+                    loginResult.response?.token
+                )
+            );
+            dispatch(updateLoginStatusAction(LoggingInFlowState.LoggedIn));
+            return;
+        }
+        dispatch(updateLoginStatusAction(LoggingInFlowState.CredentialsError));
+    };
+
     return (
         <AuthStack.Navigator
-            mode="modal"
-            initialRouteName="SignIn"
+            mode='modal'
+            initialRouteName='SignIn'
             screenOptions={{
                 headerShown: false,
             }}
         >
-            <AuthStack.Screen name="SignIn" component={SignInScreen} />
+            <AuthStack.Screen name='SignIn' component={SignInScreen} />
 
-            <AuthStack.Screen name="SignUp" component={SignUpScreen} />
+            <AuthStack.Screen name='SignUp' component={SignUpScreen} />
 
             <AuthStack.Screen
-                name="NotFound"
+                name='NotFound'
                 component={NotFoundScreen}
                 options={{ headerShown: true, title: 'Oops!' }}
             />
