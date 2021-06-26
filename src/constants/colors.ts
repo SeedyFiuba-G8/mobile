@@ -16,4 +16,5 @@ export default {
     loginScreen: {
         background: '#e5f2f2',
     },
+    darkerGrey: '#666',
 };

@@ -4,10 +4,12 @@ import { Button, Divider, Paragraph, Text } from 'react-native-paper';
 import { Avatar, Caption, Title, IconButton } from 'react-native-paper';
 import colors from '../constants/colors';
 import ProfileInfoSection from '../components/Profile/ProfileInfoSection';
-import Picker from '../components/Picker';
+import Picker from '../components/InterestsPicker';
+import LocationPicker from '../components/LocationPicker';
 
 export default function ProfileScreen(): React.ReactElement {
     const [interestPickerVisible, setInterestPickerVisible] = useState(false);
+    const [locationPickerVisible, setLocationPickerVisible] = useState(false);
 
     const categoriesWithState = categories.map((category, index) => {
         const [interested, setInterested] = useState(category.interested);
@@ -28,6 +30,9 @@ export default function ProfileScreen(): React.ReactElement {
         );
         return interested_categories_tags.join(', ');
     };
+
+    const [country, setCountry] = useState('Argentina');
+    const [city, setCity] = useState('Buenos Aires');
     return (
         <View style={styles.container}>
             <View style={styles.profilePictureView}>
@@ -63,8 +68,10 @@ export default function ProfileScreen(): React.ReactElement {
                     onOkClick={() => setInterestPickerVisible(false)}
                     onCancelClick={() => setInterestPickerVisible(false)}
                 />
-                <View style={styles.interestsListView}>
-                    <Text>{generateInterestsString()}</Text>
+                <View style={styles.profileInfoSectionContentView}>
+                    <Text style={styles.contentText}>
+                        {generateInterestsString()}
+                    </Text>
                 </View>
             </ProfileInfoSection>
 
@@ -74,7 +81,24 @@ export default function ProfileScreen(): React.ReactElement {
                 title='Location'
                 icon='map-marker'
                 editable={true}
-            ></ProfileInfoSection>
+                onEditPress={() => setLocationPickerVisible(true)}
+            >
+                <View style={styles.profileInfoSectionContentView}>
+                    <LocationPicker
+                        visible={locationPickerVisible}
+                        setVisible={setLocationPickerVisible}
+                        onOkClick={() => setLocationPickerVisible(false)}
+                        onCancelClick={() => setLocationPickerVisible(false)}
+                        city={city}
+                        setCity={setCity}
+                        country={country}
+                        setCountry={setCountry}
+                    />
+                    <Text style={styles.contentText}>
+                        {`${city}, ${country}`}
+                    </Text>
+                </View>
+            </ProfileInfoSection>
         </View>
     );
 }
@@ -130,7 +154,10 @@ const styles = StyleSheet.create({
     divider: {
         marginHorizontal: 20,
     },
-    interestsListView: {
-        margin: 10,
+    profileInfoSectionContentView: {
+        margin: 20,
+    },
+    contentText: {
+        color: colors.darkerGrey,
     },
 });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, SafeAreaView } from 'react-native';
 import {
     Portal,
@@ -7,6 +7,7 @@ import {
     Checkbox,
     Button,
     Divider,
+    Avatar,
 } from 'react-native-paper';
 import colors from '../constants/colors';
 
@@ -43,7 +44,34 @@ const Item = (props: Category) => {
 
 export default function Picker(props: Props): React.ReactElement {
     const hideModal = () => props.setVisible(false);
-    const [checked, setChecked] = useState(false);
+
+    const categoriesTemp = props.categories.map((category, index) => {
+        const [interested, setInterested] = useState(category.interested);
+        return {
+            tag: category.tag,
+            interested: interested,
+            setInterested: setInterested,
+        };
+    });
+
+    useEffect(() => {
+        resetCategories();
+    }, [props.visible]);
+    const resetCategories = () => {
+        categoriesTemp.forEach((category, index) => {
+            category.setInterested(props.categories[index].interested);
+        });
+    };
+
+    const saveChanges = () => {
+        categoriesTemp.forEach((category, index) => {
+            props.categories[index].setInterested(category.interested);
+        });
+    };
+    const onOkButtonPress = () => {
+        saveChanges();
+        props.onOkClick();
+    };
     return (
         <Portal>
             <Modal
@@ -51,7 +79,20 @@ export default function Picker(props: Props): React.ReactElement {
                 onDismiss={hideModal}
                 contentContainerStyle={styles.container}
             >
-                {props.categories.map((item, index) => (
+                <View style={styles.headerContainer}>
+                    <View>
+                        <Avatar.Icon
+                            size={50}
+                            icon='cards-heart'
+                            color={colors.grey}
+                            style={styles.icon}
+                        />
+                    </View>
+                    <View style={{ justifyContent: 'center' }}>
+                        <Text style={styles.text}>Interests</Text>
+                    </View>
+                </View>
+                {categoriesTemp.map((item, index) => (
                     <Item
                         tag={item.tag}
                         key={index}
@@ -64,7 +105,7 @@ export default function Picker(props: Props): React.ReactElement {
                 <Button style={styles.okButton} onPress={props.onCancelClick}>
                     Cancel
                 </Button>
-                <Button style={styles.okButton} onPress={props.onOkClick}>
+                <Button style={styles.okButton} onPress={onOkButtonPress}>
                     OK
                 </Button>
             </Modal>
@@ -75,8 +116,12 @@ export default function Picker(props: Props): React.ReactElement {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: colors.white,
-        marginHorizontal: 80,
+        marginHorizontal: 40,
+        padding: 20,
         alignItems: 'flex-start',
+    },
+    headerContainer: {
+        flexDirection: 'row',
     },
     listItemView: {
         flexDirection: 'row',
@@ -86,10 +131,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     itemText: {
-        fontSize: 20,
-        color: colors.darkGrey,
+        fontSize: 16,
+        color: colors.darkerGrey,
     },
     okButton: {
         alignSelf: 'flex-end',
+    },
+    text: {
+        fontSize: 18,
+        color: colors.darkGrey,
+    },
+    icon: {
+        backgroundColor: 'transparent',
     },
 });
