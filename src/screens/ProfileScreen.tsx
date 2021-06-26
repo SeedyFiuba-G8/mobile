@@ -30,6 +30,9 @@ export default function ProfileScreen(): React.ReactElement {
         );
         return interested_categories_tags.join(', ');
     };
+
+    const [country, setCountry] = useState('Argentina');
+    const [city, setCity] = useState('Buenos Aires');
     return (
         <View style={styles.container}>
             <View style={styles.profilePictureView}>
@@ -86,9 +89,13 @@ export default function ProfileScreen(): React.ReactElement {
                         setVisible={setLocationPickerVisible}
                         onOkClick={() => setLocationPickerVisible(false)}
                         onCancelClick={() => setLocationPickerVisible(false)}
+                        city={city}
+                        setCity={setCity}
+                        country={country}
+                        setCountry={setCountry}
                     />
                     <Text style={styles.contentText}>
-                        Buenos Aires, Argentina
+                        {`${city}, ${country}`}
                     </Text>
                 </View>
             </ProfileInfoSection>

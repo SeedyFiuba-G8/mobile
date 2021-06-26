@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, SafeAreaView } from 'react-native';
 import {
     Portal,
@@ -44,7 +44,34 @@ const Item = (props: Category) => {
 
 export default function Picker(props: Props): React.ReactElement {
     const hideModal = () => props.setVisible(false);
-    const [checked, setChecked] = useState(false);
+
+    const categoriesTemp = props.categories.map((category, index) => {
+        const [interested, setInterested] = useState(category.interested);
+        return {
+            tag: category.tag,
+            interested: interested,
+            setInterested: setInterested,
+        };
+    });
+
+    useEffect(() => {
+        resetCategories();
+    }, [props.visible]);
+    const resetCategories = () => {
+        categoriesTemp.forEach((category, index) => {
+            category.setInterested(props.categories[index].interested);
+        });
+    };
+
+    const saveChanges = () => {
+        categoriesTemp.forEach((category, index) => {
+            props.categories[index].setInterested(category.interested);
+        });
+    };
+    const onOkButtonPress = () => {
+        saveChanges();
+        props.onOkClick();
+    };
     return (
         <Portal>
             <Modal
@@ -65,7 +92,7 @@ export default function Picker(props: Props): React.ReactElement {
                         <Text style={styles.text}>Interests</Text>
                     </View>
                 </View>
-                {props.categories.map((item, index) => (
+                {categoriesTemp.map((item, index) => (
                     <Item
                         tag={item.tag}
                         key={index}
@@ -78,7 +105,7 @@ export default function Picker(props: Props): React.ReactElement {
                 <Button style={styles.okButton} onPress={props.onCancelClick}>
                     Cancel
                 </Button>
-                <Button style={styles.okButton} onPress={props.onOkClick}>
+                <Button style={styles.okButton} onPress={onOkButtonPress}>
                     OK
                 </Button>
             </Modal>

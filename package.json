@@ -21,6 +21,7 @@
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
     "axios": "^0.21.1",
+    "countries-list": "^2.6.1",
     "expo": "~41.0.1",
     "expo-asset": "~8.3.1",
     "expo-constants": "~10.1.3",
