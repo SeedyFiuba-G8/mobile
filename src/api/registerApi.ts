@@ -7,7 +7,7 @@ const register = async (
     lastName: string
 ): Promise<boolean> => {
     try {
-        const apiResponse = await apiProvider.post<void>('user', {
+        const apiResponse = await apiProvider.post<void>('users', {
             email: email,
             password: password,
             firstName: firstName,

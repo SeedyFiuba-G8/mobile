@@ -24,6 +24,7 @@ export default {
             },
             ProjectCreation: 'create',
             Profile: 'profile',
+            ProjectVisualization: 'visualizeProject',
             Messages: 'messages',
             Settings: 'settings',
             MyProjects: 'projects',

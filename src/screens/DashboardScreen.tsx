@@ -1,10 +1,15 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native';
-import { Text, Card, Paragraph } from 'react-native-paper';
+import {
+    StyleSheet,
+    View,
+    ScrollView,
+    RefreshControl,
+    DeviceEventEmitter,
+} from 'react-native';
+import { Button } from 'react-native-paper';
 
 // Components
 import ProjectList from '../components/Project/ProjectList';
-import ProjectCard from '../components/Project/ProjectCard';
 
 // Navigation
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
@@ -34,6 +39,19 @@ export default function DashboardScreen({
         onRefresh();
     }, []);
 
+    useEffect(() => {
+        DeviceEventEmitter.addListener(
+            'viewProject',
+            (data: { projectId: string }) => {
+                navigation.navigate('ProjectVisualization', {
+                    projectId: data.projectId,
+                });
+            }
+        );
+        return () => {
+            DeviceEventEmitter.removeAllListeners('viewProject');
+        };
+    });
     return (
         <View style={styles.container}>
             <ProjectList
