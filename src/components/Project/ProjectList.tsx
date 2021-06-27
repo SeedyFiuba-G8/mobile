@@ -38,6 +38,7 @@ export default function ProjectList(props: Props): React.ReactElement {
                         description={project.description}
                         progress={Math.random()}
                         backer_count={Math.floor(Math.random() * 100)}
+                        id={project.id}
                     />
                 );
             })}

@@ -23,6 +23,7 @@ export type RootStackParamList = {
     Settings: undefined;
     ProjectCreation: undefined;
     MyProjects: undefined;
+    ProjectVisualization: { projectId: string };
 
     // Error
     NotFound: undefined;

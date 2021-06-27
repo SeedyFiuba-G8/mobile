@@ -58,9 +58,7 @@ const getAllProjects = async (): Promise<GetProjectsApiResponse> => {
     }
 };
 
-const getUserProjects = async (
-    id: string
-): Promise<GetProjectsApiResponse> => {
+const getUserProjects = async (id: string): Promise<GetProjectsApiResponse> => {
     const authToken = store.getState().session.token;
     try {
         const apiResponse = apiProvider.get<
@@ -75,6 +73,21 @@ const getUserProjects = async (
     } catch (error) {
         console.log(error.response);
         return { projects: [] };
+    }
+};
+
+const getProject = async (id: string): Promise<Project | undefined> => {
+    const authToken = store.getState().session.token;
+    try {
+        const apiResponse = apiProvider.get<Project, ProjectRequestPayload>(
+            `projects/${id}`,
+            {},
+            { headers: { Authorization: `Bearer ${authToken}` } }
+        );
+        return apiResponse;
+    } catch (error) {
+        console.log(error.response);
+        return undefined;
     }
 };
 
@@ -112,4 +125,4 @@ const createProject = async (
     }
 };
 
-export { getAllProjects, getUserProjects, createProject };
+export { getAllProjects, getUserProjects, createProject, getProject };

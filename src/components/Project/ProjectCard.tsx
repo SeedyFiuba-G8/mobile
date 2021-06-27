@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, DeviceEventEmitter } from 'react-native';
 import {
     Text,
     Card,
@@ -19,11 +19,17 @@ type Props = {
     description: string;
     progress: number;
     backer_count: number;
+    id: string;
 };
 
 export default function ProjectCard(props: Props): React.ReactElement {
     return (
-        <Card style={styles.card} onPress={() => console.log('Card pressed')}>
+        <Card
+            style={styles.card}
+            onPress={() =>
+                DeviceEventEmitter.emit('viewProject', { projectId: props.id })
+            }
+        >
             <Card.Cover
                 style={styles.cover}
                 source={{ uri: props.cover_image_uri }}
