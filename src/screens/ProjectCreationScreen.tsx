@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
-import { Text, TextInput, Button, Divider } from 'react-native-paper';
+import { Text, TextInput, Button, Divider, Snackbar } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import colors from '../constants/colors';
 import { DatePickerModal } from 'react-native-paper-dates';
@@ -36,6 +36,9 @@ export default function SettingsScreen(): React.ReactElement {
     const [goal, setGoal] = React.useState('');
     const authToken = useSelector((state: RootState) => state.session.token);
 
+    const [statusBarVisible, setStatusBarVisible] = useState(false);
+    const [statusBarText, setStatusBarText] = useState('');
+
     const onCreateButtonPress = async () => {
         if (date !== undefined) {
             const projectResult = await createProject(
@@ -52,6 +55,8 @@ export default function SettingsScreen(): React.ReactElement {
                 console.log(
                     `Success creating project with id ${projectResult.id}`
                 );
+                setStatusBarText('Project created successfully!');
+                setStatusBarVisible(true);
             }
         }
     };
@@ -154,6 +159,12 @@ export default function SettingsScreen(): React.ReactElement {
                     <Text style={{ color: 'white' }}>Create</Text>
                 </Button>
             </ScrollView>
+            <Snackbar
+                visible={statusBarVisible}
+                onDismiss={() => setStatusBarVisible(false)}
+            >
+                {statusBarText}
+            </Snackbar>
         </View>
     );
 }
