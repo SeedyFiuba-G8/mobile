@@ -8,6 +8,7 @@ type Props = {
     refreshing: boolean;
     onRefresh: () => void;
     projects: Array<Project>;
+    editable?: boolean;
 };
 
 export default function ProjectList(props: Props): React.ReactElement {

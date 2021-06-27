@@ -29,7 +29,7 @@ const createSession = async (
         const apiResponse = await apiProvider.post<
             sessionCreationResponseType,
             sessionCreationPayloadType
-        >('user/session', {
+        >('users/session', {
             email: email,
             password: password,
         });
@@ -48,14 +48,12 @@ const createSession = async (
     }
 };
 
-const createSessionFacebook = async (
-    fbToken: string
-): Promise<loginResult> => {
+const createSessionFacebook = async (fbToken: string): Promise<loginResult> => {
     try {
         const apiResponse = await apiProvider.post<
             sessionCreationResponseType,
             facebookSessionCreationPayloadType
-        >('user/session', {
+        >('users/session', {
             fbToken: fbToken,
         });
         console.log('Login succesful!');
