@@ -1,7 +1,15 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
-import { Text, TextInput, Button, Divider, Snackbar } from 'react-native-paper';
+import {
+    Text,
+    TextInput,
+    Button,
+    Divider,
+    Snackbar,
+    Title,
+    Avatar,
+} from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import colors from '../constants/colors';
 import { DatePickerModal } from 'react-native-paper-dates';
@@ -21,6 +29,25 @@ import { useSelector } from 'react-redux';
 
 // Types
 import type { RootState } from '../reducers/index';
+
+const IconSubtitle = (props: { icon: string; text: string }) => {
+    const { isDarkTheme } = useTheme();
+    const styles = React.useMemo(
+        () => createThemedStyles(isDarkTheme),
+        [isDarkTheme]
+    );
+    return (
+        <View style={styles.labelTitleView}>
+            <Avatar.Icon
+                icon={props.icon}
+                color={colors.darkGrey}
+                style={styles.icon}
+                size={35}
+            />
+            <Title style={styles.titleSecondary}>{props.text}</Title>
+        </View>
+    );
+};
 
 export default function SettingsScreen(): React.ReactElement {
     const { isDarkTheme } = useTheme();
@@ -62,119 +89,134 @@ export default function SettingsScreen(): React.ReactElement {
     };
 
     return (
-        <View style={styles.container}>
-            <ScrollView>
-                <Text style={styles.logo}>Tell us about your project!</Text>
+        <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={styles.container}
+        >
+            <Title style={styles.titlePrimary}>Project Title</Title>
+            <TextInput
+                style={styles.input}
+                theme={createThemedTextInputTheme(isDarkTheme)}
+                onChangeText={(newTitle) => setTitle(newTitle)}
+                mode='outlined'
+                placeholder='Give your project a name'
+            />
+            <IconSubtitle icon='bullseye-arrow' text='Objective' />
+            <TextInput
+                style={styles.descriptionInput}
+                theme={createThemedTextInputTheme(isDarkTheme)}
+                multiline={true}
+                onChangeText={(newDescription) =>
+                    setDescription(newDescription)
+                }
+                mode='outlined'
+                placeholder='Briefly describe what you hope to accomplish'
+                numberOfLines={5}
+            />
 
-                <TextInput
-                    style={styles.input}
-                    label='Title'
-                    theme={createThemedTextInputTheme(isDarkTheme)}
-                    mode='outlined'
-                    onChangeText={(newTitle) => setTitle(newTitle)}
-                />
-                <TextInput
-                    style={styles.descriptionInput}
-                    label='Description'
-                    theme={createThemedTextInputTheme(isDarkTheme)}
-                    multiline={true}
-                    onChangeText={(newDescription) =>
-                        setDescription(newDescription)
-                    }
-                />
+            <IconSubtitle icon='text' text='Description' />
+            <TextInput
+                style={styles.descriptionInput}
+                theme={createThemedTextInputTheme(isDarkTheme)}
+                multiline={true}
+                onChangeText={(newDescription) =>
+                    setDescription(newDescription)
+                }
+                mode='outlined'
+                placeholder='Give a more detailed description of your project'
+                numberOfLines={10}
+            />
+            <Divider style={styles.divider} />
 
-                <Divider style={styles.divider} />
-
-                <View style={styles.titledSection}>
-                    <View
-                        style={{
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Text style={styles.categoryText}>Category</Text>
-                    </View>
-                    <View style={styles.categorySelectorDropdownSection}>
-                        <Picker
-                            style={styles.categorySelector}
-                            selectedValue={category}
-                            onValueChange={(itemValue, itemIndex) =>
-                                setCategory(itemValue)
-                            }
-                            mode='dropdown'
-                            dropdownIconColor={colors.primary.light}
-                        >
-                            <Picker.Item
-                                label='Entretainment'
-                                value='entretainment'
-                            />
-                            <Picker.Item
-                                label='Productivity'
-                                value='productivity'
-                            />
-                            <Picker.Item label='Other' value='other' />
-                        </Picker>
-                    </View>
+            <View style={styles.titledSection}>
+                <View
+                    style={{
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Text style={styles.categoryText}>Category</Text>
                 </View>
-
-                <View style={styles.titledSection}>
-                    <View
-                        style={{
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
+                <View style={styles.categorySelectorDropdownSection}>
+                    <Picker
+                        style={styles.categorySelector}
+                        selectedValue={category}
+                        onValueChange={(itemValue, itemIndex) =>
+                            setCategory(itemValue)
+                        }
+                        mode='dropdown'
+                        dropdownIconColor={colors.primary.light}
                     >
-                        <Text style={styles.categoryText}>Tags</Text>
-                    </View>
-                    <View style={styles.categorySelectorDropdownSection}>
-                        <TagAdder tags={tags} setTags={setTags} />
-                    </View>
+                        <Picker.Item
+                            label='Entretainment'
+                            value='entretainment'
+                        />
+                        <Picker.Item
+                            label='Productivity'
+                            value='productivity'
+                        />
+                        <Picker.Item label='Other' value='other' />
+                    </Picker>
                 </View>
+            </View>
 
-                <Divider style={styles.divider} />
-
-                <TextInput
-                    style={styles.input}
-                    label='Fund goal (ETH)'
-                    theme={createThemedTextInputTheme(isDarkTheme)}
-                    mode='outlined'
-                    keyboardType='numeric'
-                    onChangeText={(newGoal) => setGoal(newGoal)}
-                />
-
-                <View style={styles.titledSection}>
-                    <View
-                        style={{
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Text style={styles.categoryText}>Fund by</Text>
-                    </View>
-                    <View style={styles.categorySelectorDropdownSection}>
-                        <FundDeadlineSelector date={date} setDate={setDate} />
-                    </View>
+            <View style={styles.titledSection}>
+                <View
+                    style={{
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Text style={styles.categoryText}>Tags</Text>
                 </View>
-                <Button style={styles.button} onPress={onCreateButtonPress}>
-                    <Text style={{ color: 'white' }}>Create</Text>
-                </Button>
-            </ScrollView>
+                <View style={styles.categorySelectorDropdownSection}>
+                    <TagAdder tags={tags} setTags={setTags} />
+                </View>
+            </View>
+
+            <Divider style={styles.divider} />
+
+            <TextInput
+                style={styles.input}
+                label='Fund goal (ETH)'
+                theme={createThemedTextInputTheme(isDarkTheme)}
+                mode='outlined'
+                keyboardType='numeric'
+                onChangeText={(newGoal) => setGoal(newGoal)}
+            />
+
+            <View style={styles.titledSection}>
+                <View
+                    style={{
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Text style={styles.categoryText}>Fund by</Text>
+                </View>
+                <View style={styles.categorySelectorDropdownSection}>
+                    <FundDeadlineSelector date={date} setDate={setDate} />
+                </View>
+            </View>
+            <Button style={styles.button} onPress={onCreateButtonPress}>
+                <Text style={{ color: 'white' }}>Create</Text>
+            </Button>
             <Snackbar
                 visible={statusBarVisible}
                 onDismiss={() => setStatusBarVisible(false)}
             >
                 {statusBarText}
             </Snackbar>
-        </View>
+        </ScrollView>
     );
 }
 
 const createThemedStyles = (isDarkTheme: boolean) => {
     const styles = StyleSheet.create({
         container: {
-            flex: 1,
+            margin: 10,
+            paddingVertical: 10,
             alignItems: 'center',
-            justifyContent: 'flex-start',
             backgroundColor: isDarkTheme ? colors.black : colors.white,
         },
         button: {
@@ -202,7 +244,6 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             marginTop: 0,
             backgroundColor: isDarkTheme ? colors.white : '#EEEEEE',
             fontWeight: '300',
-            height: 200,
         },
         inputText: {
             fontSize: 20,
@@ -240,6 +281,25 @@ const createThemedStyles = (isDarkTheme: boolean) => {
         divider: {
             marginHorizontal: 32,
             marginVertical: 20,
+        },
+        titlePrimary: {
+            alignSelf: 'flex-start',
+            marginLeft: 30,
+            fontSize: 25,
+            color: colors.darkerGrey,
+        },
+        titleSecondary: {
+            alignSelf: 'flex-start',
+            fontSize: 20,
+            color: colors.grey,
+        },
+        icon: {
+            backgroundColor: 'transparent',
+        },
+        labelTitleView: {
+            flexDirection: 'row',
+            marginLeft: 30,
+            alignSelf: 'flex-start',
         },
     });
     return styles;
