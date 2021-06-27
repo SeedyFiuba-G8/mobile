@@ -66,9 +66,14 @@ export default function ProjectVisualizationScreen(
     const [project, setProject] = useState<Project>();
     const [loading, setLoading] = useState(true);
 
+    const [publishedDate, setPublishedDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
+
     const onRefresh = async () => {
         setLoading(true);
         const project_temp = await getProject(props.route.params.projectId);
+        setPublishedDate(new Date(project_temp.publishedOn));
+        setEndDate(new Date(project_temp.finalizedBy));
         setProject(project_temp);
         setLoading(false);
     };
@@ -76,9 +81,6 @@ export default function ProjectVisualizationScreen(
     useEffect(() => {
         onRefresh();
     }, [props.route.params.projectId]);
-
-    const publishedDate = new Date(project?.publishedOn);
-    const endDate = new Date(project?.finalizedBy);
 
     const remainingDays = Math.max(
         Math.ceil(

@@ -76,19 +76,14 @@ const getUserProjects = async (id: string): Promise<GetProjectsApiResponse> => {
     }
 };
 
-const getProject = async (id: string): Promise<Project | undefined> => {
+const getProject = async (id: string): Promise<Project> => {
     const authToken = store.getState().session.token;
-    try {
-        const apiResponse = apiProvider.get<Project, ProjectRequestPayload>(
-            `projects/${id}`,
-            {},
-            { headers: { Authorization: `Bearer ${authToken}` } }
-        );
-        return apiResponse;
-    } catch (error) {
-        console.log(error.response);
-        return undefined;
-    }
+    const apiResponse = apiProvider.get<Project, ProjectRequestPayload>(
+        `projects/${id}`,
+        {},
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
 };
 
 const createProject = async (
