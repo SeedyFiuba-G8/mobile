@@ -29,6 +29,7 @@ import { useSelector } from 'react-redux';
 
 // Types
 import type { RootState } from '../reducers/index';
+import { countries } from 'countries-list';
 
 const IconSubtitle = (props: { icon: string; text: string }) => {
     const { isDarkTheme } = useTheme();
@@ -60,21 +61,24 @@ export default function SettingsScreen(): React.ReactElement {
     const [date, setDate] = React.useState<Date | undefined>(undefined);
     const [title, setTitle] = React.useState('');
     const [description, setDescription] = React.useState('');
+    const [objective, setObjective] = React.useState('');
     const [goal, setGoal] = React.useState('');
     const authToken = useSelector((state: RootState) => state.session.token);
 
     const [statusBarVisible, setStatusBarVisible] = useState(false);
     const [statusBarText, setStatusBarText] = useState('');
-
+    const [city, setCity] = useState('');
+    const [country, setCountry] = useState('');
+    const element = <TextInput.Affix text='ETH' />;
     const onCreateButtonPress = async () => {
         if (date !== undefined) {
             const projectResult = await createProject(
                 title,
                 description,
                 category,
-                'Objetivo',
-                'Argentina',
-                'Buenos Aires',
+                objective,
+                country,
+                city,
                 date.toString(),
                 authToken
             );
@@ -106,9 +110,7 @@ export default function SettingsScreen(): React.ReactElement {
                 style={styles.descriptionInput}
                 theme={createThemedTextInputTheme(isDarkTheme)}
                 multiline={true}
-                onChangeText={(newDescription) =>
-                    setDescription(newDescription)
-                }
+                onChangeText={(newObjective) => setObjective(newObjective)}
                 mode='outlined'
                 placeholder='Briefly describe what you hope to accomplish'
                 numberOfLines={5}
@@ -126,78 +128,83 @@ export default function SettingsScreen(): React.ReactElement {
                 placeholder='Give a more detailed description of your project'
                 numberOfLines={10}
             />
-            <Divider style={styles.divider} />
-
-            <View style={styles.titledSection}>
-                <View
-                    style={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <Text style={styles.categoryText}>Category</Text>
-                </View>
-                <View style={styles.categorySelectorDropdownSection}>
-                    <Picker
-                        style={styles.categorySelector}
-                        selectedValue={category}
-                        onValueChange={(itemValue, itemIndex) =>
-                            setCategory(itemValue)
-                        }
-                        mode='dropdown'
-                        dropdownIconColor={colors.primary.light}
-                    >
-                        <Picker.Item
-                            label='Entretainment'
-                            value='entretainment'
-                        />
-                        <Picker.Item
-                            label='Productivity'
-                            value='productivity'
-                        />
-                        <Picker.Item label='Other' value='other' />
-                    </Picker>
-                </View>
-            </View>
-
-            <View style={styles.titledSection}>
-                <View
-                    style={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <Text style={styles.categoryText}>Tags</Text>
-                </View>
-                <View style={styles.categorySelectorDropdownSection}>
-                    <TagAdder tags={tags} setTags={setTags} />
-                </View>
-            </View>
 
             <Divider style={styles.divider} />
+            <IconSubtitle icon='shape' text='Category' />
+            <View style={styles.subsection}>
+                <Picker
+                    style={styles.categorySelector}
+                    selectedValue={category}
+                    onValueChange={(itemValue, itemIndex) =>
+                        setCategory(itemValue)
+                    }
+                    mode='dropdown'
+                >
+                    <Picker.Item label='Entretainment' value='entretainment' />
+                    <Picker.Item label='Productivity' value='productivity' />
+                    <Picker.Item label='Other' value='other' />
+                </Picker>
+            </View>
 
+            <IconSubtitle icon='tag' text='Tags' />
+            <View style={styles.subsection}>
+                <TagAdder tags={tags} setTags={setTags} />
+            </View>
+
+            <Divider
+                style={{
+                    alignSelf: 'stretch',
+                    margin: 10,
+                }}
+            />
+            <IconSubtitle icon='currency-usd' text='Goal' />
             <TextInput
-                style={styles.input}
-                label='Fund goal (ETH)'
+                style={{ ...styles.input, backgroundColor: 'transparent' }}
                 theme={createThemedTextInputTheme(isDarkTheme)}
                 mode='outlined'
                 keyboardType='numeric'
                 onChangeText={(newGoal) => setGoal(newGoal)}
+                right={element}
             />
 
-            <View style={styles.titledSection}>
-                <View
-                    style={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <Text style={styles.categoryText}>Fund by</Text>
-                </View>
-                <View style={styles.categorySelectorDropdownSection}>
-                    <FundDeadlineSelector date={date} setDate={setDate} />
-                </View>
+            <IconSubtitle icon='calendar' text='Deadline' />
+            <View style={styles.subsection}>
+                <FundDeadlineSelector date={date} setDate={setDate} />
             </View>
+
+            <Divider style={styles.divider} />
+            <IconSubtitle icon='map-marker' text='Location' />
+            <View style={styles.subsection}>
+                <Text style={styles.subtitle}>Country</Text>
+                <Picker
+                    style={styles.categorySelector}
+                    selectedValue={country}
+                    onValueChange={(itemValue, itemIndex) =>
+                        setCountry(itemValue)
+                    }
+                    mode='dropdown'
+                    dropdownIconColor={colors.primary.light}
+                >
+                    {Object.values(countries)
+                        .sort((a, b) => (a.name > b.name ? 1 : -1))
+                        .map((country, index) => {
+                            return (
+                                <Picker.Item
+                                    label={country.name}
+                                    value={country.name}
+                                    key={index}
+                                />
+                            );
+                        })}
+                </Picker>
+            </View>
+
+            <TextInput
+                style={styles.input}
+                label='City'
+                mode='outlined'
+                onChangeText={(city) => setCity(city)}
+            />
             <Button style={styles.button} onPress={onCreateButtonPress}>
                 <Text style={{ color: 'white' }}>Create</Text>
             </Button>
@@ -279,8 +286,9 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             height: 50,
         },
         divider: {
-            marginHorizontal: 32,
-            marginVertical: 20,
+            alignSelf: 'stretch',
+            margin: 10,
+            height: 1,
         },
         titlePrimary: {
             alignSelf: 'flex-start',
@@ -300,6 +308,19 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             flexDirection: 'row',
             marginLeft: 30,
             alignSelf: 'flex-start',
+        },
+        subsection: {
+            alignSelf: 'stretch',
+            marginHorizontal: 32,
+            borderWidth: 1,
+            borderRadius: 5,
+            borderColor: colors.darkGrey,
+            marginBottom: 10,
+        },
+        subtitle: {
+            fontSize: 14,
+            color: colors.darkGrey,
+            marginLeft: 10,
         },
     });
     return styles;

@@ -9,6 +9,7 @@ import {
     Button,
     Chip,
 } from 'react-native-paper';
+import colors from '../../constants/colors';
 
 import { useTheme } from '../../contexts/ThemeProvider';
 
@@ -50,7 +51,12 @@ export default function TagAdder(props: Props): React.ReactElement {
                     </Chip>
                 );
             })}
-            <IconButton icon='tag-plus' size={20} onPress={showDialog} />
+            <IconButton
+                icon='tag-plus'
+                color={colors.darkGrey}
+                size={20}
+                onPress={showDialog}
+            />
             <Portal>
                 <Dialog visible={dialogVisible} onDismiss={hideDialog}>
                     <Dialog.Title>Add new tag</Dialog.Title>
