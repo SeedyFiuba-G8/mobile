@@ -46,17 +46,17 @@ export default function Content({
                 <DrawerList data={general} props={props} />
             </Drawer.Section>
 
-            <Drawer.Section title="Collections">
+            <Drawer.Section title='Collections'>
                 <DrawerList data={collections} props={props} />
             </Drawer.Section>
 
-            <Drawer.Section title="Categories">
+            <Drawer.Section title='Categories'>
                 <DrawerList data={categories} props={props} />
             </Drawer.Section>
 
             <Drawer.Section>
                 <DrawerItem
-                    label="Log out"
+                    label='Log out'
                     icon={({ color, size }) => (
                         <Ionicons name={'log-out'} color={color} size={size} />
                     )}

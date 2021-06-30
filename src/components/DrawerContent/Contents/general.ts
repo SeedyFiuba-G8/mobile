@@ -6,7 +6,7 @@ const data: DrawerItemType[] = [
         label: 'Profile',
         icon: 'person-circle-outline',
         onPress: (props) => {
-            props.navigation.navigate('Profile');
+            props.navigation.navigate('Profile', { userId: '123' });
         },
     },
     {

@@ -6,8 +6,22 @@ import colors from '../constants/colors';
 import ProfileInfoSection from '../components/Profile/ProfileInfoSection';
 import Picker from '../components/InterestsPicker';
 import LocationPicker from '../components/LocationPicker';
+import { RouteProp } from '@react-navigation/native';
+import { RootStackParamList } from '../types';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-export default function ProfileScreen(): React.ReactElement {
+type ProfileScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'Profile'
+>;
+type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'Profile'>;
+
+type Props = {
+    route: ProfileScreenRouteProp;
+    navigation: ProfileScreenNavigationProp;
+};
+
+export default function ProfileScreen(props: Props): React.ReactElement {
     const [interestPickerVisible, setInterestPickerVisible] = useState(false);
     const [locationPickerVisible, setLocationPickerVisible] = useState(false);
 
@@ -19,6 +33,8 @@ export default function ProfileScreen(): React.ReactElement {
             setInterested: setInterested,
         };
     });
+
+    const editable = true;
 
     const generateInterestsString = () => {
         const interested_categories = categoriesWithState.filter(
@@ -40,25 +56,28 @@ export default function ProfileScreen(): React.ReactElement {
                     source={require('../assets/images/dummy_avatar.jpg')}
                     size={200}
                 />
-                <IconButton
-                    style={styles.changePictureButton}
-                    icon='camera'
-                    size={30}
-                    color={'white'}
-                    onPress={() => console.log('Pressed')}
-                />
+                {editable ? (
+                    <IconButton
+                        style={styles.changePictureButton}
+                        icon='camera'
+                        size={30}
+                        color={'white'}
+                        onPress={() => console.log('Pressed')}
+                    />
+                ) : null}
             </View>
-            <ProfileInfoSection
-                title='Personal information'
-                icon='account'
-            ></ProfileInfoSection>
+            <ProfileInfoSection title='Name' icon='account'>
+                <View style={styles.profileInfoSectionContentView}>
+                    <Text style={styles.contentText}>{`Heath Ledger`}</Text>
+                </View>
+            </ProfileInfoSection>
 
             <Divider style={styles.divider} />
 
             <ProfileInfoSection
                 title='Interests'
                 icon='cards-heart'
-                editable={true}
+                editable={editable}
                 onEditPress={() => setInterestPickerVisible(true)}
             >
                 <Picker
@@ -80,7 +99,7 @@ export default function ProfileScreen(): React.ReactElement {
             <ProfileInfoSection
                 title='Location'
                 icon='map-marker'
-                editable={true}
+                editable={editable}
                 onEditPress={() => setLocationPickerVisible(true)}
             >
                 <View style={styles.profileInfoSectionContentView}>
@@ -155,9 +174,9 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
     },
     profileInfoSectionContentView: {
-        margin: 20,
+        marginHorizontal: 20,
     },
     contentText: {
-        color: colors.darkerGrey,
+        color: colors.black,
     },
 });
