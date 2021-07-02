@@ -17,6 +17,7 @@ import { DatePickerModal } from 'react-native-paper-dates';
 //Components
 import TagAdder from '../components/Project/TagAdder';
 import FundDeadlineSelector from '../components/Project/FundDeadlineSelector';
+import ReviewerList from '../components/Project/ReviewerList';
 
 // Contexts
 import { useTheme } from '../contexts/ThemeProvider';
@@ -50,7 +51,7 @@ const IconSubtitle = (props: { icon: string; text: string }) => {
     );
 };
 
-export default function SettingsScreen(): React.ReactElement {
+export default function ProjectCreationScreen(): React.ReactElement {
     const { isDarkTheme } = useTheme();
     const styles = React.useMemo(
         () => createThemedStyles(isDarkTheme),
@@ -69,6 +70,11 @@ export default function SettingsScreen(): React.ReactElement {
     const [statusBarText, setStatusBarText] = useState('');
     const [city, setCity] = useState('');
     const [country, setCountry] = useState('');
+    const [reviewers, setReviewers] = useState<Array<string>>([
+        'pepito@gmail.com',
+        'nor@berto.com',
+    ]);
+
     const element = <TextInput.Affix text='ETH' />;
     const onCreateButtonPress = async () => {
         if (date !== undefined) {
@@ -205,6 +211,14 @@ export default function SettingsScreen(): React.ReactElement {
                 mode='outlined'
                 onChangeText={(city) => setCity(city)}
             />
+            <Divider style={styles.divider} />
+            <IconSubtitle icon='shield-account' text='Reviewers' />
+            <View style={{ ...styles.subsection, padding: 5 }}>
+                <ReviewerList
+                    reviewers={reviewers}
+                    setReviewers={setReviewers}
+                />
+            </View>
             <Button style={styles.button} onPress={onCreateButtonPress}>
                 <Text style={{ color: 'white' }}>Create</Text>
             </Button>
@@ -321,6 +335,11 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             fontSize: 14,
             color: colors.darkGrey,
             marginLeft: 10,
+        },
+        reviewerItemText: {
+            color: colors.darkerGrey,
+            fontSize: 16,
+            marginVertical: 5,
         },
     });
     return styles;
