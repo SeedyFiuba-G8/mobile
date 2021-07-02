@@ -20,6 +20,7 @@ type Props = {
     progress: number;
     backer_count: number;
     id: string;
+    draft?: boolean;
 };
 
 export default function ProjectCard(props: Props): React.ReactElement {
@@ -30,6 +31,9 @@ export default function ProjectCard(props: Props): React.ReactElement {
                 DeviceEventEmitter.emit('viewProject', { projectId: props.id })
             }
         >
+            {props.draft ?? false ? (
+                <Text style={styles.draftText}>Draft</Text>
+            ) : null}
             <Card.Cover
                 style={styles.cover}
                 source={{ uri: props.cover_image_uri }}
@@ -103,5 +107,11 @@ const styles = StyleSheet.create({
     progressTextPercentage: {
         color: colors.primary.light,
         fontWeight: 'bold',
+    },
+    draftText: {
+        color: colors.darkGrey,
+        fontSize: 18,
+        fontWeight: 'bold',
+        margin: 5,
     },
 });

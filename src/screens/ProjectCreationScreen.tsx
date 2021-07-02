@@ -70,10 +70,7 @@ export default function ProjectCreationScreen(): React.ReactElement {
     const [statusBarText, setStatusBarText] = useState('');
     const [city, setCity] = useState('');
     const [country, setCountry] = useState('');
-    const [reviewers, setReviewers] = useState<Array<string>>([
-        'pepito@gmail.com',
-        'nor@berto.com',
-    ]);
+    const [reviewers, setReviewers] = useState<Array<string>>([]);
 
     const element = <TextInput.Affix text='ETH' />;
     const onCreateButtonPress = async () => {
