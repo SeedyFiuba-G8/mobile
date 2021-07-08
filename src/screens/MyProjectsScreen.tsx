@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, DeviceEventEmitter } from 'react-native';
 
 // Components
 import ProjectList from '../components/Project/ProjectList';
@@ -42,6 +42,29 @@ export default function DashboardScreen({
         onRefresh();
     }, []);
 
+    useEffect(() => {
+        DeviceEventEmitter.addListener(
+            'viewProject',
+            (data: { projectId: string }) => {
+                navigation.navigate('ProjectVisualization', {
+                    projectId: data.projectId,
+                });
+            }
+        );
+
+        DeviceEventEmitter.addListener(
+            'editProject',
+            (data: { projectId: string }) => {
+                navigation.navigate('ProjectCreation', {
+                    edition: true,
+                    projectId: data.projectId,
+                });
+            }
+        );
+        return () => {
+            DeviceEventEmitter.removeAllListeners('viewProject');
+        };
+    });
     return (
         <>
             <View style={styles.filterBar}>
@@ -87,8 +110,7 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
     },
     filterText: {
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontSize: 16,
         color: colors.darkGrey,
     },
     filterBar: {

@@ -9,6 +9,7 @@ import {
     Snackbar,
     Title,
     Avatar,
+    ActivityIndicator,
 } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import colors from '../constants/colors';
@@ -23,7 +24,7 @@ import ReviewerList from '../components/Project/ReviewerList';
 import { useTheme } from '../contexts/ThemeProvider';
 
 // API
-import { createProject } from '../api/projectsApi';
+import { createProject, getProject } from '../api/projectsApi';
 
 // Hooks
 import { useSelector } from 'react-redux';
@@ -31,6 +32,25 @@ import { useSelector } from 'react-redux';
 // Types
 import type { RootState } from '../reducers/index';
 import { countries } from 'countries-list';
+import { RootStackParamList } from '../types';
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useEffect } from 'react';
+
+type ProjectCreationScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'ProjectCreation'
+>;
+
+type ProjectCreationScreenRouteProp = RouteProp<
+    RootStackParamList,
+    'ProjectCreation'
+>;
+
+type Props = {
+    route: ProjectCreationScreenRouteProp;
+    navigation: ProjectCreationScreenNavigationProp;
+};
 
 const IconSubtitle = (props: { icon: string; text: string }) => {
     const { isDarkTheme } = useTheme();
@@ -51,7 +71,9 @@ const IconSubtitle = (props: { icon: string; text: string }) => {
     );
 };
 
-export default function ProjectCreationScreen(): React.ReactElement {
+export default function ProjectCreationScreen(
+    props: Props
+): React.ReactElement {
     const { isDarkTheme } = useTheme();
     const styles = React.useMemo(
         () => createThemedStyles(isDarkTheme),
@@ -72,7 +94,31 @@ export default function ProjectCreationScreen(): React.ReactElement {
     const [country, setCountry] = useState('');
     const [reviewers, setReviewers] = useState<Array<string>>([]);
 
+    const [loading, setLoading] = useState(false);
+
+    const onEditProjectLoad = async () => {
+        setLoading(true);
+        if (props.route.params.edition) {
+            const project_temp = await getProject(props.route.params.projectId);
+            setTitle(project_temp.title);
+            setDescription(project_temp.description);
+            setObjective(project_temp.objective);
+            setDate(new Date(project_temp.finalizedBy));
+            setCategory('productivity');
+            setCity(project_temp.city);
+            setCountry(project_temp.country);
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        onEditProjectLoad();
+    }, [props.route.params.edition]);
+
     const element = <TextInput.Affix text='ETH' />;
+    if (props.route.params.edition) {
+        console.log(`Editing project with id ${props.route.params.projectId}`);
+    }
     const onCreateButtonPress = async () => {
         if (date !== undefined) {
             const projectResult = await createProject(
@@ -100,131 +146,152 @@ export default function ProjectCreationScreen(): React.ReactElement {
             style={{ flex: 1 }}
             contentContainerStyle={styles.container}
         >
-            <Title style={styles.titlePrimary}>Project Title</Title>
-            <TextInput
-                style={styles.input}
-                theme={createThemedTextInputTheme(isDarkTheme)}
-                onChangeText={(newTitle) => setTitle(newTitle)}
-                mode='outlined'
-                placeholder='Give your project a name'
-            />
-            <IconSubtitle icon='bullseye-arrow' text='Objective' />
-            <TextInput
-                style={styles.descriptionInput}
-                theme={createThemedTextInputTheme(isDarkTheme)}
-                multiline={true}
-                onChangeText={(newObjective) => setObjective(newObjective)}
-                mode='outlined'
-                placeholder='Briefly describe what you hope to accomplish'
-                numberOfLines={5}
-            />
+            {loading ? (
+                <ActivityIndicator size='large' animating={true} />
+            ) : (
+                <>
+                    <Title style={styles.titlePrimary}>Project Title</Title>
+                    <TextInput
+                        style={styles.input}
+                        theme={createThemedTextInputTheme(isDarkTheme)}
+                        onChangeText={(newTitle) => setTitle(newTitle)}
+                        value={title}
+                        mode='outlined'
+                        placeholder='Give your project a name'
+                    />
+                    <IconSubtitle icon='bullseye-arrow' text='Objective' />
+                    <TextInput
+                        style={styles.descriptionInput}
+                        theme={createThemedTextInputTheme(isDarkTheme)}
+                        multiline={true}
+                        onChangeText={(newObjective) =>
+                            setObjective(newObjective)
+                        }
+                        mode='outlined'
+                        placeholder='Briefly describe what you hope to accomplish'
+                        numberOfLines={5}
+                        value={objective}
+                    />
 
-            <IconSubtitle icon='text' text='Description' />
-            <TextInput
-                style={styles.descriptionInput}
-                theme={createThemedTextInputTheme(isDarkTheme)}
-                multiline={true}
-                onChangeText={(newDescription) =>
-                    setDescription(newDescription)
-                }
-                mode='outlined'
-                placeholder='Give a more detailed description of your project'
-                numberOfLines={10}
-            />
+                    <IconSubtitle icon='text' text='Description' />
+                    <TextInput
+                        style={styles.descriptionInput}
+                        theme={createThemedTextInputTheme(isDarkTheme)}
+                        multiline={true}
+                        onChangeText={(newDescription) =>
+                            setDescription(newDescription)
+                        }
+                        mode='outlined'
+                        placeholder='Give a more detailed description of your project'
+                        numberOfLines={10}
+                        value={description}
+                    />
 
-            <Divider style={styles.divider} />
-            <IconSubtitle icon='shape' text='Category' />
-            <View style={styles.subsection}>
-                <Picker
-                    style={styles.categorySelector}
-                    selectedValue={category}
-                    onValueChange={(itemValue, itemIndex) =>
-                        setCategory(itemValue)
-                    }
-                    mode='dropdown'
-                >
-                    <Picker.Item label='Entretainment' value='entretainment' />
-                    <Picker.Item label='Productivity' value='productivity' />
-                    <Picker.Item label='Other' value='other' />
-                </Picker>
-            </View>
+                    <Divider style={styles.divider} />
+                    <IconSubtitle icon='shape' text='Category' />
+                    <View style={styles.subsection}>
+                        <Picker
+                            style={styles.categorySelector}
+                            selectedValue={category}
+                            onValueChange={(itemValue, itemIndex) =>
+                                setCategory(itemValue)
+                            }
+                            mode='dropdown'
+                        >
+                            <Picker.Item
+                                label='Entretainment'
+                                value='entretainment'
+                            />
+                            <Picker.Item
+                                label='Productivity'
+                                value='productivity'
+                            />
+                            <Picker.Item label='Other' value='other' />
+                        </Picker>
+                    </View>
 
-            <IconSubtitle icon='tag' text='Tags' />
-            <View style={styles.subsection}>
-                <TagAdder tags={tags} setTags={setTags} />
-            </View>
+                    <IconSubtitle icon='tag' text='Tags' />
+                    <View style={styles.subsection}>
+                        <TagAdder tags={tags} setTags={setTags} />
+                    </View>
 
-            <Divider
-                style={{
-                    alignSelf: 'stretch',
-                    margin: 10,
-                }}
-            />
-            <IconSubtitle icon='currency-usd' text='Goal' />
-            <TextInput
-                style={{ ...styles.input, backgroundColor: 'transparent' }}
-                theme={createThemedTextInputTheme(isDarkTheme)}
-                mode='outlined'
-                keyboardType='numeric'
-                onChangeText={(newGoal) => setGoal(newGoal)}
-                right={element}
-            />
+                    <Divider
+                        style={{
+                            alignSelf: 'stretch',
+                            margin: 10,
+                        }}
+                    />
+                    <IconSubtitle icon='currency-usd' text='Goal' />
+                    <TextInput
+                        style={{
+                            ...styles.input,
+                            backgroundColor: 'transparent',
+                        }}
+                        theme={createThemedTextInputTheme(isDarkTheme)}
+                        mode='outlined'
+                        keyboardType='numeric'
+                        onChangeText={(newGoal) => setGoal(newGoal)}
+                        right={element}
+                    />
 
-            <IconSubtitle icon='calendar' text='Deadline' />
-            <View style={styles.subsection}>
-                <FundDeadlineSelector date={date} setDate={setDate} />
-            </View>
+                    <IconSubtitle icon='calendar' text='Deadline' />
+                    <View style={styles.subsection}>
+                        <FundDeadlineSelector date={date} setDate={setDate} />
+                    </View>
 
-            <Divider style={styles.divider} />
-            <IconSubtitle icon='map-marker' text='Location' />
-            <View style={styles.subsection}>
-                <Text style={styles.subtitle}>Country</Text>
-                <Picker
-                    style={styles.categorySelector}
-                    selectedValue={country}
-                    onValueChange={(itemValue, itemIndex) =>
-                        setCountry(itemValue)
-                    }
-                    mode='dropdown'
-                    dropdownIconColor={colors.primary.light}
-                >
-                    {Object.values(countries)
-                        .sort((a, b) => (a.name > b.name ? 1 : -1))
-                        .map((country, index) => {
-                            return (
-                                <Picker.Item
-                                    label={country.name}
-                                    value={country.name}
-                                    key={index}
-                                />
-                            );
-                        })}
-                </Picker>
-            </View>
+                    <Divider style={styles.divider} />
+                    <IconSubtitle icon='map-marker' text='Location' />
+                    <View style={styles.subsection}>
+                        <Text style={styles.subtitle}>Country</Text>
+                        <Picker
+                            style={styles.categorySelector}
+                            selectedValue={country}
+                            onValueChange={(itemValue, itemIndex) =>
+                                setCountry(itemValue)
+                            }
+                            mode='dropdown'
+                            dropdownIconColor={colors.primary.light}
+                        >
+                            {Object.values(countries)
+                                .sort((a, b) => (a.name > b.name ? 1 : -1))
+                                .map((country, index) => {
+                                    return (
+                                        <Picker.Item
+                                            label={country.name}
+                                            value={country.name}
+                                            key={index}
+                                        />
+                                    );
+                                })}
+                        </Picker>
+                    </View>
 
-            <TextInput
-                style={styles.input}
-                label='City'
-                mode='outlined'
-                onChangeText={(city) => setCity(city)}
-            />
-            <Divider style={styles.divider} />
-            <IconSubtitle icon='shield-account' text='Reviewers' />
-            <View style={{ ...styles.subsection, padding: 5 }}>
-                <ReviewerList
-                    reviewers={reviewers}
-                    setReviewers={setReviewers}
-                />
-            </View>
-            <Button style={styles.button} onPress={onCreateButtonPress}>
-                <Text style={{ color: 'white' }}>Create</Text>
-            </Button>
-            <Snackbar
-                visible={statusBarVisible}
-                onDismiss={() => setStatusBarVisible(false)}
-            >
-                {statusBarText}
-            </Snackbar>
+                    <TextInput
+                        style={styles.input}
+                        label='City'
+                        mode='outlined'
+                        onChangeText={(city) => setCity(city)}
+                        value={city}
+                    />
+                    <Divider style={styles.divider} />
+                    <IconSubtitle icon='shield-account' text='Reviewers' />
+                    <View style={{ ...styles.subsection, padding: 5 }}>
+                        <ReviewerList
+                            reviewers={reviewers}
+                            setReviewers={setReviewers}
+                        />
+                    </View>
+                    <Button style={styles.button} onPress={onCreateButtonPress}>
+                        <Text style={{ color: 'white' }}>Create</Text>
+                    </Button>
+                    <Snackbar
+                        visible={statusBarVisible}
+                        onDismiss={() => setStatusBarVisible(false)}
+                    >
+                        {statusBarText}
+                    </Snackbar>
+                </>
+            )}
         </ScrollView>
     );
 }

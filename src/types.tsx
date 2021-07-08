@@ -21,7 +21,7 @@ export type RootStackParamList = {
     Profile: { userId: string };
     Messages: undefined;
     Settings: undefined;
-    ProjectCreation: undefined;
+    ProjectCreation: { edition: true; projectId: string } | { edition: false };
     MyProjects: undefined;
     ProjectVisualization: { projectId: string };
 

@@ -24,13 +24,15 @@ type Props = {
 };
 
 export default function ProjectCard(props: Props): React.ReactElement {
+    const onCardPress = () => {
+        if (props.draft ?? false) {
+            DeviceEventEmitter.emit('editProject', { projectId: props.id });
+        } else {
+            DeviceEventEmitter.emit('viewProject', { projectId: props.id });
+        }
+    };
     return (
-        <Card
-            style={styles.card}
-            onPress={() =>
-                DeviceEventEmitter.emit('viewProject', { projectId: props.id })
-            }
-        >
+        <Card style={styles.card} onPress={onCardPress}>
             {props.draft ?? false ? (
                 <Text style={styles.draftText}>Draft</Text>
             ) : null}
@@ -112,6 +114,7 @@ const styles = StyleSheet.create({
         color: colors.darkGrey,
         fontSize: 18,
         fontWeight: 'bold',
+        fontStyle: 'italic',
         margin: 5,
     },
 });
