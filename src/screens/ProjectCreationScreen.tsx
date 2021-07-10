@@ -120,9 +120,6 @@ export default function ProjectCreationScreen(
     }, [props.route.params.edition]);
 
     const element = <TextInput.Affix text='ETH' />;
-    if (props.route.params.edition) {
-        console.log(`Editing project with id ${props.route.params.projectId}`);
-    }
     const onCreateButtonPress = async () => {
         const projectResult = await createProject(
             title,
@@ -131,17 +128,18 @@ export default function ProjectCreationScreen(
             objective,
             country,
             city,
-            date.toJSON()
+            date.toJSON(),
+            tags
         );
         if (projectResult.successful) {
-            console.log(`Success creating project with id ${projectResult.id}`);
-            setStatusBarText('Project created successfully!');
-            setStatusBarVisible(true);
+            props.navigation.navigate('MyProjects', {
+                showNotification: 'Project created successfully!',
+                projectId: projectResult.id,
+            });
         }
     };
 
     const onConfirmChangesButtonPress = async () => {
-        console.log('Confirm changes pressed');
         if (props.route.params.edition) {
             const result = await updateProject(
                 props.route.params.projectId,
@@ -151,7 +149,8 @@ export default function ProjectCreationScreen(
                 objective,
                 country,
                 city,
-                date.toJSON()
+                date.toJSON(),
+                tags
             );
             if (result.successful) {
                 setStatusBarText('Project modified successfully!');
@@ -164,8 +163,10 @@ export default function ProjectCreationScreen(
         if (props.route.params.edition) {
             const result = await deleteProject(props.route.params.projectId);
             if (result.successful) {
-                setStatusBarText('Project deleted successfully!');
-                setStatusBarVisible(true);
+                props.navigation.navigate('MyProjects', {
+                    showNotification: 'Project deleted successfully!',
+                    projectId: props.route.params.projectId,
+                });
             }
         }
     };
@@ -344,7 +345,9 @@ export default function ProjectCreationScreen(
                     )}
                     <Snackbar
                         visible={statusBarVisible}
-                        onDismiss={() => setStatusBarVisible(false)}
+                        onDismiss={() => {
+                            setStatusBarVisible(false);
+                        }}
                     >
                         {statusBarText}
                     </Snackbar>

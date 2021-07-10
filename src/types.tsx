@@ -22,7 +22,7 @@ export type RootStackParamList = {
     Messages: undefined;
     Settings: undefined;
     ProjectCreation: { edition: true; projectId: string } | { edition: false };
-    MyProjects: undefined;
+    MyProjects: { showNotification: string; projectId: string } | undefined;
     ProjectVisualization: { projectId: string };
 
     // Error

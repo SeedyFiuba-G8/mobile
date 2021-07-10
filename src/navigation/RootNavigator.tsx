@@ -54,7 +54,11 @@ export default function RootNavigator(): React.ReactElement {
             <RootStack.Screen
                 name='ProjectCreation'
                 component={ProjectCreationScreen}
-                options={{ title: 'Create' }}
+                options={({ route }) => ({
+                    title: route.params.edition
+                        ? 'Edit project'
+                        : 'Create project',
+                })}
             />
             <RootStack.Screen
                 name='MyProjects'

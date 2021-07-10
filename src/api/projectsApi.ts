@@ -39,6 +39,7 @@ type ProjectCreationRequestPayload = {
     country: string;
     city: string;
     finalizedBy: string;
+    tags: Array<string>;
 };
 
 type ProjectEditionResult =
@@ -98,7 +99,8 @@ const createProject = async (
     objective: string,
     country: string,
     city: string,
-    finalizedBy: string
+    finalizedBy: string,
+    tags: Array<string>
 ): Promise<ProjectCreationResult> => {
     const authToken = store.getState().session.token;
     try {
@@ -115,6 +117,7 @@ const createProject = async (
                 country: country,
                 city: city,
                 finalizedBy: finalizedBy,
+                tags: tags,
             },
             { headers: { Authorization: `Bearer ${authToken}` } }
         );
@@ -133,7 +136,8 @@ const updateProject = async (
     objective: string,
     country: string,
     city: string,
-    finalizedBy: string
+    finalizedBy: string,
+    tags: Array<string>
 ): Promise<ProjectEditionResult> => {
     const authToken = store.getState().session.token;
     try {
@@ -150,6 +154,7 @@ const updateProject = async (
                 country: country,
                 city: city,
                 finalizedBy: finalizedBy,
+                tags: tags,
             },
             { headers: { Authorization: `Bearer ${authToken}` } }
         );

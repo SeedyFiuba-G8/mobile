@@ -3,7 +3,7 @@ import { StyleSheet, View, DeviceEventEmitter } from 'react-native';
 
 // Components
 import ProjectList from '../components/Project/ProjectList';
-import { Text, Avatar } from 'react-native-paper';
+import { Text, Avatar, Snackbar } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 
 // Navigation
@@ -21,13 +21,28 @@ import { useSelector } from 'react-redux';
 
 // Constant
 import colors from '../constants/colors';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../types';
+import { RouteProp } from '@react-navigation/native';
 
-export default function DashboardScreen({
-    navigation,
-}: MaterialTopTabBarProps): React.ReactElement {
+type MyProjectsScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'MyProjects'
+>;
+
+type MyProjectsScreenRouteProp = RouteProp<RootStackParamList, 'MyProjects'>;
+
+type Props = {
+    route: MyProjectsScreenRouteProp;
+    navigation: MyProjectsScreenNavigationProp;
+};
+export default function DashboardScreen(props: Props): React.ReactElement {
     const [refreshing, setRefreshing] = React.useState(false);
     const userId = useSelector((state: RootState) => state.session.id);
     const [projects, setProjects] = React.useState<Array<Project>>([]);
+
+    const [statusBarVisible, setStatusBarVisible] = React.useState(false);
+    const [statusBarText, setStatusBarText] = React.useState('');
 
     const onRefresh = async () => {
         setRefreshing(true);
@@ -41,13 +56,20 @@ export default function DashboardScreen({
 
     useEffect(() => {
         onRefresh();
-    }, []);
+    }, [props.route.params?.showNotification, props.route.params?.projectId]);
+
+    useEffect(() => {
+        if (props.route.params?.showNotification) {
+            setStatusBarText(props.route.params.showNotification);
+            setStatusBarVisible(true);
+        }
+    }, [props.route.params?.showNotification, props.route.params?.projectId]);
 
     useEffect(() => {
         DeviceEventEmitter.addListener(
             'viewProject',
             (data: { projectId: string }) => {
-                navigation.navigate('ProjectVisualization', {
+                props.navigation.navigate('ProjectVisualization', {
                     projectId: data.projectId,
                 });
             }
@@ -56,7 +78,7 @@ export default function DashboardScreen({
         DeviceEventEmitter.addListener(
             'editProject',
             (data: { projectId: string }) => {
-                navigation.navigate('ProjectCreation', {
+                props.navigation.navigate('ProjectCreation', {
                     edition: true,
                     projectId: data.projectId,
                 });
@@ -64,6 +86,7 @@ export default function DashboardScreen({
         );
         return () => {
             DeviceEventEmitter.removeAllListeners('viewProject');
+            DeviceEventEmitter.removeAllListeners('editProject');
         };
     });
     return (
@@ -96,6 +119,14 @@ export default function DashboardScreen({
                     projects={projects}
                 />
             </View>
+            <Snackbar
+                visible={statusBarVisible}
+                onDismiss={() => {
+                    setStatusBarVisible(false);
+                }}
+            >
+                {statusBarText}
+            </Snackbar>
         </>
     );
 }
