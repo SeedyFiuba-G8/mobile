@@ -13,6 +13,7 @@ export type Project = {
     city: string;
     publishedOn: string;
     finalizedBy: string;
+    tags: Array<string>;
 };
 
 type GetProjectsApiResponse = {

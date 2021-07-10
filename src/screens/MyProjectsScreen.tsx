@@ -6,9 +6,6 @@ import ProjectList from '../components/Project/ProjectList';
 import { Text, Avatar, Snackbar } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 
-// Navigation
-import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
-
 // Types
 import type { Project } from '../api/projectsApi';
 import type { RootState } from '../reducers/index';

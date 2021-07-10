@@ -214,7 +214,7 @@ export default function ProjectVisualizationScreen(
 
                             <Title style={styles.objectiveTitle}>Tags</Title>
                             <View style={styles.tagView}>
-                                {mockTags.map((tag, index) => {
+                                {project?.tags.map((tag, index) => {
                                     return (
                                         <Chip style={styles.tag} key={index}>
                                             {tag}
@@ -304,5 +304,3 @@ const styles = StyleSheet.create({
         margin: 2,
     },
 });
-
-const mockTags = ['Entretainment', 'Game', 'Politics', 'Indie'];

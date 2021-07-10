@@ -111,6 +111,7 @@ export default function ProjectCreationScreen(
             setCategory('productivity');
             setCity(project_temp.city);
             setCountry(project_temp.country);
+            setTags(project_temp.tags);
         }
         setLoading(false);
     };
