@@ -1,7 +1,5 @@
 import { apiProvider } from './utilities/provider';
 import store from '../stores/MainStore';
-import { useSelector } from 'react-redux';
-import { RootState } from '../reducers';
 
 export type Project = {
     id: string;
@@ -20,6 +18,9 @@ type GetProjectsApiResponse = {
     projects: Array<Project>;
 };
 
+export type GetProjectApiResponse = Project & {
+    userId: string;
+};
 type ProjectCreationApiResponse = {
     id: string;
 };
@@ -83,9 +84,12 @@ const getUserProjects = async (id: string): Promise<GetProjectsApiResponse> => {
     }
 };
 
-const getProject = async (id: string): Promise<Project> => {
+const getProject = async (id: string): Promise<GetProjectApiResponse> => {
     const authToken = store.getState().session.token;
-    const apiResponse = apiProvider.get<Project, ProjectRequestPayload>(
+    const apiResponse = apiProvider.get<
+        GetProjectApiResponse,
+        ProjectRequestPayload
+    >(
         `projects/${id}`,
         {},
         { headers: { Authorization: `Bearer ${authToken}` } }

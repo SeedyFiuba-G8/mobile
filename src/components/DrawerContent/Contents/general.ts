@@ -1,12 +1,14 @@
 // Types
 import { DrawerItemType } from './contentTypes';
+import store from '../../../stores/MainStore';
 
 const data: DrawerItemType[] = [
     {
         label: 'Profile',
         icon: 'person-circle-outline',
         onPress: (props) => {
-            props.navigation.navigate('Profile', { userId: '123' });
+            const myUserId = store.getState().session.id;
+            props.navigation.navigate('Profile', { userId: myUserId });
         },
     },
     {

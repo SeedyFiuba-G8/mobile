@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button, Divider, Paragraph, Text } from 'react-native-paper';
+import {
+    ActivityIndicator,
+    Button,
+    Divider,
+    Paragraph,
+    Text,
+} from 'react-native-paper';
 import { Avatar, Caption, Title, IconButton } from 'react-native-paper';
 import colors from '../constants/colors';
 import ProfileInfoSection from '../components/Profile/ProfileInfoSection';
@@ -9,6 +15,14 @@ import LocationPicker from '../components/LocationPicker';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../types';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useSelector } from 'react-redux';
+// API
+import { getProfile } from '../api/profileApi';
+import { useEffect } from 'react';
+import { setAutoLogAppEventsEnabledAsync } from 'expo-facebook';
+
+// Types
+import type { RootState } from '../reducers/index';
 
 type ProfileScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -24,7 +38,7 @@ type Props = {
 export default function ProfileScreen(props: Props): React.ReactElement {
     const [interestPickerVisible, setInterestPickerVisible] = useState(false);
     const [locationPickerVisible, setLocationPickerVisible] = useState(false);
-
+    const [name, setName] = useState('');
     const categoriesWithState = categories.map((category, index) => {
         const [interested, setInterested] = useState(category.interested);
         return {
@@ -33,8 +47,9 @@ export default function ProfileScreen(props: Props): React.ReactElement {
             setInterested: setInterested,
         };
     });
-
-    const editable = true;
+    const myUserId = useSelector((state: RootState) => state.session.id);
+    const editable = myUserId === props.route.params.userId;
+    const [loading, setLoading] = useState(false);
 
     const generateInterestsString = () => {
         const interested_categories = categoriesWithState.filter(
@@ -47,77 +62,104 @@ export default function ProfileScreen(props: Props): React.ReactElement {
         return interested_categories_tags.join(', ');
     };
 
-    const [country, setCountry] = useState('Argentina');
-    const [city, setCity] = useState('Buenos Aires');
+    const [country, setCountry] = useState('');
+    const [city, setCity] = useState('');
+
+    const onRefresh = async () => {
+        setLoading(true);
+        const profile = await getProfile(props.route.params.userId);
+        setName(`${profile.firstName} ${profile.lastName}`);
+        setCity(profile.city);
+        setCountry(profile.country);
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        console.log(`Fetching profile for user ${props.route.params.userId}`);
+        onRefresh();
+    }, [props.route.params.userId]);
+
     return (
         <View style={styles.container}>
-            <View style={styles.profilePictureView}>
-                <Avatar.Image
-                    source={require('../assets/images/dummy_avatar.jpg')}
-                    size={200}
-                />
-                {editable ? (
-                    <IconButton
-                        style={styles.changePictureButton}
-                        icon='camera'
-                        size={30}
-                        color={'white'}
-                        onPress={() => console.log('Pressed')}
-                    />
-                ) : null}
-            </View>
-            <ProfileInfoSection title='Name' icon='account'>
-                <View style={styles.profileInfoSectionContentView}>
-                    <Text style={styles.contentText}>{`Heath Ledger`}</Text>
-                </View>
-            </ProfileInfoSection>
+            {loading ? (
+                <ActivityIndicator size='large' animating={true} />
+            ) : (
+                <>
+                    <View style={styles.profilePictureView}>
+                        <Avatar.Image
+                            source={require('../assets/images/dummy_avatar.jpg')}
+                            size={200}
+                        />
+                        {editable ? (
+                            <IconButton
+                                style={styles.changePictureButton}
+                                icon='camera'
+                                size={30}
+                                color={'white'}
+                                onPress={() => console.log('Pressed')}
+                            />
+                        ) : null}
+                    </View>
+                    <ProfileInfoSection title='Name' icon='account'>
+                        <View style={styles.profileInfoSectionContentView}>
+                            <Text style={styles.contentText}>{name}</Text>
+                        </View>
+                    </ProfileInfoSection>
 
-            <Divider style={styles.divider} />
+                    <Divider style={styles.divider} />
 
-            <ProfileInfoSection
-                title='Interests'
-                icon='cards-heart'
-                editable={editable}
-                onEditPress={() => setInterestPickerVisible(true)}
-            >
-                <Picker
-                    visible={interestPickerVisible}
-                    setVisible={setInterestPickerVisible}
-                    categories={categoriesWithState}
-                    onOkClick={() => setInterestPickerVisible(false)}
-                    onCancelClick={() => setInterestPickerVisible(false)}
-                />
-                <View style={styles.profileInfoSectionContentView}>
-                    <Text style={styles.contentText}>
-                        {generateInterestsString()}
-                    </Text>
-                </View>
-            </ProfileInfoSection>
+                    <ProfileInfoSection
+                        title='Interests'
+                        icon='cards-heart'
+                        editable={editable}
+                        onEditPress={() => setInterestPickerVisible(true)}
+                    >
+                        <Picker
+                            visible={interestPickerVisible}
+                            setVisible={setInterestPickerVisible}
+                            categories={categoriesWithState}
+                            onOkClick={() => setInterestPickerVisible(false)}
+                            onCancelClick={() =>
+                                setInterestPickerVisible(false)
+                            }
+                        />
+                        <View style={styles.profileInfoSectionContentView}>
+                            <Text style={styles.contentText}>
+                                {generateInterestsString()}
+                            </Text>
+                        </View>
+                    </ProfileInfoSection>
 
-            <Divider style={styles.divider} />
+                    <Divider style={styles.divider} />
 
-            <ProfileInfoSection
-                title='Location'
-                icon='map-marker'
-                editable={editable}
-                onEditPress={() => setLocationPickerVisible(true)}
-            >
-                <View style={styles.profileInfoSectionContentView}>
-                    <LocationPicker
-                        visible={locationPickerVisible}
-                        setVisible={setLocationPickerVisible}
-                        onOkClick={() => setLocationPickerVisible(false)}
-                        onCancelClick={() => setLocationPickerVisible(false)}
-                        city={city}
-                        setCity={setCity}
-                        country={country}
-                        setCountry={setCountry}
-                    />
-                    <Text style={styles.contentText}>
-                        {`${city}, ${country}`}
-                    </Text>
-                </View>
-            </ProfileInfoSection>
+                    <ProfileInfoSection
+                        title='Location'
+                        icon='map-marker'
+                        editable={editable}
+                        onEditPress={() => setLocationPickerVisible(true)}
+                    >
+                        <View style={styles.profileInfoSectionContentView}>
+                            <LocationPicker
+                                visible={locationPickerVisible}
+                                setVisible={setLocationPickerVisible}
+                                onOkClick={() =>
+                                    setLocationPickerVisible(false)
+                                }
+                                onCancelClick={() =>
+                                    setLocationPickerVisible(false)
+                                }
+                                city={city}
+                                setCity={setCity}
+                                country={country}
+                                setCountry={setCountry}
+                            />
+                            <Text style={styles.contentText}>
+                                {`${city}, ${country}`}
+                            </Text>
+                        </View>
+                    </ProfileInfoSection>
+                </>
+            )}
         </View>
     );
 }
