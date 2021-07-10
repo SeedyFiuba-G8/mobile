@@ -17,12 +17,16 @@ import { RootStackParamList } from '../types';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useSelector } from 'react-redux';
 // API
-import { getProfile } from '../api/profileApi';
+import { getProfile, updateProfile } from '../api/profileApi';
 import { useEffect } from 'react';
 import { setAutoLogAppEventsEnabledAsync } from 'expo-facebook';
 
 // Types
 import type { RootState } from '../reducers/index';
+import type { UpdateProfilePayload } from '../api/profileApi';
+
+// Constants
+import categories from '../constants/categories';
 
 type ProfileScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -39,27 +43,13 @@ export default function ProfileScreen(props: Props): React.ReactElement {
     const [interestPickerVisible, setInterestPickerVisible] = useState(false);
     const [locationPickerVisible, setLocationPickerVisible] = useState(false);
     const [name, setName] = useState('');
-    const categoriesWithState = categories.map((category, index) => {
-        const [interested, setInterested] = useState(category.interested);
-        return {
-            tag: category.tag,
-            interested: interested,
-            setInterested: setInterested,
-        };
-    });
+    const [interests, setInterests] = useState<Array<string>>([]);
     const myUserId = useSelector((state: RootState) => state.session.id);
     const editable = myUserId === props.route.params.userId;
     const [loading, setLoading] = useState(false);
 
     const generateInterestsString = () => {
-        const interested_categories = categoriesWithState.filter(
-            (category, index) => category.interested
-        );
-
-        const interested_categories_tags = interested_categories.map(
-            (category, index) => category.tag
-        );
-        return interested_categories_tags.join(', ');
+        return interests.join(', ');
     };
 
     const [country, setCountry] = useState('');
@@ -73,12 +63,26 @@ export default function ProfileScreen(props: Props): React.ReactElement {
             setName(`${profile.firstName} ${profile.lastName}`);
             setCity(profile.city);
             setCountry(profile.country);
+            setInterests(profile.interests);
         }
         setLoading(false);
     };
 
+    const updateInterests = async (newInterests: string[]) => {
+        await updateProfile(props.route.params.userId, {
+            interests: newInterests,
+        });
+        onRefresh();
+    };
+
+    const updateLocation = async (newCity: string, newCountry: string) => {
+        await updateProfile(props.route.params.userId, {
+            city: newCity,
+            country: newCountry,
+        });
+        onRefresh();
+    };
     useEffect(() => {
-        console.log(`Fetching profile for user ${props.route.params.userId}`);
         onRefresh();
     }, [props.route.params.userId]);
 
@@ -120,8 +124,11 @@ export default function ProfileScreen(props: Props): React.ReactElement {
                         <Picker
                             visible={interestPickerVisible}
                             setVisible={setInterestPickerVisible}
-                            categories={categoriesWithState}
-                            onOkClick={() => setInterestPickerVisible(false)}
+                            interests={interests}
+                            onOkClick={(newInterests) => {
+                                setInterestPickerVisible(false);
+                                updateInterests(newInterests);
+                            }}
                             onCancelClick={() =>
                                 setInterestPickerVisible(false)
                             }
@@ -145,16 +152,15 @@ export default function ProfileScreen(props: Props): React.ReactElement {
                             <LocationPicker
                                 visible={locationPickerVisible}
                                 setVisible={setLocationPickerVisible}
-                                onOkClick={() =>
-                                    setLocationPickerVisible(false)
-                                }
+                                onOkClick={(newCity, newCountry) => {
+                                    setLocationPickerVisible(false);
+                                    updateLocation(newCity, newCountry);
+                                }}
                                 onCancelClick={() =>
                                     setLocationPickerVisible(false)
                                 }
                                 city={city}
-                                setCity={setCity}
                                 country={country}
-                                setCountry={setCountry}
                             />
                             <Text style={styles.contentText}>
                                 {`${city}, ${country}`}
@@ -166,16 +172,6 @@ export default function ProfileScreen(props: Props): React.ReactElement {
         </View>
     );
 }
-
-const categories = [
-    { tag: 'Entretainment', interested: true },
-    { tag: 'Production', interested: true },
-    { tag: 'Games', interested: false },
-    { tag: 'Home', interested: false },
-    { tag: 'Office', interested: true },
-    { tag: 'Technology', interested: false },
-    { tag: 'Writing', interested: false },
-];
 
 const styles = StyleSheet.create({
     container: {
