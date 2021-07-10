@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // Navigation
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -17,6 +17,10 @@ import colors from '../constants/colors';
 // Ts types
 import { DrawerParamList, RootStackParamList } from '../types';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../reducers';
+import { getProfile } from '../api/profileApi';
+import { updateNameAction } from '../actions/UpdateProfileAction';
 
 type DrawerNavigatorNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -47,6 +51,33 @@ function AddNewProjectButton(props: Props) {
 export default function DrawerNavigator(props: Props): React.ReactElement {
     const { isDarkTheme } = useTheme();
 
+    const dispatch = useDispatch();
+    const userId = useSelector((state: RootState) => state.session.id);
+    useEffect(() => {
+        const updateProfileInfo = async () => {
+            const profileResponse = await getProfile(userId);
+            if (profileResponse.successful) {
+                dispatch(
+                    updateNameAction(
+                        profileResponse.data.firstName,
+                        profileResponse.data.lastName
+                    )
+                );
+                if (
+                    profileResponse.data.interests.length === 0 ||
+                    !profileResponse.data.city ||
+                    !profileResponse.data.country
+                ) {
+                    props.navigation.navigate('Profile', {
+                        userId: userId,
+                        showNotification:
+                            'To complete your register, enter your interests and location. ',
+                    });
+                }
+            }
+        };
+        updateProfileInfo();
+    }, []);
     return (
         <Drawer.Navigator
             initialRouteName='Dashboard'

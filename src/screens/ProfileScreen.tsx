@@ -5,6 +5,7 @@ import {
     Button,
     Divider,
     Paragraph,
+    Snackbar,
     Text,
 } from 'react-native-paper';
 import { Avatar, Caption, Title, IconButton } from 'react-native-paper';
@@ -23,10 +24,6 @@ import { setAutoLogAppEventsEnabledAsync } from 'expo-facebook';
 
 // Types
 import type { RootState } from '../reducers/index';
-import type { UpdateProfilePayload } from '../api/profileApi';
-
-// Constants
-import categories from '../constants/categories';
 
 type ProfileScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -55,6 +52,8 @@ export default function ProfileScreen(props: Props): React.ReactElement {
     const [country, setCountry] = useState('');
     const [city, setCity] = useState('');
 
+    const [statusBarVisible, setStatusBarVisible] = React.useState(false);
+    const [statusBarText, setStatusBarText] = React.useState('');
     const onRefresh = async () => {
         setLoading(true);
         const profileResponse = await getProfile(props.route.params.userId);
@@ -86,6 +85,12 @@ export default function ProfileScreen(props: Props): React.ReactElement {
         onRefresh();
     }, [props.route.params.userId]);
 
+    useEffect(() => {
+        if (props.route.params.showNotification) {
+            setStatusBarText(props.route.params.showNotification);
+            setStatusBarVisible(true);
+        }
+    }, []);
     return (
         <View style={styles.container}>
             {loading ? (
@@ -169,6 +174,15 @@ export default function ProfileScreen(props: Props): React.ReactElement {
                     </ProfileInfoSection>
                 </>
             )}
+            <Snackbar
+                visible={statusBarVisible}
+                onDismiss={() => {
+                    setStatusBarVisible(false);
+                }}
+                duration={3000}
+            >
+                {statusBarText}
+            </Snackbar>
         </View>
     );
 }
