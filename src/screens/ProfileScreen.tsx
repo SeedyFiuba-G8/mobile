@@ -67,10 +67,13 @@ export default function ProfileScreen(props: Props): React.ReactElement {
 
     const onRefresh = async () => {
         setLoading(true);
-        const profile = await getProfile(props.route.params.userId);
-        setName(`${profile.firstName} ${profile.lastName}`);
-        setCity(profile.city);
-        setCountry(profile.country);
+        const profileResponse = await getProfile(props.route.params.userId);
+        if (profileResponse.successful) {
+            const profile = profileResponse.data;
+            setName(`${profile.firstName} ${profile.lastName}`);
+            setCity(profile.city);
+            setCountry(profile.country);
+        }
         setLoading(false);
     };
 

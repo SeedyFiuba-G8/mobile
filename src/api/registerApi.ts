@@ -1,24 +1,33 @@
 import { apiProvider } from './utilities/provider';
+import type { Response } from './utilities/provider';
 
+//Responses
+type registerApiResponse = Record<string, never>;
+
+//Payload
+type registerApiPayload = {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+};
 const register = async (
     email: string,
     password: string,
     firstName: string,
     lastName: string
-): Promise<boolean> => {
-    try {
-        const apiResponse = await apiProvider.post<void>('users', {
-            email: email,
-            password: password,
-            firstName: firstName,
-            lastName: lastName,
-        });
-        console.log('Registered successfully!');
-        return true;
-    } catch (error) {
-        console.log(error.response);
-        return false;
-    }
+): Promise<Response<registerApiResponse>> => {
+    const apiResponse = apiProvider.post<
+        registerApiResponse,
+        registerApiPayload
+    >('users', {
+        email: email,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+    });
+    console.log('Registered successfully!');
+    return apiResponse;
 };
 
 export { register };

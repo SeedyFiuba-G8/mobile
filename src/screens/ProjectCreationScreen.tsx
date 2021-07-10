@@ -106,15 +106,20 @@ export default function ProjectCreationScreen(
     const onEditProjectLoad = async () => {
         setLoading(true);
         if (props.route.params.edition) {
-            const project_temp = await getProject(props.route.params.projectId);
-            setTitle(project_temp.title);
-            setDescription(project_temp.description);
-            setObjective(project_temp.objective);
-            setDate(new Date(project_temp.finalizedBy));
-            setCategory('productivity');
-            setCity(project_temp.city);
-            setCountry(project_temp.country);
-            setTags(project_temp.tags);
+            const projectResponse = await getProject(
+                props.route.params.projectId
+            );
+            if (projectResponse.successful) {
+                const project_temp = projectResponse.data;
+                setTitle(project_temp.title);
+                setDescription(project_temp.description);
+                setObjective(project_temp.objective);
+                setDate(new Date(project_temp.finalizedBy));
+                setCategory('productivity');
+                setCity(project_temp.city);
+                setCountry(project_temp.country);
+                setTags(project_temp.tags);
+            }
         }
         setLoading(false);
     };
@@ -125,7 +130,7 @@ export default function ProjectCreationScreen(
 
     const element = <TextInput.Affix text='ETH' />;
     const onCreateButtonPress = async () => {
-        const projectResult = await createProject(
+        const projectCreationResponse = await createProject(
             title,
             description,
             category,
@@ -135,10 +140,10 @@ export default function ProjectCreationScreen(
             date.toJSON(),
             tags
         );
-        if (projectResult.successful) {
+        if (projectCreationResponse.successful) {
             props.navigation.navigate('MyProjects', {
                 showNotification: 'Project created successfully!',
-                projectId: projectResult.id,
+                projectId: projectCreationResponse.data.id,
             });
         }
     };

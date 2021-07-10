@@ -1,75 +1,46 @@
 import { apiProvider } from './utilities/provider';
-type sessionCreationResponseType = {
+import type { Response } from './utilities/provider';
+
+//Responses
+type postSessionApiResponse = {
     id: string;
     token: string;
 };
 
-type loginResult =
-    | {
-          loginSuccessful: false;
-      }
-    | {
-          loginSuccessful: true;
-          response: sessionCreationResponseType;
-      };
-
-type sessionCreationPayloadType = {
+// Payloads
+type postSessionPayload = {
     email: string;
     password: string;
 };
 
-type facebookSessionCreationPayloadType = {
+type postFacebookSessionPayload = {
     fbToken: string;
 };
+
 const createSession = async (
     email: string,
     password: string
-): Promise<loginResult> => {
-    try {
-        const apiResponse = await apiProvider.post<
-            sessionCreationResponseType,
-            sessionCreationPayloadType
-        >('users/session', {
-            email: email,
-            password: password,
-        });
-        console.log('Login succesful!');
-        return {
-            loginSuccessful: true,
-            response: apiResponse,
-        };
-    } catch (error) {
-        if (error.response) {
-            console.log(error.response.status);
-        }
-        return {
-            loginSuccessful: false,
-        };
-    }
+): Promise<Response<postSessionApiResponse>> => {
+    const apiResponse = apiProvider.post<
+        postSessionApiResponse,
+        postSessionPayload
+    >('users/session', {
+        email: email,
+        password: password,
+    });
+    return apiResponse;
 };
 
-const createSessionFacebook = async (fbToken: string): Promise<loginResult> => {
-    try {
-        const apiResponse = await apiProvider.post<
-            sessionCreationResponseType,
-            facebookSessionCreationPayloadType
-        >('users/session', {
-            fbToken: fbToken,
-        });
-        console.log('Login succesful!');
-        return {
-            loginSuccessful: true,
-            response: apiResponse,
-        };
-    } catch (error) {
-        if (error.response) {
-            console.log(error.response.status);
-            console.log(error.response);
-        }
-        return {
-            loginSuccessful: false,
-        };
-    }
+const createSessionFacebook = async (
+    fbToken: string
+): Promise<Response<postSessionApiResponse>> => {
+    const apiResponse = apiProvider.post<
+        postSessionApiResponse,
+        postFacebookSessionPayload
+    >('users/session', {
+        fbToken: fbToken,
+    });
+    return apiResponse;
 };
 
 export { createSession, createSessionFacebook };

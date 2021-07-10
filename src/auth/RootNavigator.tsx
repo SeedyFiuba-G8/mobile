@@ -56,15 +56,12 @@ export default function RootNavigator(): React.ReactElement {
         );
         const loginResult = await createSession(email, password);
 
-        if (loginResult.loginSuccessful) {
-            await persistSessionData(
-                loginResult.response?.id,
-                loginResult.response?.token
-            );
+        if (loginResult.successful) {
+            persistSessionData(loginResult.data.id, loginResult.data.token);
             dispatch(
                 updateSessionCredentialsAction(
-                    loginResult.response?.id,
-                    loginResult.response?.token
+                    loginResult.data.id,
+                    loginResult.data.token
                 )
             );
             dispatch(updateLoginStatusAction(LoggingInFlowState.LoggedIn));
@@ -79,15 +76,12 @@ export default function RootNavigator(): React.ReactElement {
         );
         const loginResult = await createSessionFacebook(fbToken);
 
-        if (loginResult.loginSuccessful) {
-            await persistSessionData(
-                loginResult.response?.id,
-                loginResult.response?.token
-            );
+        if (loginResult.successful) {
+            persistSessionData(loginResult.data.id, loginResult.data.token);
             dispatch(
                 updateSessionCredentialsAction(
-                    loginResult.response?.id,
-                    loginResult.response?.token
+                    loginResult.data.id,
+                    loginResult.data.token
                 )
             );
             dispatch(updateLoginStatusAction(LoggingInFlowState.LoggedIn));

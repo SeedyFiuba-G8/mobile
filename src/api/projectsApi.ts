@@ -1,4 +1,6 @@
 import { apiProvider } from './utilities/provider';
+import type { Response } from './utilities/provider';
+
 import store from '../stores/MainStore';
 
 export type Project = {
@@ -14,6 +16,7 @@ export type Project = {
     tags: Array<string>;
 };
 
+// Responses
 type GetProjectsApiResponse = {
     projects: Array<Project>;
 };
@@ -21,17 +24,21 @@ type GetProjectsApiResponse = {
 export type GetProjectApiResponse = Project & {
     userId: string;
 };
+
 type ProjectCreationApiResponse = {
     id: string;
 };
-type ProjectRequestPayload = Record<string, never> | { userId: string };
 
-type ProjectCreationResult =
-    | {
-          successful: true;
-          id: string;
-      }
-    | { successful: false };
+type ProjectDeletionApiResponse = {
+    id: string;
+};
+
+type ProjectEditionApiResponse = {
+    id: string;
+};
+
+// Payloads
+type ProjectRequestPayload = Record<string, never> | { userId: string };
 
 type ProjectCreationRequestPayload = {
     title: string;
@@ -44,55 +51,33 @@ type ProjectCreationRequestPayload = {
     tags: Array<string>;
 };
 
-type ProjectEditionResult =
-    | { successful: true }
-    | { successful: false; errorMessage: string };
-
-type Response<T> =
-    | {
-          successful: false;
-          errorMessage?: string;
-          errorCode?: string;
-      }
-    | { successful: true; data: T };
-
 const getAllProjects = async (): Promise<Response<GetProjectsApiResponse>> => {
     const authToken = store.getState().session.token;
-    try {
-        const apiResponse = await apiProvider.get<
-            GetProjectsApiResponse,
-            ProjectRequestPayload
-        >(
-            'projects',
-            {},
-            { headers: { Authorization: `Bearer ${authToken}` } }
-        );
-        return { successful: true, data: apiResponse };
-    } catch (error) {
-        console.log(error.response);
-        return { successful: false };
-    }
+    const apiResponse = apiProvider.get<
+        GetProjectsApiResponse,
+        ProjectRequestPayload
+    >('projects', {}, { headers: { Authorization: `Bearer ${authToken}` } });
+    return apiResponse;
 };
 
-const getUserProjects = async (id: string): Promise<GetProjectsApiResponse> => {
+const getUserProjects = async (
+    userId: string
+): Promise<Response<GetProjectsApiResponse>> => {
     const authToken = store.getState().session.token;
-    try {
-        const apiResponse = apiProvider.get<
-            GetProjectsApiResponse,
-            ProjectRequestPayload
-        >(
-            'projects',
-            { userId: id },
-            { headers: { Authorization: `Bearer ${authToken}` } }
-        );
-        return apiResponse;
-    } catch (error) {
-        console.log(error.response);
-        return { projects: [] };
-    }
+    const apiResponse = apiProvider.get<
+        GetProjectsApiResponse,
+        ProjectRequestPayload
+    >(
+        'projects',
+        { userId: userId },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
 };
 
-const getProject = async (id: string): Promise<GetProjectApiResponse> => {
+const getProject = async (
+    id: string
+): Promise<Response<GetProjectApiResponse>> => {
     const authToken = store.getState().session.token;
     const apiResponse = apiProvider.get<
         GetProjectApiResponse,
@@ -114,31 +99,26 @@ const createProject = async (
     city: string,
     finalizedBy: string,
     tags: Array<string>
-): Promise<ProjectCreationResult> => {
+): Promise<Response<ProjectCreationApiResponse>> => {
     const authToken = store.getState().session.token;
-    try {
-        const apiResponse = await apiProvider.post<
-            ProjectCreationApiResponse,
-            ProjectCreationRequestPayload
-        >(
-            'projects',
-            {
-                title: title,
-                description: description,
-                type: type,
-                objective: objective,
-                country: country,
-                city: city,
-                finalizedBy: finalizedBy,
-                tags: tags,
-            },
-            { headers: { Authorization: `Bearer ${authToken}` } }
-        );
-        return { successful: true, id: apiResponse.id };
-    } catch (error) {
-        console.log(error.response);
-        return { successful: false };
-    }
+    const apiResponse = apiProvider.post<
+        ProjectCreationApiResponse,
+        ProjectCreationRequestPayload
+    >(
+        'projects',
+        {
+            title: title,
+            description: description,
+            type: type,
+            objective: objective,
+            country: country,
+            city: city,
+            finalizedBy: finalizedBy,
+            tags: tags,
+        },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
 };
 
 const updateProject = async (
@@ -151,47 +131,42 @@ const updateProject = async (
     city: string,
     finalizedBy: string,
     tags: Array<string>
-): Promise<ProjectEditionResult> => {
+): Promise<Response<ProjectEditionApiResponse>> => {
     const authToken = store.getState().session.token;
-    try {
-        const apiResponse = await apiProvider.patch<
-            ProjectCreationApiResponse,
-            ProjectCreationRequestPayload
-        >(
-            `projects/${id}`,
-            {
-                title: title,
-                description: description,
-                type: type,
-                objective: objective,
-                country: country,
-                city: city,
-                finalizedBy: finalizedBy,
-                tags: tags,
-            },
-            { headers: { Authorization: `Bearer ${authToken}` } }
-        );
-        return { successful: true };
-    } catch (error) {
-        console.log(error.response);
-        return { successful: false, errorMessage: error.response };
-    }
+    const apiResponse = apiProvider.patch<
+        ProjectEditionApiResponse,
+        ProjectCreationRequestPayload
+    >(
+        `projects/${id}`,
+        {
+            title: title,
+            description: description,
+            type: type,
+            objective: objective,
+            country: country,
+            city: city,
+            finalizedBy: finalizedBy,
+            tags: tags,
+        },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
 };
 
-const deleteProject = async (id: string): Promise<ProjectEditionResult> => {
+const deleteProject = async (
+    id: string
+): Promise<Response<ProjectDeletionApiResponse>> => {
     const authToken = store.getState().session.token;
-    try {
-        const apiResponse = apiProvider.del<Project, null>(
-            `projects/${id}`,
-            null,
-            { headers: { Authorization: `Bearer ${authToken}` } }
-        );
-        return { successful: true };
-    } catch (error) {
-        console.log(error.response);
-        return { successful: false, errorMessage: error.response };
-    }
+    const apiResponse = apiProvider.del<ProjectDeletionApiResponse, null>(
+        `projects/${id}`,
+        null,
+        {
+            headers: { Authorization: `Bearer ${authToken}` },
+        }
+    );
+    return apiResponse;
 };
+
 export {
     getAllProjects,
     getUserProjects,

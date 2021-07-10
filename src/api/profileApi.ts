@@ -1,4 +1,6 @@
 import { apiProvider } from './utilities/provider';
+import type { Response } from './utilities/provider';
+
 import store from '../stores/MainStore';
 
 export type Profile = {
@@ -12,9 +14,12 @@ export type Profile = {
     interests: Array<string>;
 };
 
+// Resposes
 type GetProfileApiRespose = Profile;
 
-const getProfile = async (userId: string): Promise<GetProfileApiRespose> => {
+const getProfile = async (
+    userId: string
+): Promise<Response<GetProfileApiRespose>> => {
     const authToken = store.getState().session.token;
     const apiResponse = apiProvider.get<GetProfileApiRespose, null>(
         `users/${userId}`,

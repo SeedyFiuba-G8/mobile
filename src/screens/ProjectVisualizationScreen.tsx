@@ -79,15 +79,22 @@ export default function ProjectVisualizationScreen(
     const [creatorName, setCreatorName] = useState('');
     const onRefresh = async () => {
         setLoading(true);
-        const project_temp = await getProject(props.route.params.projectId);
-        setPublishedDate(new Date(project_temp.publishedOn));
-        setEndDate(new Date(project_temp.finalizedBy));
-        setProject(project_temp);
-        const creator_profile_temp = await getProfile(project_temp.userId);
-        console.log(creator_profile_temp);
-        setCreatorName(
-            `${creator_profile_temp.firstName} ${creator_profile_temp.lastName}`
-        );
+        const projectResponse = await getProject(props.route.params.projectId);
+        if (projectResponse.successful) {
+            const project_temp = projectResponse.data;
+            setPublishedDate(new Date(project_temp.publishedOn));
+            setEndDate(new Date(project_temp.finalizedBy));
+            setProject(project_temp);
+            const creatorProfileResponse = await getProfile(
+                project_temp.userId
+            );
+            if (creatorProfileResponse.successful) {
+                const creator_profile_temp = creatorProfileResponse.data;
+                setCreatorName(
+                    `${creator_profile_temp.firstName} ${creator_profile_temp.lastName}`
+                );
+            }
+        }
         setLoading(false);
     };
 
