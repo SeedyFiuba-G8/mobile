@@ -43,9 +43,10 @@ export default function DashboardScreen(props: Props): React.ReactElement {
 
     const onRefresh = async () => {
         setRefreshing(true);
-        const projects = await getUserProjects(userId);
-        console.log(`Fetched ${projects.projects.length} projects.`);
-        setProjects(projects.projects);
+        const projectsResponse = await getUserProjects(userId);
+        if (projectsResponse.successful) {
+            setProjects(projectsResponse.data.projects);
+        }
         setRefreshing(false);
     };
 

@@ -35,7 +35,7 @@ export default function SignInScreen(): React.ReactElement {
             signUpData.firstname,
             signUpData.lastname
         );
-        if (registerResult) {
+        if (registerResult.successful) {
             console.log(
                 `User ${signUpData.firstname} ${signUpData.lastname} was registered successfully.`
             );
