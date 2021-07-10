@@ -40,6 +40,11 @@ type ProjectCreationRequestPayload = {
     city: string;
     finalizedBy: string;
 };
+
+type ProjectEditionResult =
+    | { successful: true }
+    | { successful: false; errorMessage: string };
+
 const getAllProjects = async (): Promise<GetProjectsApiResponse> => {
     const authToken = store.getState().session.token;
     try {
@@ -93,9 +98,9 @@ const createProject = async (
     objective: string,
     country: string,
     city: string,
-    finalizedBy: string,
-    authToken: string
+    finalizedBy: string
 ): Promise<ProjectCreationResult> => {
+    const authToken = store.getState().session.token;
     try {
         const apiResponse = await apiProvider.post<
             ProjectCreationApiResponse,
@@ -120,4 +125,60 @@ const createProject = async (
     }
 };
 
-export { getAllProjects, getUserProjects, createProject, getProject };
+const updateProject = async (
+    id: string,
+    title: string,
+    description: string,
+    type: string,
+    objective: string,
+    country: string,
+    city: string,
+    finalizedBy: string
+): Promise<ProjectEditionResult> => {
+    const authToken = store.getState().session.token;
+    try {
+        const apiResponse = await apiProvider.patch<
+            ProjectCreationApiResponse,
+            ProjectCreationRequestPayload
+        >(
+            `projects/${id}`,
+            {
+                title: title,
+                description: description,
+                type: type,
+                objective: objective,
+                country: country,
+                city: city,
+                finalizedBy: finalizedBy,
+            },
+            { headers: { Authorization: `Bearer ${authToken}` } }
+        );
+        return { successful: true };
+    } catch (error) {
+        console.log(error.response);
+        return { successful: false, errorMessage: error.response };
+    }
+};
+
+const deleteProject = async (id: string): Promise<ProjectEditionResult> => {
+    const authToken = store.getState().session.token;
+    try {
+        const apiResponse = apiProvider.del<Project, null>(
+            `projects/${id}`,
+            null,
+            { headers: { Authorization: `Bearer ${authToken}` } }
+        );
+        return { successful: true };
+    } catch (error) {
+        console.log(error.response);
+        return { successful: false, errorMessage: error.response };
+    }
+};
+export {
+    getAllProjects,
+    getUserProjects,
+    createProject,
+    getProject,
+    updateProject,
+    deleteProject,
+};

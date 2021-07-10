@@ -32,6 +32,7 @@ export default function DashboardScreen({
     const onRefresh = async () => {
         setRefreshing(true);
         const projects = await getUserProjects(userId);
+        console.log(`Fetched ${projects.projects.length} projects.`);
         setProjects(projects.projects);
         setRefreshing(false);
     };

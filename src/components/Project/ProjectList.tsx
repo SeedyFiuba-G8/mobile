@@ -1,9 +1,11 @@
 import React from 'react';
 import { ScrollView, RefreshControl, StyleSheet } from 'react-native';
 import ProjectCard from './ProjectCard';
+import { Text } from 'react-native-paper';
 
 // Types
 import type { Project } from '../../api/projectsApi';
+import colors from '../../constants/colors';
 type Props = {
     refreshing: boolean;
     onRefresh: () => void;
@@ -22,28 +24,32 @@ export default function ProjectList(props: Props): React.ReactElement {
                 />
             }
         >
-            {props.projects.map((project, index) => {
-                return (
-                    <ProjectCard
-                        key={index}
-                        title={project.title}
-                        city={project.city}
-                        country={project.country}
-                        cover_image_uri={`https://picsum.photos/id/${
-                            randomImageIds[
-                                Math.floor(
-                                    Math.random() * randomImageIds.length
-                                )
-                            ]
-                        }/700`}
-                        description={project.description}
-                        progress={Math.random()}
-                        backer_count={Math.floor(Math.random() * 100)}
-                        id={project.id}
-                        draft={index % 2 === 0}
-                    />
-                );
-            })}
+            {props.projects.length > 0 ? (
+                props.projects.map((project, index) => {
+                    return (
+                        <ProjectCard
+                            key={index}
+                            title={project.title}
+                            city={project.city}
+                            country={project.country}
+                            cover_image_uri={`https://picsum.photos/id/${
+                                randomImageIds[
+                                    Math.floor(
+                                        Math.random() * randomImageIds.length
+                                    )
+                                ]
+                            }/700`}
+                            description={project.description}
+                            progress={Math.random()}
+                            backer_count={Math.floor(Math.random() * 100)}
+                            id={project.id}
+                            draft={index % 2 === 0}
+                        />
+                    );
+                })
+            ) : (
+                <Text style={styles.noProjectsText}>No projects to show.</Text>
+            )}
         </ScrollView>
     );
 }
@@ -52,6 +58,12 @@ const styles = StyleSheet.create({
     scrollview: {
         flex: 1,
         alignSelf: 'stretch',
+    },
+    noProjectsText: {
+        alignSelf: 'center',
+        color: colors.darkGrey,
+        margin: 12,
+        fontSize: 16,
     },
 });
 

@@ -24,7 +24,12 @@ import ReviewerList from '../components/Project/ReviewerList';
 import { useTheme } from '../contexts/ThemeProvider';
 
 // API
-import { createProject, getProject } from '../api/projectsApi';
+import {
+    createProject,
+    getProject,
+    updateProject,
+    deleteProject,
+} from '../api/projectsApi';
 
 // Hooks
 import { useSelector } from 'react-redux';
@@ -81,12 +86,11 @@ export default function ProjectCreationScreen(
     );
     const [category, setCategory] = useState('');
     const [tags, setTags] = useState<Array<string>>([]);
-    const [date, setDate] = React.useState<Date | undefined>(undefined);
+    const [date, setDate] = React.useState<Date>(new Date());
     const [title, setTitle] = React.useState('');
     const [description, setDescription] = React.useState('');
     const [objective, setObjective] = React.useState('');
     const [goal, setGoal] = React.useState('');
-    const authToken = useSelector((state: RootState) => state.session.token);
 
     const [statusBarVisible, setStatusBarVisible] = useState(false);
     const [statusBarText, setStatusBarText] = useState('');
@@ -120,22 +124,47 @@ export default function ProjectCreationScreen(
         console.log(`Editing project with id ${props.route.params.projectId}`);
     }
     const onCreateButtonPress = async () => {
-        if (date !== undefined) {
-            const projectResult = await createProject(
+        const projectResult = await createProject(
+            title,
+            description,
+            category,
+            objective,
+            country,
+            city,
+            date.toJSON()
+        );
+        if (projectResult.successful) {
+            console.log(`Success creating project with id ${projectResult.id}`);
+            setStatusBarText('Project created successfully!');
+            setStatusBarVisible(true);
+        }
+    };
+
+    const onConfirmChangesButtonPress = async () => {
+        console.log('Confirm changes pressed');
+        if (props.route.params.edition) {
+            const result = await updateProject(
+                props.route.params.projectId,
                 title,
                 description,
                 category,
                 objective,
                 country,
                 city,
-                date.toString(),
-                authToken
+                date.toJSON()
             );
-            if (projectResult.successful) {
-                console.log(
-                    `Success creating project with id ${projectResult.id}`
-                );
-                setStatusBarText('Project created successfully!');
+            if (result.successful) {
+                setStatusBarText('Project modified successfully!');
+                setStatusBarVisible(true);
+            }
+        }
+    };
+
+    const onDeleteButtonPress = async () => {
+        if (props.route.params.edition) {
+            const result = await deleteProject(props.route.params.projectId);
+            if (result.successful) {
+                setStatusBarText('Project deleted successfully!');
                 setStatusBarVisible(true);
             }
         }
@@ -281,9 +310,38 @@ export default function ProjectCreationScreen(
                             setReviewers={setReviewers}
                         />
                     </View>
-                    <Button style={styles.button} onPress={onCreateButtonPress}>
-                        <Text style={{ color: 'white' }}>Create</Text>
-                    </Button>
+                    {!props.route.params.edition ? (
+                        <Button
+                            style={styles.button}
+                            onPress={onCreateButtonPress}
+                        >
+                            <Text style={{ color: 'white' }}>Create</Text>
+                        </Button>
+                    ) : (
+                        <>
+                            <View style={styles.editButtonView}>
+                                <Button
+                                    style={styles.confirmChangesButton}
+                                    onPress={onConfirmChangesButtonPress}
+                                >
+                                    <Text style={{ color: 'white' }}>
+                                        Confirm Changes
+                                    </Text>
+                                </Button>
+                                <Button
+                                    style={styles.deleteProjectButon}
+                                    onPress={onDeleteButtonPress}
+                                >
+                                    <Text style={{ color: 'white' }}>
+                                        Delete
+                                    </Text>
+                                </Button>
+                            </View>
+                            <Button style={styles.publishButtonDisabled}>
+                                <Text style={{ color: 'white' }}>Publish</Text>
+                            </Button>
+                        </>
+                    )}
                     <Snackbar
                         visible={statusBarVisible}
                         onDismiss={() => setStatusBarVisible(false)}
@@ -404,6 +462,43 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             color: colors.darkerGrey,
             fontSize: 16,
             marginVertical: 5,
+        },
+        editButtonView: {
+            flexDirection: 'row',
+            marginTop: 32,
+        },
+        confirmChangesButton: {
+            backgroundColor: colors.primary.light,
+            justifyContent: 'center',
+            height: 50,
+            borderRadius: 6,
+            alignSelf: 'stretch',
+            marginRight: 5,
+        },
+        deleteProjectButon: {
+            backgroundColor: 'red',
+            justifyContent: 'center',
+            height: 50,
+            borderRadius: 6,
+            alignSelf: 'stretch',
+        },
+        publishButtonDisabled: {
+            backgroundColor: colors.grey,
+            justifyContent: 'center',
+            height: 50,
+            borderRadius: 6,
+            alignSelf: 'stretch',
+            margin: 32,
+            marginTop: 10,
+        },
+        publishButton: {
+            backgroundColor: 'green',
+            justifyContent: 'center',
+            height: 50,
+            borderRadius: 6,
+            alignSelf: 'stretch',
+            margin: 32,
+            marginTop: 10,
         },
     });
     return styles;
