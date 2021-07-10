@@ -48,10 +48,18 @@ type ProjectEditionResult =
     | { successful: true }
     | { successful: false; errorMessage: string };
 
-const getAllProjects = async (): Promise<GetProjectsApiResponse> => {
+type Response<T> =
+    | {
+          successful: false;
+          errorMessage?: string;
+          errorCode?: string;
+      }
+    | { successful: true; data: T };
+
+const getAllProjects = async (): Promise<Response<GetProjectsApiResponse>> => {
     const authToken = store.getState().session.token;
     try {
-        const apiResponse = apiProvider.get<
+        const apiResponse = await apiProvider.get<
             GetProjectsApiResponse,
             ProjectRequestPayload
         >(
@@ -59,10 +67,10 @@ const getAllProjects = async (): Promise<GetProjectsApiResponse> => {
             {},
             { headers: { Authorization: `Bearer ${authToken}` } }
         );
-        return apiResponse;
+        return { successful: true, data: apiResponse };
     } catch (error) {
         console.log(error.response);
-        return { projects: [] };
+        return { successful: false };
     }
 };
 

@@ -42,6 +42,9 @@ import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useEffect } from 'react';
 
+// Constants
+import categories from '../constants/categories';
+
 type ProjectCreationScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     'ProjectCreation'
@@ -229,15 +232,15 @@ export default function ProjectCreationScreen(
                             }
                             mode='dropdown'
                         >
-                            <Picker.Item
-                                label='Entretainment'
-                                value='entretainment'
-                            />
-                            <Picker.Item
-                                label='Productivity'
-                                value='productivity'
-                            />
-                            <Picker.Item label='Other' value='other' />
+                            {categories.map((category, index) => {
+                                return (
+                                    <Picker.Item
+                                        label={category}
+                                        value={category}
+                                        key={index}
+                                    />
+                                );
+                            })}
                         </Picker>
                     </View>
 
