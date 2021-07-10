@@ -18,11 +18,11 @@ export type RootStackParamList = {
     Drawer: undefined;
 
     // Modals
-    Profile: undefined;
+    Profile: { userId: string };
     Messages: undefined;
     Settings: undefined;
-    ProjectCreation: undefined;
-    MyProjects: undefined;
+    ProjectCreation: { edition: true; projectId: string } | { edition: false };
+    MyProjects: { showNotification: string; projectId: string } | undefined;
     ProjectVisualization: { projectId: string };
 
     // Error

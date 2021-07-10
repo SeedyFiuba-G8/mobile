@@ -33,7 +33,9 @@ function AddNewProjectButton(props: Props) {
     return (
         <Button
             icon='briefcase-plus'
-            onPress={() => props.navigation.navigate('ProjectCreation')}
+            onPress={() =>
+                props.navigation.navigate('ProjectCreation', { edition: false })
+            }
             mode='contained'
             style={buttonStyle}
             labelStyle={{ color: '#fff' }}

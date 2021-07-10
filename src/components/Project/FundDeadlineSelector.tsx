@@ -4,6 +4,7 @@ import { View, StyleSheet } from 'react-native';
 import { useTheme } from '../../contexts/ThemeProvider';
 import { DatePickerModal } from 'react-native-paper-dates';
 import { IconButton, Text } from 'react-native-paper';
+import colors from '../../constants/colors';
 
 type Props = {
     date: Date | undefined;
@@ -42,6 +43,7 @@ export default function FundDeadlineSelector(
                 icon='pencil'
                 style={styles.modifyButton}
                 onPress={() => setOpen(true)}
+                color={colors.darkGrey}
             />
             <DatePickerModal
                 mode='single'

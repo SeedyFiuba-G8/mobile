@@ -31,7 +31,9 @@ export default function DashboardScreen({
     const onRefresh = async () => {
         setRefreshing(true);
         const projects = await getAllProjects();
-        setProjects(projects.projects);
+        if (projects.successful) {
+            setProjects(projects.data.projects);
+        }
         setRefreshing(false);
     };
 

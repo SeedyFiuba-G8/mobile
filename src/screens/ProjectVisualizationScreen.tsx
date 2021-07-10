@@ -16,12 +16,13 @@ import {
 } from 'react-native-paper';
 
 // Types
-import type { Project } from '../api/projectsApi';
+import type { GetProjectApiResponse } from '../api/projectsApi';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 // APIs
 import { getProject } from '../api/projectsApi';
+import { getProfile, Profile } from '../api/profileApi';
 
 // Hooks
 import { RootStackParamList } from '../types';
@@ -42,7 +43,11 @@ type Props = {
     navigation: ProjectVisualizationScreenNavigationProp;
 };
 
-const IconLabel = (props: { icon: string; text: string }) => {
+const IconLabel = (props: {
+    icon: string;
+    text: string;
+    onPress?: () => void;
+}) => {
     return (
         <View style={{ flexDirection: 'row' }}>
             <View>
@@ -54,7 +59,9 @@ const IconLabel = (props: { icon: string; text: string }) => {
                 />
             </View>
             <View>
-                <Subheading style={styles.subheading}>{props.text}</Subheading>
+                <Subheading style={styles.subheading} onPress={props.onPress}>
+                    {props.text}
+                </Subheading>
             </View>
         </View>
     );
@@ -63,18 +70,24 @@ const IconLabel = (props: { icon: string; text: string }) => {
 export default function ProjectVisualizationScreen(
     props: Props
 ): React.ReactElement {
-    const [project, setProject] = useState<Project>();
+    const [project, setProject] = useState<GetProjectApiResponse>();
     const [loading, setLoading] = useState(true);
 
     const [publishedDate, setPublishedDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
 
+    const [creatorName, setCreatorName] = useState('');
     const onRefresh = async () => {
         setLoading(true);
         const project_temp = await getProject(props.route.params.projectId);
         setPublishedDate(new Date(project_temp.publishedOn));
         setEndDate(new Date(project_temp.finalizedBy));
         setProject(project_temp);
+        const creator_profile_temp = await getProfile(project_temp.userId);
+        console.log(creator_profile_temp);
+        setCreatorName(
+            `${creator_profile_temp.firstName} ${creator_profile_temp.lastName}`
+        );
         setLoading(false);
     };
 
@@ -89,6 +102,11 @@ export default function ProjectVisualizationScreen(
         0
     );
 
+    const onCreatorNamePress = () => {
+        if (project) {
+            props.navigation.navigate('Profile', { userId: project?.userId });
+        }
+    };
     console.log(remainingDays);
     return (
         <View style={{ flex: 1 }}>
@@ -111,6 +129,11 @@ export default function ProjectVisualizationScreen(
                                 text={`Created in ${project?.city}, ${project?.country}`}
                             />
                             <IconLabel icon='tag' text={`Entretainment`} />
+                            <IconLabel
+                                icon='account'
+                                text={creatorName}
+                                onPress={onCreatorNamePress}
+                            />
                             <Divider style={styles.divider} />
 
                             <Title style={styles.objectiveTitle}>
@@ -214,7 +237,7 @@ export default function ProjectVisualizationScreen(
 
                             <Title style={styles.objectiveTitle}>Tags</Title>
                             <View style={styles.tagView}>
-                                {mockTags.map((tag, index) => {
+                                {project?.tags.map((tag, index) => {
                                     return (
                                         <Chip style={styles.tag} key={index}>
                                             {tag}
@@ -304,5 +327,3 @@ const styles = StyleSheet.create({
         margin: 2,
     },
 });
-
-const mockTags = ['Entretainment', 'Game', 'Politics', 'Indie'];

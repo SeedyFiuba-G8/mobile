@@ -1,7 +1,5 @@
 import { apiProvider } from './utilities/provider';
 import store from '../stores/MainStore';
-import { useSelector } from 'react-redux';
-import { RootState } from '../reducers';
 
 export type Project = {
     id: string;
@@ -13,12 +11,16 @@ export type Project = {
     city: string;
     publishedOn: string;
     finalizedBy: string;
+    tags: Array<string>;
 };
 
 type GetProjectsApiResponse = {
     projects: Array<Project>;
 };
 
+export type GetProjectApiResponse = Project & {
+    userId: string;
+};
 type ProjectCreationApiResponse = {
     id: string;
 };
@@ -39,11 +41,25 @@ type ProjectCreationRequestPayload = {
     country: string;
     city: string;
     finalizedBy: string;
+    tags: Array<string>;
 };
-const getAllProjects = async (): Promise<GetProjectsApiResponse> => {
+
+type ProjectEditionResult =
+    | { successful: true }
+    | { successful: false; errorMessage: string };
+
+type Response<T> =
+    | {
+          successful: false;
+          errorMessage?: string;
+          errorCode?: string;
+      }
+    | { successful: true; data: T };
+
+const getAllProjects = async (): Promise<Response<GetProjectsApiResponse>> => {
     const authToken = store.getState().session.token;
     try {
-        const apiResponse = apiProvider.get<
+        const apiResponse = await apiProvider.get<
             GetProjectsApiResponse,
             ProjectRequestPayload
         >(
@@ -51,10 +67,10 @@ const getAllProjects = async (): Promise<GetProjectsApiResponse> => {
             {},
             { headers: { Authorization: `Bearer ${authToken}` } }
         );
-        return apiResponse;
+        return { successful: true, data: apiResponse };
     } catch (error) {
         console.log(error.response);
-        return { projects: [] };
+        return { successful: false };
     }
 };
 
@@ -76,9 +92,12 @@ const getUserProjects = async (id: string): Promise<GetProjectsApiResponse> => {
     }
 };
 
-const getProject = async (id: string): Promise<Project> => {
+const getProject = async (id: string): Promise<GetProjectApiResponse> => {
     const authToken = store.getState().session.token;
-    const apiResponse = apiProvider.get<Project, ProjectRequestPayload>(
+    const apiResponse = apiProvider.get<
+        GetProjectApiResponse,
+        ProjectRequestPayload
+    >(
         `projects/${id}`,
         {},
         { headers: { Authorization: `Bearer ${authToken}` } }
@@ -94,8 +113,9 @@ const createProject = async (
     country: string,
     city: string,
     finalizedBy: string,
-    authToken: string
+    tags: Array<string>
 ): Promise<ProjectCreationResult> => {
+    const authToken = store.getState().session.token;
     try {
         const apiResponse = await apiProvider.post<
             ProjectCreationApiResponse,
@@ -110,6 +130,7 @@ const createProject = async (
                 country: country,
                 city: city,
                 finalizedBy: finalizedBy,
+                tags: tags,
             },
             { headers: { Authorization: `Bearer ${authToken}` } }
         );
@@ -120,4 +141,62 @@ const createProject = async (
     }
 };
 
-export { getAllProjects, getUserProjects, createProject, getProject };
+const updateProject = async (
+    id: string,
+    title: string,
+    description: string,
+    type: string,
+    objective: string,
+    country: string,
+    city: string,
+    finalizedBy: string,
+    tags: Array<string>
+): Promise<ProjectEditionResult> => {
+    const authToken = store.getState().session.token;
+    try {
+        const apiResponse = await apiProvider.patch<
+            ProjectCreationApiResponse,
+            ProjectCreationRequestPayload
+        >(
+            `projects/${id}`,
+            {
+                title: title,
+                description: description,
+                type: type,
+                objective: objective,
+                country: country,
+                city: city,
+                finalizedBy: finalizedBy,
+                tags: tags,
+            },
+            { headers: { Authorization: `Bearer ${authToken}` } }
+        );
+        return { successful: true };
+    } catch (error) {
+        console.log(error.response);
+        return { successful: false, errorMessage: error.response };
+    }
+};
+
+const deleteProject = async (id: string): Promise<ProjectEditionResult> => {
+    const authToken = store.getState().session.token;
+    try {
+        const apiResponse = apiProvider.del<Project, null>(
+            `projects/${id}`,
+            null,
+            { headers: { Authorization: `Bearer ${authToken}` } }
+        );
+        return { successful: true };
+    } catch (error) {
+        console.log(error.response);
+        return { successful: false, errorMessage: error.response };
+    }
+};
+export {
+    getAllProjects,
+    getUserProjects,
+    createProject,
+    getProject,
+    updateProject,
+    deleteProject,
+};

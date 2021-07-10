@@ -1,7 +1,16 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
-import { Text, TextInput, Button, Divider } from 'react-native-paper';
+import {
+    Text,
+    TextInput,
+    Button,
+    Divider,
+    Snackbar,
+    Title,
+    Avatar,
+    ActivityIndicator,
+} from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import colors from '../constants/colors';
 import { DatePickerModal } from 'react-native-paper-dates';
@@ -9,20 +18,70 @@ import { DatePickerModal } from 'react-native-paper-dates';
 //Components
 import TagAdder from '../components/Project/TagAdder';
 import FundDeadlineSelector from '../components/Project/FundDeadlineSelector';
+import ReviewerList from '../components/Project/ReviewerList';
 
 // Contexts
 import { useTheme } from '../contexts/ThemeProvider';
 
 // API
-import { createProject } from '../api/projectsApi';
+import {
+    createProject,
+    getProject,
+    updateProject,
+    deleteProject,
+} from '../api/projectsApi';
 
 // Hooks
 import { useSelector } from 'react-redux';
 
 // Types
 import type { RootState } from '../reducers/index';
+import { countries } from 'countries-list';
+import { RootStackParamList } from '../types';
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useEffect } from 'react';
 
-export default function SettingsScreen(): React.ReactElement {
+// Constants
+import categories from '../constants/categories';
+
+type ProjectCreationScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'ProjectCreation'
+>;
+
+type ProjectCreationScreenRouteProp = RouteProp<
+    RootStackParamList,
+    'ProjectCreation'
+>;
+
+type Props = {
+    route: ProjectCreationScreenRouteProp;
+    navigation: ProjectCreationScreenNavigationProp;
+};
+
+const IconSubtitle = (props: { icon: string; text: string }) => {
+    const { isDarkTheme } = useTheme();
+    const styles = React.useMemo(
+        () => createThemedStyles(isDarkTheme),
+        [isDarkTheme]
+    );
+    return (
+        <View style={styles.labelTitleView}>
+            <Avatar.Icon
+                icon={props.icon}
+                color={colors.darkGrey}
+                style={styles.icon}
+                size={35}
+            />
+            <Title style={styles.titleSecondary}>{props.text}</Title>
+        </View>
+    );
+};
+
+export default function ProjectCreationScreen(
+    props: Props
+): React.ReactElement {
     const { isDarkTheme } = useTheme();
     const styles = React.useMemo(
         () => createThemedStyles(isDarkTheme),
@@ -30,66 +89,141 @@ export default function SettingsScreen(): React.ReactElement {
     );
     const [category, setCategory] = useState('');
     const [tags, setTags] = useState<Array<string>>([]);
-    const [date, setDate] = React.useState<Date | undefined>(undefined);
+    const [date, setDate] = React.useState<Date>(new Date());
     const [title, setTitle] = React.useState('');
     const [description, setDescription] = React.useState('');
+    const [objective, setObjective] = React.useState('');
     const [goal, setGoal] = React.useState('');
-    const authToken = useSelector((state: RootState) => state.session.token);
 
+    const [statusBarVisible, setStatusBarVisible] = useState(false);
+    const [statusBarText, setStatusBarText] = useState('');
+    const [city, setCity] = useState('');
+    const [country, setCountry] = useState('');
+    const [reviewers, setReviewers] = useState<Array<string>>([]);
+
+    const [loading, setLoading] = useState(false);
+
+    const onEditProjectLoad = async () => {
+        setLoading(true);
+        if (props.route.params.edition) {
+            const project_temp = await getProject(props.route.params.projectId);
+            setTitle(project_temp.title);
+            setDescription(project_temp.description);
+            setObjective(project_temp.objective);
+            setDate(new Date(project_temp.finalizedBy));
+            setCategory('productivity');
+            setCity(project_temp.city);
+            setCountry(project_temp.country);
+            setTags(project_temp.tags);
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        onEditProjectLoad();
+    }, [props.route.params.edition]);
+
+    const element = <TextInput.Affix text='ETH' />;
     const onCreateButtonPress = async () => {
-        if (date !== undefined) {
-            const projectResult = await createProject(
+        const projectResult = await createProject(
+            title,
+            description,
+            category,
+            objective,
+            country,
+            city,
+            date.toJSON(),
+            tags
+        );
+        if (projectResult.successful) {
+            props.navigation.navigate('MyProjects', {
+                showNotification: 'Project created successfully!',
+                projectId: projectResult.id,
+            });
+        }
+    };
+
+    const onConfirmChangesButtonPress = async () => {
+        if (props.route.params.edition) {
+            const result = await updateProject(
+                props.route.params.projectId,
                 title,
                 description,
                 category,
-                'Objetivo',
-                'Argentina',
-                'Buenos Aires',
-                date.toString(),
-                authToken
+                objective,
+                country,
+                city,
+                date.toJSON(),
+                tags
             );
-            if (projectResult.successful) {
-                console.log(
-                    `Success creating project with id ${projectResult.id}`
-                );
+            if (result.successful) {
+                setStatusBarText('Project modified successfully!');
+                setStatusBarVisible(true);
+            }
+        }
+    };
+
+    const onDeleteButtonPress = async () => {
+        if (props.route.params.edition) {
+            const result = await deleteProject(props.route.params.projectId);
+            if (result.successful) {
+                props.navigation.navigate('MyProjects', {
+                    showNotification: 'Project deleted successfully!',
+                    projectId: props.route.params.projectId,
+                });
             }
         }
     };
 
     return (
-        <View style={styles.container}>
-            <ScrollView>
-                <Text style={styles.logo}>Tell us about your project!</Text>
+        <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={styles.container}
+        >
+            {loading ? (
+                <ActivityIndicator size='large' animating={true} />
+            ) : (
+                <>
+                    <Title style={styles.titlePrimary}>Project Title</Title>
+                    <TextInput
+                        style={styles.input}
+                        theme={createThemedTextInputTheme(isDarkTheme)}
+                        onChangeText={(newTitle) => setTitle(newTitle)}
+                        value={title}
+                        mode='outlined'
+                        placeholder='Give your project a name'
+                    />
+                    <IconSubtitle icon='bullseye-arrow' text='Objective' />
+                    <TextInput
+                        style={styles.descriptionInput}
+                        theme={createThemedTextInputTheme(isDarkTheme)}
+                        multiline={true}
+                        onChangeText={(newObjective) =>
+                            setObjective(newObjective)
+                        }
+                        mode='outlined'
+                        placeholder='Briefly describe what you hope to accomplish'
+                        numberOfLines={5}
+                        value={objective}
+                    />
 
-                <TextInput
-                    style={styles.input}
-                    label='Title'
-                    theme={createThemedTextInputTheme(isDarkTheme)}
-                    mode='outlined'
-                    onChangeText={(newTitle) => setTitle(newTitle)}
-                />
-                <TextInput
-                    style={styles.descriptionInput}
-                    label='Description'
-                    theme={createThemedTextInputTheme(isDarkTheme)}
-                    multiline={true}
-                    onChangeText={(newDescription) =>
-                        setDescription(newDescription)
-                    }
-                />
+                    <IconSubtitle icon='text' text='Description' />
+                    <TextInput
+                        style={styles.descriptionInput}
+                        theme={createThemedTextInputTheme(isDarkTheme)}
+                        multiline={true}
+                        onChangeText={(newDescription) =>
+                            setDescription(newDescription)
+                        }
+                        mode='outlined'
+                        placeholder='Give a more detailed description of your project'
+                        numberOfLines={10}
+                        value={description}
+                    />
 
-                <Divider style={styles.divider} />
-
-                <View style={styles.titledSection}>
-                    <View
-                        style={{
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Text style={styles.categoryText}>Category</Text>
-                    </View>
-                    <View style={styles.categorySelectorDropdownSection}>
+                    <Divider style={styles.divider} />
+                    <IconSubtitle icon='shape' text='Category' />
+                    <View style={styles.subsection}>
                         <Picker
                             style={styles.categorySelector}
                             selectedValue={category}
@@ -97,73 +231,142 @@ export default function SettingsScreen(): React.ReactElement {
                                 setCategory(itemValue)
                             }
                             mode='dropdown'
-                            dropdownIconColor={colors.primary.light}
                         >
-                            <Picker.Item
-                                label='Entretainment'
-                                value='entretainment'
-                            />
-                            <Picker.Item
-                                label='Productivity'
-                                value='productivity'
-                            />
-                            <Picker.Item label='Other' value='other' />
+                            {categories.map((category, index) => {
+                                return (
+                                    <Picker.Item
+                                        label={category}
+                                        value={category}
+                                        key={index}
+                                    />
+                                );
+                            })}
                         </Picker>
                     </View>
-                </View>
 
-                <View style={styles.titledSection}>
-                    <View
-                        style={{
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Text style={styles.categoryText}>Tags</Text>
-                    </View>
-                    <View style={styles.categorySelectorDropdownSection}>
+                    <IconSubtitle icon='tag' text='Tags' />
+                    <View style={styles.subsection}>
                         <TagAdder tags={tags} setTags={setTags} />
                     </View>
-                </View>
 
-                <Divider style={styles.divider} />
-
-                <TextInput
-                    style={styles.input}
-                    label='Fund goal (ETH)'
-                    theme={createThemedTextInputTheme(isDarkTheme)}
-                    mode='outlined'
-                    keyboardType='numeric'
-                    onChangeText={(newGoal) => setGoal(newGoal)}
-                />
-
-                <View style={styles.titledSection}>
-                    <View
+                    <Divider
                         style={{
-                            alignItems: 'center',
-                            justifyContent: 'center',
+                            alignSelf: 'stretch',
+                            margin: 10,
                         }}
-                    >
-                        <Text style={styles.categoryText}>Fund by</Text>
-                    </View>
-                    <View style={styles.categorySelectorDropdownSection}>
+                    />
+                    <IconSubtitle icon='currency-usd' text='Goal' />
+                    <TextInput
+                        style={{
+                            ...styles.input,
+                            backgroundColor: 'transparent',
+                        }}
+                        theme={createThemedTextInputTheme(isDarkTheme)}
+                        mode='outlined'
+                        keyboardType='numeric'
+                        onChangeText={(newGoal) => setGoal(newGoal)}
+                        right={element}
+                    />
+
+                    <IconSubtitle icon='calendar' text='Deadline' />
+                    <View style={styles.subsection}>
                         <FundDeadlineSelector date={date} setDate={setDate} />
                     </View>
-                </View>
-                <Button style={styles.button} onPress={onCreateButtonPress}>
-                    <Text style={{ color: 'white' }}>Create</Text>
-                </Button>
-            </ScrollView>
-        </View>
+
+                    <Divider style={styles.divider} />
+                    <IconSubtitle icon='map-marker' text='Location' />
+                    <View style={styles.subsection}>
+                        <Text style={styles.subtitle}>Country</Text>
+                        <Picker
+                            style={styles.categorySelector}
+                            selectedValue={country}
+                            onValueChange={(itemValue, itemIndex) =>
+                                setCountry(itemValue)
+                            }
+                            mode='dropdown'
+                            dropdownIconColor={colors.primary.light}
+                        >
+                            {Object.values(countries)
+                                .sort((a, b) => (a.name > b.name ? 1 : -1))
+                                .map((country, index) => {
+                                    return (
+                                        <Picker.Item
+                                            label={country.name}
+                                            value={country.name}
+                                            key={index}
+                                        />
+                                    );
+                                })}
+                        </Picker>
+                    </View>
+
+                    <TextInput
+                        style={styles.input}
+                        label='City'
+                        mode='outlined'
+                        onChangeText={(city) => setCity(city)}
+                        value={city}
+                    />
+                    <Divider style={styles.divider} />
+                    <IconSubtitle icon='shield-account' text='Reviewers' />
+                    <View style={{ ...styles.subsection, padding: 5 }}>
+                        <ReviewerList
+                            reviewers={reviewers}
+                            setReviewers={setReviewers}
+                        />
+                    </View>
+                    {!props.route.params.edition ? (
+                        <Button
+                            style={styles.button}
+                            onPress={onCreateButtonPress}
+                        >
+                            <Text style={{ color: 'white' }}>Create</Text>
+                        </Button>
+                    ) : (
+                        <>
+                            <View style={styles.editButtonView}>
+                                <Button
+                                    style={styles.confirmChangesButton}
+                                    onPress={onConfirmChangesButtonPress}
+                                >
+                                    <Text style={{ color: 'white' }}>
+                                        Confirm Changes
+                                    </Text>
+                                </Button>
+                                <Button
+                                    style={styles.deleteProjectButon}
+                                    onPress={onDeleteButtonPress}
+                                >
+                                    <Text style={{ color: 'white' }}>
+                                        Delete
+                                    </Text>
+                                </Button>
+                            </View>
+                            <Button style={styles.publishButtonDisabled}>
+                                <Text style={{ color: 'white' }}>Publish</Text>
+                            </Button>
+                        </>
+                    )}
+                    <Snackbar
+                        visible={statusBarVisible}
+                        onDismiss={() => {
+                            setStatusBarVisible(false);
+                        }}
+                    >
+                        {statusBarText}
+                    </Snackbar>
+                </>
+            )}
+        </ScrollView>
     );
 }
 
 const createThemedStyles = (isDarkTheme: boolean) => {
     const styles = StyleSheet.create({
         container: {
-            flex: 1,
+            margin: 10,
+            paddingVertical: 10,
             alignItems: 'center',
-            justifyContent: 'flex-start',
             backgroundColor: isDarkTheme ? colors.black : colors.white,
         },
         button: {
@@ -191,7 +394,6 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             marginTop: 0,
             backgroundColor: isDarkTheme ? colors.white : '#EEEEEE',
             fontWeight: '300',
-            height: 200,
         },
         inputText: {
             fontSize: 20,
@@ -227,8 +429,83 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             height: 50,
         },
         divider: {
+            alignSelf: 'stretch',
+            margin: 10,
+            height: 1,
+        },
+        titlePrimary: {
+            alignSelf: 'flex-start',
+            marginLeft: 30,
+            fontSize: 25,
+            color: colors.darkerGrey,
+        },
+        titleSecondary: {
+            alignSelf: 'flex-start',
+            fontSize: 20,
+            color: colors.grey,
+        },
+        icon: {
+            backgroundColor: 'transparent',
+        },
+        labelTitleView: {
+            flexDirection: 'row',
+            marginLeft: 30,
+            alignSelf: 'flex-start',
+        },
+        subsection: {
+            alignSelf: 'stretch',
             marginHorizontal: 32,
-            marginVertical: 20,
+            borderWidth: 1,
+            borderRadius: 5,
+            borderColor: colors.darkGrey,
+            marginBottom: 10,
+        },
+        subtitle: {
+            fontSize: 14,
+            color: colors.darkGrey,
+            marginLeft: 10,
+        },
+        reviewerItemText: {
+            color: colors.darkerGrey,
+            fontSize: 16,
+            marginVertical: 5,
+        },
+        editButtonView: {
+            flexDirection: 'row',
+            marginTop: 32,
+        },
+        confirmChangesButton: {
+            backgroundColor: colors.primary.light,
+            justifyContent: 'center',
+            height: 50,
+            borderRadius: 6,
+            alignSelf: 'stretch',
+            marginRight: 5,
+        },
+        deleteProjectButon: {
+            backgroundColor: 'red',
+            justifyContent: 'center',
+            height: 50,
+            borderRadius: 6,
+            alignSelf: 'stretch',
+        },
+        publishButtonDisabled: {
+            backgroundColor: colors.grey,
+            justifyContent: 'center',
+            height: 50,
+            borderRadius: 6,
+            alignSelf: 'stretch',
+            margin: 32,
+            marginTop: 10,
+        },
+        publishButton: {
+            backgroundColor: 'green',
+            justifyContent: 'center',
+            height: 50,
+            borderRadius: 6,
+            alignSelf: 'stretch',
+            margin: 32,
+            marginTop: 10,
         },
     });
     return styles;
