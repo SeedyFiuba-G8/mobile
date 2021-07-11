@@ -186,11 +186,16 @@ export default function ProfileScreen(props: Props): React.ReactElement {
                         >
                             <View style={styles.profileInfoSectionContentView}>
                                 {isReviewer ? (
-                                    <Text style={{ color: colors.green }}>
+                                    <Text
+                                        style={{
+                                            color: colors.primary.light,
+                                            fontWeight: 'bold',
+                                        }}
+                                    >
                                         {'You are a project reviewer.'}
                                     </Text>
                                 ) : (
-                                    <Text style={{ color: colors.red }}>
+                                    <Text style={{ color: colors.darkerGrey }}>
                                         {'You are not a project reviewer.'}
                                     </Text>
                                 )}
