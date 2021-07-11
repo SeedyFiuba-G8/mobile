@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Avatar } from 'react-native-paper';
 
 // Types
 import { DrawerItemType } from './Contents/contentTypes';
@@ -28,10 +29,11 @@ export default function DrawerList(
                         key={key}
                         label={value.label}
                         icon={({ color, size }) => (
-                            <Ionicons
-                                name={value.icon || 'question'}
+                            <Avatar.Icon
+                                style={{ backgroundColor: 'transparent' }}
+                                icon={value.icon}
                                 color={color}
-                                size={size}
+                                size={35}
                             />
                         )}
                         onPress={() => value.onPress(props)}
