@@ -5,7 +5,7 @@ import store from '../../../stores/MainStore';
 const data: DrawerItemType[] = [
     {
         label: 'Profile',
-        icon: 'person-circle-outline',
+        icon: 'account',
         onPress: (props) => {
             const myUserId = store.getState().session.id;
             props.navigation.navigate('Profile', { userId: myUserId });
@@ -13,16 +13,9 @@ const data: DrawerItemType[] = [
     },
     {
         label: 'Messages',
-        icon: 'chatbubbles-outline',
+        icon: 'message-text',
         onPress: (props) => {
             props.navigation.navigate('Messages');
-        },
-    },
-    {
-        label: 'Settings',
-        icon: 'settings-outline',
-        onPress: (props) => {
-            props.navigation.navigate('Settings');
         },
     },
     {
@@ -30,6 +23,20 @@ const data: DrawerItemType[] = [
         icon: 'briefcase',
         onPress: (props) => {
             props.navigation.navigate('MyProjects');
+        },
+    },
+    {
+        label: 'Review requests',
+        icon: 'shield-account',
+        onPress: (props) => {
+            props.navigation.navigate('ReviewRequests');
+        },
+    },
+    {
+        label: 'Settings',
+        icon: 'cog',
+        onPress: (props) => {
+            props.navigation.navigate('Settings');
         },
     },
 ];

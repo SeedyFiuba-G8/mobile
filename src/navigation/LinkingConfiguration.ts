@@ -31,6 +31,7 @@ export default {
             NotFound: '*',
             SingIn: 'singin',
             SingUp: 'singup',
+            ReviewRequests: 'reviewRequests',
         },
     },
 };
