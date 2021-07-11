@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import {
     ActivityIndicator,
     Button,
     Divider,
-    Paragraph,
     Snackbar,
     Text,
 } from 'react-native-paper';
-import { Avatar, Caption, Title, IconButton } from 'react-native-paper';
+import { Avatar, IconButton } from 'react-native-paper';
 import colors from '../constants/colors';
 import ProfileInfoSection from '../components/Profile/ProfileInfoSection';
 import Picker from '../components/InterestsPicker';
@@ -17,13 +16,14 @@ import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../types';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useSelector } from 'react-redux';
+
 // API
 import { getProfile, updateProfile } from '../api/profileApi';
 import { useEffect } from 'react';
-import { setAutoLogAppEventsEnabledAsync } from 'expo-facebook';
 
 // Types
 import type { RootState } from '../reducers/index';
+import ReviewershipModal from '../components/Profile/ReviewershipModal';
 
 type ProfileScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -39,6 +39,9 @@ type Props = {
 export default function ProfileScreen(props: Props): React.ReactElement {
     const [interestPickerVisible, setInterestPickerVisible] = useState(false);
     const [locationPickerVisible, setLocationPickerVisible] = useState(false);
+    const [reviewershipModalVisible, setReviewershipModalVisible] =
+        useState(false);
+
     const [name, setName] = useState('');
     const [interests, setInterests] = useState<Array<string>>([]);
     const myUserId = useSelector((state: RootState) => state.session.id);
@@ -51,9 +54,9 @@ export default function ProfileScreen(props: Props): React.ReactElement {
 
     const [country, setCountry] = useState('');
     const [city, setCity] = useState('');
-
-    const [statusBarVisible, setStatusBarVisible] = React.useState(false);
-    const [statusBarText, setStatusBarText] = React.useState('');
+    const [isReviewer, setIsReviewer] = useState(false);
+    const [statusBarVisible, setStatusBarVisible] = useState(false);
+    const [statusBarText, setStatusBarText] = useState('');
     const onRefresh = async () => {
         setLoading(true);
         const profileResponse = await getProfile(props.route.params.userId);
@@ -92,7 +95,7 @@ export default function ProfileScreen(props: Props): React.ReactElement {
         }
     }, []);
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             {loading ? (
                 <ActivityIndicator size='large' animating={true} />
             ) : (
@@ -117,7 +120,6 @@ export default function ProfileScreen(props: Props): React.ReactElement {
                             <Text style={styles.contentText}>{name}</Text>
                         </View>
                     </ProfileInfoSection>
-
                     <Divider style={styles.divider} />
 
                     <ProfileInfoSection
@@ -172,6 +174,41 @@ export default function ProfileScreen(props: Props): React.ReactElement {
                             </Text>
                         </View>
                     </ProfileInfoSection>
+                    <Divider style={styles.divider} />
+                    <ProfileInfoSection
+                        title='Reviewership'
+                        icon='shield-account'
+                        editable={true}
+                        onEditPress={() => setReviewershipModalVisible(true)}
+                    >
+                        <View style={styles.profileInfoSectionContentView}>
+                            {isReviewer ? (
+                                <Text style={{ color: colors.green }}>
+                                    {'You are a project reviewer.'}
+                                </Text>
+                            ) : (
+                                <Text style={{ color: colors.red }}>
+                                    {'You are not a project reviewer.'}
+                                </Text>
+                            )}
+                        </View>
+                        <ReviewershipModal
+                            isReviewer={isReviewer}
+                            visible={reviewershipModalVisible}
+                            setVisible={setReviewershipModalVisible}
+                            onOkClick={() => {
+                                setReviewershipModalVisible(false);
+                                setIsReviewer(true);
+                            }}
+                            onRevokeClick={() => {
+                                setReviewershipModalVisible(false);
+                                setIsReviewer(false);
+                            }}
+                            onCancelClick={() =>
+                                setReviewershipModalVisible(false)
+                            }
+                        />
+                    </ProfileInfoSection>
                 </>
             )}
             <Snackbar
@@ -183,13 +220,12 @@ export default function ProfileScreen(props: Props): React.ReactElement {
             >
                 {statusBarText}
             </Snackbar>
-        </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
         justifyContent: 'flex-start',
     },
     title: {
