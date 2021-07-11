@@ -18,7 +18,7 @@ export type RootStackParamList = {
     Drawer: undefined;
 
     // Modals
-    Profile: { userId: string };
+    Profile: { userId: string; showNotification?: string };
     Messages: undefined;
     Settings: undefined;
     ProjectCreation: { edition: true; projectId: string } | { edition: false };

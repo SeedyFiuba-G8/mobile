@@ -16,5 +16,8 @@ export default {
     loginScreen: {
         background: '#e5f2f2',
     },
+    red: '#c00',
+    green: '#0a0',
     darkerGrey: '#666',
+    link: '#00c',
 };

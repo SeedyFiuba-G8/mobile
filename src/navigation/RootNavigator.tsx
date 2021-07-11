@@ -15,6 +15,7 @@ import ProjectVisualizationScreen from '../screens/ProjectVisualizationScreen';
 
 // Ts types
 import { RootStackParamList } from '../types';
+import { RootState } from '../reducers';
 
 // Constants
 import colors from '../constants/colors';

@@ -11,6 +11,9 @@ import {
 } from 'react-native-paper';
 import colors from '../constants/colors';
 
+// constants
+import categories from '../constants/categories';
+
 type Category = {
     tag: string;
     interested: boolean;
@@ -20,8 +23,8 @@ type Category = {
 type Props = {
     visible: boolean;
     setVisible: (visible: boolean) => void;
-    categories: Category[];
-    onOkClick: () => void;
+    interests: string[];
+    onOkClick: (interests: string[]) => void;
     onCancelClick: () => void;
 };
 
@@ -45,10 +48,12 @@ const Item = (props: Category) => {
 export default function Picker(props: Props): React.ReactElement {
     const hideModal = () => props.setVisible(false);
 
-    const categoriesTemp = props.categories.map((category, index) => {
-        const [interested, setInterested] = useState(category.interested);
+    const categoriesTemp = categories.map((category, index) => {
+        const [interested, setInterested] = useState<boolean>(
+            props.interests.includes(category)
+        );
         return {
-            tag: category.tag,
+            tag: category,
             interested: interested,
             setInterested: setInterested,
         };
@@ -59,18 +64,14 @@ export default function Picker(props: Props): React.ReactElement {
     }, [props.visible]);
     const resetCategories = () => {
         categoriesTemp.forEach((category, index) => {
-            category.setInterested(props.categories[index].interested);
-        });
-    };
-
-    const saveChanges = () => {
-        categoriesTemp.forEach((category, index) => {
-            props.categories[index].setInterested(category.interested);
+            category.setInterested(props.interests.includes(category.tag));
         });
     };
     const onOkButtonPress = () => {
-        saveChanges();
-        props.onOkClick();
+        const categories = categoriesTemp
+            .filter((category, index) => category.interested)
+            .map((category, index) => category.tag);
+        props.onOkClick(categories);
     };
     return (
         <Portal>

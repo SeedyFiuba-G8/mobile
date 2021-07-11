@@ -12,6 +12,12 @@ import values from '../../constants/values';
 // Contexts
 import { useTheme } from '../../contexts/ThemeProvider';
 
+// Hooks
+import { useSelector } from 'react-redux';
+
+// Types
+import type { RootState } from '../../reducers';
+
 export default function Header({
     ...props
 }: DrawerContentComponentProps): React.ReactNode {
@@ -21,7 +27,7 @@ export default function Header({
         () => createThemedStyles(isDarkTheme),
         [isDarkTheme]
     );
-
+    const profile_info = useSelector((state: RootState) => state.profile);
     return (
         <View style={styles.container}>
             <View style={styles.userInfo}>
@@ -31,8 +37,9 @@ export default function Header({
                 />
 
                 <View style={styles.userName}>
-                    <Title style={styles.title}>Heath Ledger</Title>
-                    <Caption style={styles.caption}>@da_real_joker</Caption>
+                    <Title
+                        style={styles.title}
+                    >{`${profile_info.first_name} ${profile_info.last_name}`}</Title>
                 </View>
             </View>
         </View>

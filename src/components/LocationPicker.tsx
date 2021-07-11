@@ -25,23 +25,16 @@ type Category = {
 type Props = {
     visible: boolean;
     setVisible: (visible: boolean) => void;
-    onOkClick: () => void;
+    onOkClick: (city: string, country: string) => void;
     onCancelClick: () => void;
     country: string;
-    setCountry: (newCountry: string) => void;
     city: string;
-    setCity: (newCity: string) => void;
 };
 
 export default function LocationPicker(props: Props): React.ReactElement {
     const hideModal = () => props.setVisible(false);
     const [countryTemp, setCountryTemp] = useState(props.country);
     const [cityTemp, setCityTemp] = useState(props.city);
-
-    const saveCountryAndCity = () => {
-        props.setCity(cityTemp.trim());
-        props.setCountry(countryTemp);
-    };
 
     const resetCountryAndCity = () => {
         setCountryTemp(props.country);
@@ -53,8 +46,7 @@ export default function LocationPicker(props: Props): React.ReactElement {
     }, [props.visible]);
 
     const onOkButtonPress = () => {
-        saveCountryAndCity();
-        props.onOkClick();
+        props.onOkClick(cityTemp.trim(), countryTemp);
     };
     return (
         <Portal>
