@@ -38,6 +38,8 @@ export default function DashboardScreen(props: Props): React.ReactElement {
     const userId = useSelector((state: RootState) => state.session.id);
     const [projects, setProjects] = React.useState<Array<Project>>([]);
 
+    const [showProjects, setShowProjects] = React.useState<Array<Project>>([]);
+
     const [statusBarVisible, setStatusBarVisible] = React.useState(false);
     const [statusBarText, setStatusBarText] = React.useState('');
 
@@ -51,6 +53,9 @@ export default function DashboardScreen(props: Props): React.ReactElement {
     };
 
     const [filter, setFilter] = React.useState('all');
+    const changeFilter = (newFilter: string, index: number) => {
+        setFilter(newFilter);
+    };
 
     useEffect(() => {
         onRefresh();
@@ -100,9 +105,7 @@ export default function DashboardScreen(props: Props): React.ReactElement {
                 <Picker
                     style={styles.categorySelector}
                     selectedValue={filter}
-                    onValueChange={(itemValue, itemIndex) =>
-                        setFilter(itemValue)
-                    }
+                    onValueChange={changeFilter}
                     mode='dropdown'
                 >
                     <Picker.Item label='All' value='all' />
@@ -114,7 +117,11 @@ export default function DashboardScreen(props: Props): React.ReactElement {
                 <ProjectList
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                    projects={projects}
+                    projects={projects.filter(
+                        (project, index) =>
+                            filter === 'all' ||
+                            project.status.toLowerCase() === filter
+                    )}
                 />
             </View>
             <Snackbar

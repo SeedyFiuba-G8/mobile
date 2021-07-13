@@ -32,7 +32,12 @@ export default function DashboardScreen({
         setRefreshing(true);
         const projects = await getAllProjects();
         if (projects.successful) {
-            setProjects(projects.data.projects);
+            setProjects(
+                projects.data.projects.filter(
+                    (project, index) => project.status === 'PUBLISHED'
+                )
+            );
+            console.log(projects.data.projects);
         }
         setRefreshing(false);
     };

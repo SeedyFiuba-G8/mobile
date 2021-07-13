@@ -46,6 +46,8 @@ export default function ProfileScreen(props: Props): React.ReactElement {
     const [interests, setInterests] = useState<Array<string>>([]);
     const myUserId = useSelector((state: RootState) => state.session.id);
     const editable = myUserId === props.route.params.userId;
+    const enableReviewership = false;
+
     const [loading, setLoading] = useState(false);
 
     const generateInterestsString = () => {
@@ -174,49 +176,59 @@ export default function ProfileScreen(props: Props): React.ReactElement {
                             </Text>
                         </View>
                     </ProfileInfoSection>
-                    <Divider style={styles.divider} />
-                    {editable ? (
-                        <ProfileInfoSection
-                            title='Reviewership'
-                            icon='shield-account'
-                            editable={true}
-                            onEditPress={() =>
-                                setReviewershipModalVisible(true)
-                            }
-                        >
-                            <View style={styles.profileInfoSectionContentView}>
-                                {isReviewer ? (
-                                    <Text
-                                        style={{
-                                            color: colors.primary.light,
-                                            fontWeight: 'bold',
-                                        }}
-                                    >
-                                        {'You are a project reviewer.'}
-                                    </Text>
-                                ) : (
-                                    <Text style={{ color: colors.darkerGrey }}>
-                                        {'You are not a project reviewer.'}
-                                    </Text>
-                                )}
-                            </View>
-                            <ReviewershipModal
-                                isReviewer={isReviewer}
-                                visible={reviewershipModalVisible}
-                                setVisible={setReviewershipModalVisible}
-                                onOkClick={() => {
-                                    setReviewershipModalVisible(false);
-                                    setIsReviewer(true);
-                                }}
-                                onRevokeClick={() => {
-                                    setReviewershipModalVisible(false);
-                                    setIsReviewer(false);
-                                }}
-                                onCancelClick={() =>
-                                    setReviewershipModalVisible(false)
+                    {editable && enableReviewership ? (
+                        <>
+                            <Divider style={styles.divider} />
+                            <ProfileInfoSection
+                                title='Reviewership'
+                                icon='shield-account'
+                                editable={true}
+                                onEditPress={() =>
+                                    setReviewershipModalVisible(true)
                                 }
-                            />
-                        </ProfileInfoSection>
+                            >
+                                <View
+                                    style={
+                                        styles.profileInfoSectionContentView
+                                    }
+                                >
+                                    {isReviewer ? (
+                                        <Text
+                                            style={{
+                                                color: colors.primary.light,
+                                                fontWeight: 'bold',
+                                            }}
+                                        >
+                                            {'You are a project reviewer.'}
+                                        </Text>
+                                    ) : (
+                                        <Text
+                                            style={{
+                                                color: colors.darkerGrey,
+                                            }}
+                                        >
+                                            {'You are not a project reviewer.'}
+                                        </Text>
+                                    )}
+                                </View>
+                                <ReviewershipModal
+                                    isReviewer={isReviewer}
+                                    visible={reviewershipModalVisible}
+                                    setVisible={setReviewershipModalVisible}
+                                    onOkClick={() => {
+                                        setReviewershipModalVisible(false);
+                                        setIsReviewer(true);
+                                    }}
+                                    onRevokeClick={() => {
+                                        setReviewershipModalVisible(false);
+                                        setIsReviewer(false);
+                                    }}
+                                    onCancelClick={() =>
+                                        setReviewershipModalVisible(false)
+                                    }
+                                />
+                            </ProfileInfoSection>
+                        </>
                     ) : null}
                 </>
             )}

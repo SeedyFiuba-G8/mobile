@@ -20,4 +20,5 @@ export default {
     green: '#0a0',
     darkerGrey: '#666',
     link: '#00c',
+    yellow: '#E1AD01',
 };

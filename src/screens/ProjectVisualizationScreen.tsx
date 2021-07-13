@@ -137,7 +137,9 @@ export default function ProjectVisualizationScreen(
                             source={{ uri: 'https://picsum.photos/350/300' }}
                         />
                         <View style={styles.basicInfoView}>
-                            <Title style={styles.title}>{project?.title}</Title>
+                            <Title style={styles.title}>
+                                {project?.title}
+                            </Title>
                             <IconLabel
                                 icon='map-marker'
                                 text={`Created in ${project?.city}, ${project?.country}`}

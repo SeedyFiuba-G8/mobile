@@ -2,6 +2,7 @@ import { apiProvider } from './utilities/provider';
 import type { Response } from './utilities/provider';
 
 import store from '../stores/MainStore';
+import ReviewershipModal from '../components/Profile/ReviewershipModal';
 
 export type Project = {
     id: string;
@@ -14,6 +15,7 @@ export type Project = {
     publishedOn: string;
     finalizedBy: string;
     tags: Array<string>;
+    status: string;
 };
 
 // Responses
@@ -21,8 +23,17 @@ type GetProjectsApiResponse = {
     projects: Array<Project>;
 };
 
+export type Reviewer = {
+    email: string;
+    firstName: string;
+    lastName: string;
+    reviewerId: string;
+    status: string;
+};
+
 export type GetProjectApiResponse = Project & {
     userId: string;
+    reviewers: Array<Reviewer>;
 };
 
 type ProjectCreationApiResponse = {
@@ -37,6 +48,23 @@ type ProjectEditionApiResponse = {
     id: string;
 };
 
+export type ReviewRequest = {
+    projectId: string;
+    userId: string;
+    title: string;
+    description: string;
+    type: string;
+    objective: string;
+    country: string;
+    city: string;
+    publishedOn: string;
+    finalizedBy: string;
+    status: string;
+};
+
+type ReviewRequestApiResponse = {
+    requests: Array<ReviewRequest>;
+};
 // Payloads
 type ProjectRequestPayload = Record<string, never> | { userId: string };
 
@@ -49,6 +77,11 @@ type ProjectCreationRequestPayload = {
     city: string;
     finalizedBy: string;
     tags: Array<string>;
+    reviewers: Array<string>;
+};
+
+type ReviewershipReplyPayload = {
+    status: string;
 };
 
 const getAllProjects = async (): Promise<Response<GetProjectsApiResponse>> => {
@@ -98,7 +131,8 @@ const createProject = async (
     country: string,
     city: string,
     finalizedBy: string,
-    tags: Array<string>
+    tags: Array<string>,
+    reviewers: Array<string>
 ): Promise<Response<ProjectCreationApiResponse>> => {
     const authToken = store.getState().session.token;
     const apiResponse = apiProvider.post<
@@ -115,6 +149,7 @@ const createProject = async (
             city: city,
             finalizedBy: finalizedBy,
             tags: tags,
+            reviewers: reviewers,
         },
         { headers: { Authorization: `Bearer ${authToken}` } }
     );
@@ -130,7 +165,8 @@ const updateProject = async (
     country: string,
     city: string,
     finalizedBy: string,
-    tags: Array<string>
+    tags: Array<string>,
+    reviewers: Array<string>
 ): Promise<Response<ProjectEditionApiResponse>> => {
     const authToken = store.getState().session.token;
     const apiResponse = apiProvider.patch<
@@ -147,6 +183,7 @@ const updateProject = async (
             city: city,
             finalizedBy: finalizedBy,
             tags: tags,
+            reviewers: reviewers,
         },
         { headers: { Authorization: `Bearer ${authToken}` } }
     );
@@ -167,6 +204,44 @@ const deleteProject = async (
     return apiResponse;
 };
 
+const getReviewRequests = async (): Promise<
+    Response<ReviewRequestApiResponse>
+> => {
+    const authToken = store.getState().session.token;
+    const userId = store.getState().session.id;
+    const apiResponse = apiProvider.get<ReviewRequestApiResponse, null>(
+        `reviewrequests/${userId}`,
+        null,
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
+const acceptReviewRequest = async (
+    projectId: string
+): Promise<Response<null>> => {
+    const authToken = store.getState().session.token;
+    const userId = store.getState().session.id;
+    const apiResponse = apiProvider.put<null, ReviewershipReplyPayload>(
+        `reviewrequests/${userId}/${projectId}`,
+        { status: 'ACCEPTED' },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
+const rejectReviewRequest = async (
+    projectId: string
+): Promise<Response<null>> => {
+    const authToken = store.getState().session.token;
+    const userId = store.getState().session.id;
+    const apiResponse = apiProvider.put<null, ReviewershipReplyPayload>(
+        `reviewrequests/${userId}/${projectId}`,
+        { status: 'REJECTED' },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
 export {
     getAllProjects,
     getUserProjects,
@@ -174,4 +249,7 @@ export {
     getProject,
     updateProject,
     deleteProject,
+    getReviewRequests,
+    acceptReviewRequest,
+    rejectReviewRequest,
 };

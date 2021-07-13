@@ -6,19 +6,12 @@ import { Text } from 'react-native-paper';
 import type { Project } from '../../api/projectsApi';
 import colors from '../../constants/colors';
 import ReviewRequestCard from './ReviewRequestCard';
-
-type DraftProject = {
-    title: string;
-    city: string;
-    country: string;
-    description: string;
-    id: string;
-};
+import type { ReviewRequest } from '../../api/projectsApi';
 
 type Props = {
     refreshing: boolean;
     onRefresh: () => void;
-    projects: Array<DraftProject>;
+    reviewRequests: Array<ReviewRequest>;
     editable?: boolean;
 };
 
@@ -33,14 +26,14 @@ export default function ReviewRequestList(props: Props): React.ReactElement {
                 />
             }
         >
-            {props.projects.length > 0 ? (
-                props.projects.map((project, index) => {
+            {props.reviewRequests.length > 0 ? (
+                props.reviewRequests.map((reviewRequest, index) => {
                     return (
                         <ReviewRequestCard
                             key={index}
-                            title={project.title}
-                            city={project.city}
-                            country={project.country}
+                            title={reviewRequest.title}
+                            city={reviewRequest.city}
+                            country={reviewRequest.country}
                             cover_image_uri={`https://picsum.photos/id/${
                                 randomImageIds[
                                     Math.floor(
@@ -48,8 +41,8 @@ export default function ReviewRequestList(props: Props): React.ReactElement {
                                     )
                                 ]
                             }/700`}
-                            description={project.description}
-                            id={project.id}
+                            description={reviewRequest.description}
+                            projectId={reviewRequest.projectId}
                         />
                     );
                 })
