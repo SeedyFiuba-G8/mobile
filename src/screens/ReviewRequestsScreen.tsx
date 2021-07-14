@@ -4,10 +4,29 @@ import { StyleSheet, View } from 'react-native';
 import ReviewRequestList from '../components/ReviewRequest/ReviewRequestList';
 import { getReviewRequests } from '../api/projectsApi';
 
+import { ReviewerCenterTabParamList } from '../types';
 import type { ReviewRequest } from '../api/projectsApi';
-import ReviewerList from '../components/Project/ReviewerList';
 
-export default function ReviewRequestsScreen(): React.ReactElement {
+import { MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
+import { RouteProp } from '@react-navigation/native';
+
+type ReviewRequestsScreenNavigationProp = MaterialTopTabNavigationProp<
+    ReviewerCenterTabParamList,
+    'ReviewRequests'
+>;
+type ReviewRequestsScreenRouteProp = RouteProp<
+    ReviewerCenterTabParamList,
+    'ReviewRequests'
+>;
+
+type Props = {
+    route: ReviewRequestsScreenRouteProp;
+    navigation: ReviewRequestsScreenNavigationProp;
+};
+
+export default function ReviewRequestsScreen(
+    props: Props
+): React.ReactElement {
     const [refreshing, setRefreshing] = useState(false);
     const [reviewRequests, setReviewRequests] = useState<Array<ReviewRequest>>(
         []
@@ -17,7 +36,11 @@ export default function ReviewRequestsScreen(): React.ReactElement {
         const reviewRequestResponse = await getReviewRequests();
         if (reviewRequestResponse.successful) {
             console.log(reviewRequestResponse.data.requests);
-            setReviewRequests(reviewRequestResponse.data.requests);
+            setReviewRequests(
+                reviewRequestResponse.data.requests.filter(
+                    (request, index) => request.status === 'PENDING'
+                )
+            );
         }
         setRefreshing(false);
     };
@@ -35,30 +58,6 @@ export default function ReviewRequestsScreen(): React.ReactElement {
         </View>
     );
 }
-
-const mockProjects = [
-    {
-        title: 'Test project 1',
-        city: 'Buenos Aires',
-        country: 'Argentina',
-        description: 'Dejar de tomar falopita',
-        id: '123123123',
-    },
-    {
-        title: 'Test project 2',
-        city: 'Chapadmalal',
-        country: 'Argentina',
-        description: 'Tomar MAS falopita',
-        id: '123123123',
-    },
-    {
-        title: 'Test project 3',
-        city: 'Zapala',
-        country: 'Argentina',
-        description: 'Dejar de hacer proyectos que hablen de la falopita',
-        id: '123123123',
-    },
-];
 
 const styles = StyleSheet.create({
     container: {

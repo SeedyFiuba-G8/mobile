@@ -108,6 +108,8 @@ export default function ProjectCreationScreen(
 
     const [loading, setLoading] = useState(false);
 
+    const [creating, setCreating] = useState(false);
+
     const onEditProjectLoad = async () => {
         setLoading(true);
         if (props.route.params.edition) {
@@ -137,6 +139,7 @@ export default function ProjectCreationScreen(
 
     const element = <TextInput.Affix text='ETH' />;
     const onCreateButtonPress = async () => {
+        setCreating(true);
         const projectCreationResponse = await createProject(
             title,
             description,
@@ -149,7 +152,8 @@ export default function ProjectCreationScreen(
             reviewers.map((reviewer, index) => reviewer.email)
         );
         if (projectCreationResponse.successful) {
-            props.navigation.navigate('MyProjects', {
+            setCreating(false);
+            props.navigation.replace('MyProjects', {
                 showNotification: 'Project created successfully!',
                 projectId: projectCreationResponse.data.id,
             });
@@ -183,7 +187,8 @@ export default function ProjectCreationScreen(
         if (props.route.params.edition) {
             const result = await deleteProject(props.route.params.projectId);
             if (result.successful) {
-                props.navigation.navigate('MyProjects', {
+                props.navigation.pop();
+                props.navigation.replace('MyProjects', {
                     showNotification: 'Project deleted successfully!',
                     projectId: props.route.params.projectId,
                 });
@@ -339,29 +344,15 @@ export default function ProjectCreationScreen(
                         <Button
                             style={styles.button}
                             onPress={onCreateButtonPress}
+                            loading={creating}
+                            color='white'
+                            disabled={creating}
+                            icon='lightbulb'
                         >
                             <Text style={{ color: 'white' }}>Create</Text>
                         </Button>
                     ) : (
                         <>
-                            <View style={styles.editButtonView}>
-                                <Button
-                                    style={styles.confirmChangesButton}
-                                    onPress={onConfirmChangesButtonPress}
-                                >
-                                    <Text style={{ color: 'white' }}>
-                                        Confirm Changes
-                                    </Text>
-                                </Button>
-                                <Button
-                                    style={styles.deleteProjectButon}
-                                    onPress={onDeleteButtonPress}
-                                >
-                                    <Text style={{ color: 'white' }}>
-                                        Delete
-                                    </Text>
-                                </Button>
-                            </View>
                             <Button
                                 style={
                                     isPublishable
@@ -369,9 +360,40 @@ export default function ProjectCreationScreen(
                                         : styles.publishButtonDisabled
                                 }
                                 disabled={!isPublishable}
+                                icon='send'
+                                color='white'
                             >
-                                <Text style={{ color: 'white' }}>Publish</Text>
+                                <Text
+                                    style={{
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    Publish
+                                </Text>
                             </Button>
+                            <View style={styles.editButtonView}>
+                                <Button
+                                    style={styles.confirmChangesButton}
+                                    onPress={onConfirmChangesButtonPress}
+                                    icon='content-save'
+                                    color='white'
+                                >
+                                    <Text style={{ color: 'white' }}>
+                                        Save
+                                    </Text>
+                                </Button>
+                                <Button
+                                    style={styles.deleteProjectButon}
+                                    onPress={onDeleteButtonPress}
+                                    icon='delete'
+                                    color='white'
+                                >
+                                    <Text style={{ color: 'white' }}>
+                                        Delete
+                                    </Text>
+                                </Button>
+                            </View>
                         </>
                     )}
                     <Snackbar
@@ -499,7 +521,9 @@ const createThemedStyles = (isDarkTheme: boolean) => {
         },
         editButtonView: {
             flexDirection: 'row',
-            marginTop: 32,
+            flex: 1,
+            marginHorizontal: 36,
+            marginBottom: 10,
         },
         confirmChangesButton: {
             backgroundColor: colors.primary.light,
@@ -508,31 +532,32 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             borderRadius: 6,
             alignSelf: 'stretch',
             marginRight: 5,
+            flex: 1,
         },
         deleteProjectButon: {
-            backgroundColor: 'red',
+            backgroundColor: colors.red,
             justifyContent: 'center',
             height: 50,
             borderRadius: 6,
             alignSelf: 'stretch',
         },
         publishButtonDisabled: {
-            backgroundColor: colors.grey,
+            backgroundColor: colors.darkGrey,
             justifyContent: 'center',
             height: 50,
             borderRadius: 6,
             alignSelf: 'stretch',
-            margin: 32,
-            marginTop: 10,
+            marginVertical: 10,
+            marginHorizontal: 36,
         },
         publishButton: {
-            backgroundColor: 'green',
+            backgroundColor: colors.primary.darkerLight,
             justifyContent: 'center',
             height: 50,
             borderRadius: 6,
             alignSelf: 'stretch',
-            margin: 32,
-            marginTop: 10,
+            marginVertical: 10,
+            marginHorizontal: 36,
         },
     });
     return styles;

@@ -1,5 +1,5 @@
 export default {
-    primary: { light: 'teal', dark: 'coral' },
+    primary: { light: 'teal', dark: 'coral', darkerLight: '#00A0A0' },
     accent: { light: 'coral', dark: 'teal' },
 
     // Components
@@ -16,7 +16,7 @@ export default {
     loginScreen: {
         background: '#e5f2f2',
     },
-    red: '#c00',
+    red: '#f05348',
     green: '#0a0',
     darkerGrey: '#666',
     link: '#00c',

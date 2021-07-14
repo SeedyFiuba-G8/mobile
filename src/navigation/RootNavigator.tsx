@@ -3,6 +3,7 @@ import React from 'react';
 // Navigation
 import { createStackNavigator } from '@react-navigation/stack';
 import DrawerNavigator from './DrawerNavigator';
+import ReviewerCenterNavigator from './ReviewerCenterNavigator';
 
 // Screens
 import NotFoundScreen from '../screens/NotFoundScreen';
@@ -73,9 +74,9 @@ export default function RootNavigator(): React.ReactElement {
                 options={{ title: 'Project' }}
             />
             <RootStack.Screen
-                name='ReviewRequests'
-                component={ReviewRequestsScreen}
-                options={{ title: 'Review requests' }}
+                name='ReviewerCenter'
+                component={ReviewerCenterNavigator}
+                options={{ title: 'Reviewer center' }}
             />
             <RootStack.Screen
                 name='NotFound'

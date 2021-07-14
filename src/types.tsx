@@ -24,7 +24,7 @@ export type RootStackParamList = {
     ProjectCreation: { edition: true; projectId: string } | { edition: false };
     MyProjects: { showNotification: string; projectId: string } | undefined;
     ProjectVisualization: { projectId: string };
-    ReviewRequests: undefined;
+    ReviewerCenter: undefined;
     // Error
     NotFound: undefined;
 };
@@ -40,4 +40,9 @@ export type TopTabsParamList = {
     Popular: undefined;
     Newest: undefined;
     EndingSoon: undefined;
+};
+
+export type ReviewerCenterTabParamList = {
+    ReviewRequests: undefined;
+    ReviewingProjects: undefined;
 };
