@@ -3,19 +3,39 @@ import { StyleSheet, View, DeviceEventEmitter } from 'react-native';
 import { Text, Card, ProgressBar, Button } from 'react-native-paper';
 import colors from '../../constants/colors';
 
+import {
+    acceptReviewRequest,
+    rejectReviewRequest,
+} from '../../api/projectsApi';
+
 type Props = {
     title: string;
     city: string;
     country: string;
     cover_image_uri: string;
     description: string;
-    id: string;
+    projectId: string;
 };
 
 export default function ReviewRequestCard(props: Props): React.ReactElement {
     const onCardPress = () => {
         console.log('Pressed review request card');
     };
+
+    const onAccept = async () => {
+        const response = await acceptReviewRequest(props.projectId);
+        if (response.successful) {
+            console.log('Successfully accepted reviewership');
+        }
+    };
+
+    const onReject = async () => {
+        const response = await rejectReviewRequest(props.projectId);
+        if (response.successful) {
+            console.log('Successfully rejected reviewership');
+        }
+    };
+
     return (
         <Card style={styles.card} onPress={onCardPress}>
             <Card.Cover
@@ -37,7 +57,7 @@ export default function ReviewRequestCard(props: Props): React.ReactElement {
                             icon='check-bold'
                             color={colors.primary.light}
                             mode='contained'
-                            onPress={() => console.log('Falopa')}
+                            onPress={onAccept}
                         >
                             <Text style={{ color: colors.white }}>Accept</Text>
                         </Button>
@@ -54,9 +74,11 @@ export default function ReviewRequestCard(props: Props): React.ReactElement {
                             icon='close-thick'
                             color={colors.darkerGrey}
                             mode='contained'
-                            onPress={() => console.log('Falopa 2')}
+                            onPress={onReject}
                         >
-                            <Text style={{ color: colors.white }}>Decline</Text>
+                            <Text style={{ color: colors.white }}>
+                                Decline
+                            </Text>
                         </Button>
                     </View>
                 </View>

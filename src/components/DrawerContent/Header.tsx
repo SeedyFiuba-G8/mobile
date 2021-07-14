@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Avatar, Caption, Title } from 'react-native-paper';
+import { Avatar, Caption, Title, IconButton } from 'react-native-paper';
 
 // Navigation
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
@@ -40,6 +40,17 @@ export default function Header({
                     <Title
                         style={styles.title}
                     >{`${profile_info.first_name} ${profile_info.last_name}`}</Title>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <IconButton icon='ethereum' color={colors.darkerGrey} />
+                        <Text style={{ left: -10, color: colors.darkerGrey }}>
+                            0.000253
+                        </Text>
+                    </View>
                 </View>
             </View>
         </View>
@@ -74,6 +85,7 @@ const createThemedStyles = (isDarkTheme: boolean) => {
         userName: {
             marginTop: 10,
             flexDirection: 'column',
+            alignItems: 'center',
         },
     });
 

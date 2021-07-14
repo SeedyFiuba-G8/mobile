@@ -79,6 +79,11 @@ const IconSubtitle = (props: { icon: string; text: string }) => {
     );
 };
 
+type Reviewer = {
+    email: string;
+    status: string;
+};
+
 export default function ProjectCreationScreen(
     props: Props
 ): React.ReactElement {
@@ -99,7 +104,7 @@ export default function ProjectCreationScreen(
     const [statusBarText, setStatusBarText] = useState('');
     const [city, setCity] = useState('');
     const [country, setCountry] = useState('');
-    const [reviewers, setReviewers] = useState<Array<string>>([]);
+    const [reviewers, setReviewers] = useState<Array<Reviewer>>([]);
 
     const [loading, setLoading] = useState(false);
 
@@ -111,6 +116,7 @@ export default function ProjectCreationScreen(
             );
             if (projectResponse.successful) {
                 const project_temp = projectResponse.data;
+                console.log(project_temp);
                 setTitle(project_temp.title);
                 setDescription(project_temp.description);
                 setObjective(project_temp.objective);
@@ -119,6 +125,7 @@ export default function ProjectCreationScreen(
                 setCity(project_temp.city);
                 setCountry(project_temp.country);
                 setTags(project_temp.tags);
+                setReviewers(project_temp.reviewers);
             }
         }
         setLoading(false);
@@ -138,7 +145,8 @@ export default function ProjectCreationScreen(
             country,
             city,
             date.toJSON(),
-            tags
+            tags,
+            reviewers.map((reviewer, index) => reviewer.email)
         );
         if (projectCreationResponse.successful) {
             props.navigation.navigate('MyProjects', {
@@ -159,7 +167,10 @@ export default function ProjectCreationScreen(
                 country,
                 city,
                 date.toJSON(),
-                tags
+                tags,
+                reviewers
+                    .filter((reviewer, index) => reviewer.status === 'PENDING')
+                    .map((reviewer, index) => reviewer.email)
             );
             if (result.successful) {
                 setStatusBarText('Project modified successfully!');
@@ -180,6 +191,9 @@ export default function ProjectCreationScreen(
         }
     };
 
+    const isPublishable = reviewers.some(
+        (reviewer, index) => reviewer.status === 'ACCEPTED'
+    );
     return (
         <ScrollView
             style={{ flex: 1 }}
@@ -318,6 +332,7 @@ export default function ProjectCreationScreen(
                         <ReviewerList
                             reviewers={reviewers}
                             setReviewers={setReviewers}
+                            showStatus={props.route.params.edition}
                         />
                     </View>
                     {!props.route.params.edition ? (
@@ -347,7 +362,14 @@ export default function ProjectCreationScreen(
                                     </Text>
                                 </Button>
                             </View>
-                            <Button style={styles.publishButtonDisabled}>
+                            <Button
+                                style={
+                                    isPublishable
+                                        ? styles.publishButton
+                                        : styles.publishButtonDisabled
+                                }
+                                disabled={!isPublishable}
+                            >
                                 <Text style={{ color: 'white' }}>Publish</Text>
                             </Button>
                         </>

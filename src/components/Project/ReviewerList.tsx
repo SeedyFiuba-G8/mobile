@@ -11,9 +11,14 @@ import { View } from 'react-native';
 
 import colors from '../../constants/colors';
 
+type Reviewer = {
+    email: string;
+    status: string;
+};
 type Props = {
-    reviewers: Array<string>;
-    setReviewers: (newReviewers: Array<string>) => void;
+    reviewers: Array<Reviewer>;
+    setReviewers: (newReviewers: Array<Reviewer>) => void;
+    showStatus: boolean;
 };
 export default function ReviewerList(props: Props): React.ReactElement {
     const [dialogVisible, setDialogVisible] = React.useState(false);
@@ -23,13 +28,43 @@ export default function ReviewerList(props: Props): React.ReactElement {
 
     const onOkDialogClick = () => {
         setDialogVisible(false);
-        props.setReviewers([...props.reviewers, reviewerInput]);
+        props.setReviewers([
+            ...props.reviewers,
+            { email: reviewerInput, status: 'PENDING' },
+        ]);
     };
 
     const removeReviewer = (removeIndex: number) => {
         props.setReviewers(
             props.reviewers.filter((reviewer, index) => index !== removeIndex)
         );
+    };
+    const generateStatusIcon = (status: string): React.ReactElement | null => {
+        switch (status) {
+            case 'PENDING':
+                return (
+                    <IconButton
+                        icon='circle'
+                        size={10}
+                        color={colors.yellow}
+                    />
+                );
+
+            case 'ACCEPTED':
+                return (
+                    <IconButton
+                        icon='check-bold'
+                        size={16}
+                        color={colors.green}
+                    />
+                );
+            case 'REJECTED':
+                return (
+                    <IconButton icon='close' size={16} color={colors.red} />
+                );
+            default:
+                return null;
+        }
     };
     return (
         <>
@@ -49,8 +84,11 @@ export default function ReviewerList(props: Props): React.ReactElement {
                             onPress={() => removeReviewer(index)}
                         />
                         <Text style={styles.reviewerItemText} key={index}>
-                            {reviewer}
+                            {reviewer.email}
                         </Text>
+                        {props.showStatus
+                            ? generateStatusIcon(reviewer.status)
+                            : null}
                     </View>
                 );
             })}

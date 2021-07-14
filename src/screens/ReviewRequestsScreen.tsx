@@ -1,20 +1,36 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Paragraph, Text } from 'react-native-paper';
-import ReviewRequestCard from '../components/ReviewRequest/ReviewRequestCard';
 import ReviewRequestList from '../components/ReviewRequest/ReviewRequestList';
+import { getReviewRequests } from '../api/projectsApi';
+
+import type { ReviewRequest } from '../api/projectsApi';
+import ReviewerList from '../components/Project/ReviewerList';
+
 export default function ReviewRequestsScreen(): React.ReactElement {
     const [refreshing, setRefreshing] = useState(false);
-    const onRefresh = () => {
-        console.log('falopa');
+    const [reviewRequests, setReviewRequests] = useState<Array<ReviewRequest>>(
+        []
+    );
+    const onRefresh = async () => {
+        setRefreshing(true);
+        const reviewRequestResponse = await getReviewRequests();
+        if (reviewRequestResponse.successful) {
+            console.log(reviewRequestResponse.data.requests);
+            setReviewRequests(reviewRequestResponse.data.requests);
+        }
+        setRefreshing(false);
     };
+
+    useEffect(() => {
+        onRefresh();
+    }, []);
     return (
         <View style={styles.container}>
             <ReviewRequestList
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                projects={mockProjects}
+                reviewRequests={reviewRequests}
             />
         </View>
     );

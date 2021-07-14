@@ -91,7 +91,35 @@ const patch = async <T, P>(
     options?: AxiosRequestConfig
 ): Promise<Response<T>> => {
     try {
-        const response = await axios.patch(`${BASE_URL}/${resource}`, payload, {
+        const response = await axios.patch(
+            `${BASE_URL}/${resource}`,
+            payload,
+            {
+                ...options,
+            }
+        );
+        const data = handleResponse<T>(response);
+        return {
+            successful: true,
+            data: data,
+        };
+    } catch (error) {
+        console.log(error.response);
+        return {
+            successful: false,
+            errorMessage: error.response.data.message,
+            errorCode: error.response.data.status,
+        };
+    }
+};
+
+const put = async <T, P>(
+    resource: string,
+    payload: P,
+    options?: AxiosRequestConfig
+): Promise<Response<T>> => {
+    try {
+        const response = await axios.put(`${BASE_URL}/${resource}`, payload, {
             ...options,
         });
         const data = handleResponse<T>(response);
@@ -113,4 +141,5 @@ export const apiProvider = {
     get,
     patch,
     del,
+    put,
 };

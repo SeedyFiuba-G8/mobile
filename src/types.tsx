@@ -25,7 +25,6 @@ export type RootStackParamList = {
     MyProjects: { showNotification: string; projectId: string } | undefined;
     ProjectVisualization: { projectId: string };
     ReviewRequests: undefined;
-
     // Error
     NotFound: undefined;
 };

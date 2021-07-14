@@ -14,6 +14,7 @@ import {
     ActivityIndicator,
     Button,
 } from 'react-native-paper';
+import SponsorProjectModal from '../components/Sponsor/SponsorProjectModal';
 
 // Types
 import type { GetProjectApiResponse } from '../api/projectsApi';
@@ -77,6 +78,9 @@ export default function ProjectVisualizationScreen(
     const [endDate, setEndDate] = useState(new Date());
 
     const [creatorName, setCreatorName] = useState('');
+
+    const [sponsorProjectModalVisible, setSponsorProjectModalVisible] =
+        useState(false);
     const onRefresh = async () => {
         setLoading(true);
         const projectResponse = await getProject(props.route.params.projectId);
@@ -102,6 +106,9 @@ export default function ProjectVisualizationScreen(
         onRefresh();
     }, [props.route.params.projectId]);
 
+    const onSponsorProjectPress = () => {
+        setSponsorProjectModalVisible(true);
+    };
     const remainingDays = Math.max(
         Math.ceil(
             (endDate.getTime() - new Date().getTime()) / (1000 * 3600 * 24)
@@ -130,7 +137,9 @@ export default function ProjectVisualizationScreen(
                             source={{ uri: 'https://picsum.photos/350/300' }}
                         />
                         <View style={styles.basicInfoView}>
-                            <Title style={styles.title}>{project?.title}</Title>
+                            <Title style={styles.title}>
+                                {project?.title}
+                            </Title>
                             <IconLabel
                                 icon='map-marker'
                                 text={`Created in ${project?.city}, ${project?.country}`}
@@ -264,10 +273,16 @@ export default function ProjectVisualizationScreen(
                     </>
                 )}
             </ScrollView>
+            <SponsorProjectModal
+                visible={sponsorProjectModalVisible}
+                setVisible={setSponsorProjectModalVisible}
+                onOkClick={() => setSponsorProjectModalVisible(false)}
+                onCancelClick={() => setSponsorProjectModalVisible(false)}
+            />
             <FAB
                 style={styles.fab}
                 icon='ethereum'
-                onPress={() => console.log('Pressed')}
+                onPress={onSponsorProjectPress}
                 label='Sponsor this project'
             />
         </View>
