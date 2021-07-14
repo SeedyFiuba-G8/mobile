@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, DeviceEventEmitter } from 'react-native';
 import { Text, Card, ProgressBar, Button } from 'react-native-paper';
 import colors from '../../constants/colors';
@@ -15,6 +15,7 @@ type Props = {
     cover_image_uri: string;
     description: string;
     projectId: string;
+    onRefresh: () => void;
 };
 
 export default function ReviewRequestCard(props: Props): React.ReactElement {
@@ -23,19 +24,25 @@ export default function ReviewRequestCard(props: Props): React.ReactElement {
     };
 
     const onAccept = async () => {
+        setAccepting(true);
         const response = await acceptReviewRequest(props.projectId);
         if (response.successful) {
             console.log('Successfully accepted reviewership');
+            props.onRefresh();
         }
     };
 
     const onReject = async () => {
+        setRejecting(true);
         const response = await rejectReviewRequest(props.projectId);
         if (response.successful) {
             console.log('Successfully rejected reviewership');
+            props.onRefresh();
         }
     };
 
+    const [accepting, setAccepting] = useState(false);
+    const [rejecting, setRejecting] = useState(false);
     return (
         <Card style={styles.card} onPress={onCardPress}>
             <Card.Cover
@@ -58,6 +65,8 @@ export default function ReviewRequestCard(props: Props): React.ReactElement {
                             color={colors.primary.light}
                             mode='contained'
                             onPress={onAccept}
+                            loading={accepting}
+                            disabled={accepting || rejecting}
                         >
                             <Text style={{ color: colors.white }}>Accept</Text>
                         </Button>
@@ -75,6 +84,8 @@ export default function ReviewRequestCard(props: Props): React.ReactElement {
                             color={colors.darkerGrey}
                             mode='contained'
                             onPress={onReject}
+                            loading={rejecting}
+                            disabled={accepting || rejecting}
                         >
                             <Text style={{ color: colors.white }}>
                                 Decline

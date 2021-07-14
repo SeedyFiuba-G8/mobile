@@ -26,10 +26,10 @@ const data: DrawerItemType[] = [
         },
     },
     {
-        label: 'Review requests',
+        label: 'Reviewer center',
         icon: 'shield-account',
         onPress: (props) => {
-            props.navigation.navigate('ReviewRequests');
+            props.navigation.navigate('ReviewerCenter');
         },
     },
     {

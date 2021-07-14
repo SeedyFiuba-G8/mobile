@@ -7,7 +7,6 @@ import type { Project } from '../../api/projectsApi';
 import colors from '../../constants/colors';
 import ReviewRequestCard from './ReviewRequestCard';
 import type { ReviewRequest } from '../../api/projectsApi';
-
 type Props = {
     refreshing: boolean;
     onRefresh: () => void;
@@ -43,6 +42,7 @@ export default function ReviewRequestList(props: Props): React.ReactElement {
                             }/700`}
                             description={reviewRequest.description}
                             projectId={reviewRequest.projectId}
+                            onRefresh={props.onRefresh}
                         />
                     );
                 })
