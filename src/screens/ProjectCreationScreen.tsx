@@ -10,6 +10,7 @@ import {
     Title,
     Avatar,
     ActivityIndicator,
+    IconButton,
 } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import colors from '../constants/colors';
@@ -62,15 +63,11 @@ type Props = {
 
 const IconSubtitle = (props: { icon: string; text: string }) => {
     const { isDarkTheme } = useTheme();
-    const styles = React.useMemo(
-        () => createThemedStyles(isDarkTheme),
-        [isDarkTheme]
-    );
     return (
         <View style={styles.labelTitleView}>
             <Avatar.Icon
                 icon={props.icon}
-                color={colors.darkGrey}
+                color={colors.primary.light}
                 style={styles.icon}
                 size={35}
             />
@@ -79,26 +76,104 @@ const IconSubtitle = (props: { icon: string; text: string }) => {
     );
 };
 
+const StageItem = (props: {
+    index: number;
+    totalItems: number;
+    onModifyGoal: (index: number, title: string) => void;
+    onModifyTitle: (index: number, title: string) => void;
+    onDeleteStagePress: (index: number) => void;
+    stage: Stage;
+}) => {
+    const affix = <TextInput.Affix text='ETH' />;
+    return (
+        <>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={styles.stageText}>{`Stage ${
+                    props.index + 1
+                }`}</Text>
+                {props.totalItems > 1 ? (
+                    <IconButton
+                        icon='close-circle'
+                        style={{ margin: 0 }}
+                        color={colors.grey}
+                        size={25}
+                        onPress={() => props.onDeleteStagePress(props.index)}
+                    />
+                ) : null}
+            </View>
+            <View
+                style={{
+                    flexDirection: 'row',
+                    flex: 1,
+                    alignSelf: 'stretch',
+                    alignItems: 'center',
+                    marginRight: 32,
+                }}
+            >
+                <View
+                    style={{
+                        flexDirection: 'column',
+                        flex: 1,
+                    }}
+                >
+                    <View style={styles.goalStageView}>
+                        <TextInput
+                            style={styles.goalInput}
+                            label='Title'
+                            mode='outlined'
+                            onChangeText={(text) =>
+                                props.onModifyTitle(props.index, text)
+                            }
+                            value={props.stage.title}
+                        />
+                    </View>
+                    <View style={styles.goalStageView}>
+                        <TextInput
+                            style={styles.goalInput}
+                            mode='outlined'
+                            keyboardType='numeric'
+                            right={affix}
+                            label='Goal'
+                            onChangeText={(text) =>
+                                props.onModifyGoal(props.index, text)
+                            }
+                            value={props.stage.goal}
+                        />
+                    </View>
+                </View>
+            </View>
+            <View
+                style={{
+                    borderWidth: 0.25,
+                    height: 25,
+                    borderColor: colors.grey,
+                }}
+            ></View>
+        </>
+    );
+};
+
 type Reviewer = {
     email: string;
     status: string;
+};
+
+type Stage = {
+    title?: string;
+    goal?: string;
 };
 
 export default function ProjectCreationScreen(
     props: Props
 ): React.ReactElement {
     const { isDarkTheme } = useTheme();
-    const styles = React.useMemo(
-        () => createThemedStyles(isDarkTheme),
-        [isDarkTheme]
-    );
     const [category, setCategory] = useState('');
     const [tags, setTags] = useState<Array<string>>([]);
     const [date, setDate] = React.useState<Date>(new Date());
     const [title, setTitle] = React.useState('');
     const [description, setDescription] = React.useState('');
     const [objective, setObjective] = React.useState('');
-    const [goal, setGoal] = React.useState('');
+    const [stages, setStages] = React.useState<Array<Stage>>([{ title: '' }]);
 
     const [statusBarVisible, setStatusBarVisible] = useState(false);
     const [statusBarText, setStatusBarText] = useState('');
@@ -196,6 +271,33 @@ export default function ProjectCreationScreen(
         }
     };
 
+    const onModifyStageTitle = (index: number, title: string) => {
+        const stage_modified = [...stages];
+        stage_modified[index].title = title;
+        setStages(stage_modified);
+    };
+
+    const onModifyStageGoal = (index: number, goal: string) => {
+        const stage_modified = [...stages];
+        stage_modified[index].goal = goal;
+        setStages(stage_modified);
+    };
+
+    const onAddStagePress = () => {
+        const stage_modified = [...stages, { title: '' }];
+        setStages(stage_modified);
+    };
+
+    const onDeleteStagePress = (delete_index: number) => {
+        console.log(`Deleting item on index ${delete_index}`);
+        const stage_modified = stages.filter((stage, index) => {
+            console.log(`Deletting index ${index}: ${index === delete_index}`);
+            return index !== delete_index;
+        });
+        console.log(stage_modified.map((stage, index) => stage.title));
+        setStages(stage_modified);
+    };
+
     const isPublishable = reviewers.some(
         (reviewer, index) => reviewer.status === 'ACCEPTED'
     );
@@ -211,7 +313,6 @@ export default function ProjectCreationScreen(
                     <Title style={styles.titlePrimary}>Project Title</Title>
                     <TextInput
                         style={styles.input}
-                        theme={createThemedTextInputTheme(isDarkTheme)}
                         onChangeText={(newTitle) => setTitle(newTitle)}
                         value={title}
                         mode='outlined'
@@ -220,7 +321,6 @@ export default function ProjectCreationScreen(
                     <IconSubtitle icon='bullseye-arrow' text='Objective' />
                     <TextInput
                         style={styles.descriptionInput}
-                        theme={createThemedTextInputTheme(isDarkTheme)}
                         multiline={true}
                         onChangeText={(newObjective) =>
                             setObjective(newObjective)
@@ -234,7 +334,6 @@ export default function ProjectCreationScreen(
                     <IconSubtitle icon='text' text='Description' />
                     <TextInput
                         style={styles.descriptionInput}
-                        theme={createThemedTextInputTheme(isDarkTheme)}
                         multiline={true}
                         onChangeText={(newDescription) =>
                             setDescription(newDescription)
@@ -280,18 +379,32 @@ export default function ProjectCreationScreen(
                         }}
                     />
                     <IconSubtitle icon='currency-usd' text='Goal' />
-                    <TextInput
-                        style={{
-                            ...styles.input,
-                            backgroundColor: 'transparent',
-                        }}
-                        theme={createThemedTextInputTheme(isDarkTheme)}
-                        mode='outlined'
-                        keyboardType='numeric'
-                        onChangeText={(newGoal) => setGoal(newGoal)}
-                        right={element}
+                    {stages.map((stage, index) => {
+                        return (
+                            <StageItem
+                                key={index}
+                                index={index}
+                                onModifyGoal={onModifyStageGoal}
+                                onModifyTitle={onModifyStageTitle}
+                                totalItems={stages.length}
+                                onDeleteStagePress={onDeleteStagePress}
+                                stage={stages[index]}
+                            />
+                        );
+                    })}
+                    <IconButton
+                        icon='plus-circle-outline'
+                        color={colors.darkGrey}
+                        size={30}
+                        onPress={onAddStagePress}
                     />
 
+                    <Divider
+                        style={{
+                            alignSelf: 'stretch',
+                            margin: 10,
+                        }}
+                    />
                     <IconSubtitle icon='calendar' text='Deadline' />
                     <View style={styles.subsection}>
                         <FundDeadlineSelector date={date} setDate={setDate} />
@@ -410,166 +523,176 @@ export default function ProjectCreationScreen(
     );
 }
 
-const createThemedStyles = (isDarkTheme: boolean) => {
-    const styles = StyleSheet.create({
-        container: {
-            margin: 10,
-            paddingVertical: 10,
-            alignItems: 'center',
-            backgroundColor: isDarkTheme ? colors.black : colors.white,
-        },
-        button: {
-            backgroundColor: isDarkTheme
-                ? colors.primary.dark
-                : colors.primary.light,
-            justifyContent: 'center',
-            height: 50,
-            borderRadius: 6,
-            margin: 32,
-            alignSelf: 'stretch',
-        },
-        input: {
-            alignSelf: 'stretch',
-            marginHorizontal: 32,
-            marginVertical: 10,
-            marginTop: 0,
-            backgroundColor: isDarkTheme ? colors.white : '#EEEEEE',
-            fontWeight: '300',
-        },
-        descriptionInput: {
-            alignSelf: 'stretch',
-            marginHorizontal: 32,
-            marginVertical: 10,
-            marginTop: 0,
-            backgroundColor: isDarkTheme ? colors.white : '#EEEEEE',
-            fontWeight: '300',
-        },
-        inputText: {
-            fontSize: 20,
-            fontWeight: '200',
-        },
-        logo: {
-            fontSize: 30,
-            fontWeight: '300',
-            margin: 32,
-            color: colors.primary.light,
-            alignSelf: 'center',
-            justifyContent: 'center',
-            textAlign: 'center',
-        },
-        titledSection: {
-            flexDirection: 'row',
-            alignSelf: 'stretch',
-            marginHorizontal: 32,
-        },
-        categoryText: {
-            fontSize: 20,
-            color: colors.primary.light,
-        },
-        categorySelectorDropdownSection: {
-            flex: 1,
-            borderWidth: 1,
-            borderColor: colors.primary.light,
-            borderRadius: 10,
-            margin: 5,
-        },
-        categorySelector: {
-            alignSelf: 'stretch',
-            height: 50,
-        },
-        divider: {
-            alignSelf: 'stretch',
-            margin: 10,
-            height: 1,
-        },
-        titlePrimary: {
-            alignSelf: 'flex-start',
-            marginLeft: 30,
-            fontSize: 25,
-            color: colors.darkerGrey,
-        },
-        titleSecondary: {
-            alignSelf: 'flex-start',
-            fontSize: 20,
-            color: colors.grey,
-        },
-        icon: {
-            backgroundColor: 'transparent',
-        },
-        labelTitleView: {
-            flexDirection: 'row',
-            marginLeft: 30,
-            alignSelf: 'flex-start',
-        },
-        subsection: {
-            alignSelf: 'stretch',
-            marginHorizontal: 32,
-            borderWidth: 1,
-            borderRadius: 5,
-            borderColor: colors.darkGrey,
-            marginBottom: 10,
-        },
-        subtitle: {
-            fontSize: 14,
-            color: colors.darkGrey,
-            marginLeft: 10,
-        },
-        reviewerItemText: {
-            color: colors.darkerGrey,
-            fontSize: 16,
-            marginVertical: 5,
-        },
-        editButtonView: {
-            flexDirection: 'row',
-            flex: 1,
-            marginHorizontal: 36,
-            marginBottom: 10,
-        },
-        confirmChangesButton: {
-            backgroundColor: colors.primary.light,
-            justifyContent: 'center',
-            height: 50,
-            borderRadius: 6,
-            alignSelf: 'stretch',
-            marginRight: 5,
-            flex: 1,
-        },
-        deleteProjectButon: {
-            backgroundColor: colors.red,
-            justifyContent: 'center',
-            height: 50,
-            borderRadius: 6,
-            alignSelf: 'stretch',
-        },
-        publishButtonDisabled: {
-            backgroundColor: colors.darkGrey,
-            justifyContent: 'center',
-            height: 50,
-            borderRadius: 6,
-            alignSelf: 'stretch',
-            marginVertical: 10,
-            marginHorizontal: 36,
-        },
-        publishButton: {
-            backgroundColor: colors.primary.darkerLight,
-            justifyContent: 'center',
-            height: 50,
-            borderRadius: 6,
-            alignSelf: 'stretch',
-            marginVertical: 10,
-            marginHorizontal: 36,
-        },
-    });
-    return styles;
-};
-
-const createThemedTextInputTheme = (isDarkTheme: boolean) => {
-    const theme = {
-        colors: {
-            placeholder: colors.grey,
-            primary: isDarkTheme ? colors.primary.dark : colors.primary.light,
-            text: colors.black,
-        },
-    };
-    return theme;
-};
+const styles = StyleSheet.create({
+    container: {
+        margin: 10,
+        paddingVertical: 10,
+        alignItems: 'center',
+        backgroundColor: colors.white,
+    },
+    button: {
+        backgroundColor: colors.primary.light,
+        justifyContent: 'center',
+        height: 50,
+        borderRadius: 6,
+        margin: 32,
+        alignSelf: 'stretch',
+    },
+    input: {
+        alignSelf: 'stretch',
+        flex: 1,
+        marginHorizontal: 32,
+        marginVertical: 10,
+        marginTop: 0,
+        backgroundColor: '#EEEEEE',
+        fontWeight: '300',
+    },
+    descriptionInput: {
+        alignSelf: 'stretch',
+        marginHorizontal: 32,
+        marginVertical: 10,
+        marginTop: 0,
+        backgroundColor: '#EEEEEE',
+        fontWeight: '300',
+    },
+    inputText: {
+        fontSize: 20,
+        fontWeight: '200',
+    },
+    logo: {
+        fontSize: 30,
+        fontWeight: '300',
+        margin: 32,
+        color: colors.primary.light,
+        alignSelf: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+    },
+    titledSection: {
+        flexDirection: 'row',
+        alignSelf: 'stretch',
+        marginHorizontal: 32,
+    },
+    categoryText: {
+        fontSize: 20,
+        color: colors.primary.light,
+    },
+    categorySelectorDropdownSection: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: colors.primary.light,
+        borderRadius: 10,
+        margin: 5,
+    },
+    categorySelector: {
+        alignSelf: 'stretch',
+        height: 50,
+    },
+    divider: {
+        alignSelf: 'stretch',
+        margin: 10,
+        height: 1,
+    },
+    titlePrimary: {
+        alignSelf: 'flex-start',
+        marginLeft: 30,
+        fontSize: 25,
+        color: colors.primary.light,
+    },
+    titleSecondary: {
+        alignSelf: 'flex-start',
+        fontSize: 20,
+        color: colors.primary.light,
+    },
+    icon: {
+        backgroundColor: 'transparent',
+    },
+    labelTitleView: {
+        flexDirection: 'row',
+        marginLeft: 30,
+        alignSelf: 'flex-start',
+    },
+    subsection: {
+        alignSelf: 'stretch',
+        marginHorizontal: 32,
+        borderWidth: 1,
+        borderRadius: 5,
+        borderColor: colors.darkGrey,
+        marginBottom: 10,
+    },
+    subtitle: {
+        fontSize: 14,
+        color: colors.darkGrey,
+        marginLeft: 10,
+    },
+    reviewerItemText: {
+        color: colors.darkerGrey,
+        fontSize: 16,
+        marginVertical: 5,
+    },
+    editButtonView: {
+        flexDirection: 'row',
+        flex: 1,
+        marginHorizontal: 36,
+        marginBottom: 10,
+    },
+    confirmChangesButton: {
+        backgroundColor: colors.primary.light,
+        justifyContent: 'center',
+        height: 50,
+        borderRadius: 6,
+        alignSelf: 'stretch',
+        marginRight: 5,
+        flex: 1,
+    },
+    deleteProjectButon: {
+        backgroundColor: colors.red,
+        justifyContent: 'center',
+        height: 50,
+        borderRadius: 6,
+        alignSelf: 'stretch',
+    },
+    publishButtonDisabled: {
+        backgroundColor: colors.darkGrey,
+        justifyContent: 'center',
+        height: 50,
+        borderRadius: 6,
+        alignSelf: 'stretch',
+        marginVertical: 10,
+        marginHorizontal: 36,
+    },
+    publishButton: {
+        backgroundColor: colors.primary.darkerLight,
+        justifyContent: 'center',
+        height: 50,
+        borderRadius: 6,
+        alignSelf: 'stretch',
+        marginVertical: 10,
+        marginHorizontal: 36,
+    },
+    goalStageView: {
+        alignSelf: 'stretch',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: 32,
+    },
+    goalInput: {
+        alignSelf: 'stretch',
+        flex: 1,
+        marginVertical: 10,
+        marginTop: 0,
+        backgroundColor: colors.white,
+        fontWeight: '300',
+    },
+    stageText: {
+        fontWeight: 'bold',
+        color: colors.darkGrey,
+        fontSize: 16,
+    },
+    stageItemText: {
+        color: colors.darkGrey,
+        marginRight: 4,
+    },
+});
