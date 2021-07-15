@@ -20,22 +20,58 @@ type Props = {
     progress: number;
     backer_count: number;
     id: string;
-    draft?: boolean;
+    status?: string;
+    showStatus: boolean;
 };
 
 export default function ProjectCard(props: Props): React.ReactElement {
     const onCardPress = () => {
-        if (props.draft ?? false) {
+        if (props.status?.toLowerCase() === 'draft' ?? false) {
             DeviceEventEmitter.emit('editProject', { projectId: props.id });
         } else {
             DeviceEventEmitter.emit('viewProject', { projectId: props.id });
         }
     };
+
+    const generateStatusText = (): React.ReactElement | null => {
+        if (props.status && props.showStatus) {
+            switch (props.status.toLowerCase()) {
+                case 'draft':
+                    return (
+                        <View
+                            style={{
+                                backgroundColor: colors.darkGrey,
+                            }}
+                        >
+                            <Text style={styles.statusText}>Draft</Text>
+                        </View>
+                    );
+                case 'funding':
+                    return (
+                        <View
+                            style={{ backgroundColor: colors.primary.light }}
+                        >
+                            <Text style={styles.statusText}>Funding</Text>
+                        </View>
+                    );
+                case 'finished':
+                    return (
+                        <View
+                            style={{ backgroundColor: colors.primary.light }}
+                        >
+                            <Text style={styles.statusText}>Finished</Text>
+                        </View>
+                    );
+
+                default:
+                    return null;
+            }
+        }
+        return null;
+    };
     return (
         <Card style={styles.card} onPress={onCardPress}>
-            {props.draft ?? false ? (
-                <Text style={styles.draftText}>Draft</Text>
-            ) : null}
+            {generateStatusText()}
             <Card.Cover
                 style={styles.cover}
                 source={{ uri: props.cover_image_uri }}
@@ -112,6 +148,19 @@ const styles = StyleSheet.create({
     },
     draftText: {
         color: colors.darkGrey,
+        fontSize: 18,
+        fontWeight: 'bold',
+        fontStyle: 'italic',
+        margin: 5,
+    },
+    statusText: {
+        color: colors.white,
+        fontSize: 14,
+        margin: 5,
+        alignSelf: 'center',
+    },
+    finishedText: {
+        color: colors.primary.light,
         fontSize: 18,
         fontWeight: 'bold',
         fontStyle: 'italic',

@@ -11,6 +11,7 @@ type Props = {
     onRefresh: () => void;
     projects: Array<Project>;
     editable?: boolean;
+    showStatus: boolean;
 };
 
 export default function ProjectList(props: Props): React.ReactElement {
@@ -43,7 +44,8 @@ export default function ProjectList(props: Props): React.ReactElement {
                             progress={Math.random()}
                             backer_count={Math.floor(Math.random() * 100)}
                             id={project.id}
-                            draft={project.status === 'DRAFT'}
+                            status={project.status}
+                            showStatus={props.showStatus}
                         />
                     );
                 })

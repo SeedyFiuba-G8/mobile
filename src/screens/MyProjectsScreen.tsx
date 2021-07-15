@@ -38,8 +38,6 @@ export default function DashboardScreen(props: Props): React.ReactElement {
     const userId = useSelector((state: RootState) => state.session.id);
     const [projects, setProjects] = React.useState<Array<Project>>([]);
 
-    const [showProjects, setShowProjects] = React.useState<Array<Project>>([]);
-
     const [statusBarVisible, setStatusBarVisible] = React.useState(false);
     const [statusBarText, setStatusBarText] = React.useState('');
 
@@ -109,8 +107,9 @@ export default function DashboardScreen(props: Props): React.ReactElement {
                     mode='dropdown'
                 >
                     <Picker.Item label='All' value='all' />
-                    <Picker.Item label='Published' value='published' />
                     <Picker.Item label='Draft' value='draft' />
+                    <Picker.Item label='Funding' value='funding' />
+                    <Picker.Item label='Finalized' value='finalized' />
                 </Picker>
             </View>
             <View style={styles.container}>
@@ -122,6 +121,7 @@ export default function DashboardScreen(props: Props): React.ReactElement {
                             filter === 'all' ||
                             project.status.toLowerCase() === filter
                     )}
+                    showStatus={true}
                 />
             </View>
             <Snackbar
