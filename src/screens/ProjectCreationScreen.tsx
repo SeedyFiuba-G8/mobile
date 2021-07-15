@@ -30,6 +30,7 @@ import {
     getProject,
     updateProject,
     deleteProject,
+    publishProject,
 } from '../api/projectsApi';
 
 // Hooks
@@ -62,7 +63,6 @@ type Props = {
 };
 
 const IconSubtitle = (props: { icon: string; text: string }) => {
-    const { isDarkTheme } = useTheme();
     return (
         <View style={styles.labelTitleView}>
             <Avatar.Icon
@@ -271,6 +271,18 @@ export default function ProjectCreationScreen(
         }
     };
 
+    const onPublishButtonPress = async () => {
+        if (props.route.params.edition) {
+            const result = await publishProject(props.route.params.projectId);
+            if (result.successful) {
+                props.navigation.pop();
+                props.navigation.replace('MyProjects', {
+                    showNotification: 'Your project has been published!',
+                    projectId: props.route.params.projectId,
+                });
+            }
+        }
+    };
     const onModifyStageTitle = (index: number, title: string) => {
         const stage_modified = [...stages];
         stage_modified[index].title = title;
@@ -475,6 +487,7 @@ export default function ProjectCreationScreen(
                                 disabled={!isPublishable}
                                 icon='send'
                                 color='white'
+                                onPress={onPublishButtonPress}
                             >
                                 <Text
                                     style={{

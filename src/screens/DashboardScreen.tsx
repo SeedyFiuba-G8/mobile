@@ -34,7 +34,8 @@ export default function DashboardScreen({
         if (projects.successful) {
             setProjects(
                 projects.data.projects.filter(
-                    (project, index) => project.status === 'PUBLISHED'
+                    (project, index) =>
+                        project.status.toLowerCase() === 'funding'
                 )
             );
             console.log(projects.data.projects);
@@ -65,6 +66,7 @@ export default function DashboardScreen({
                 refreshing={refreshing}
                 onRefresh={onRefresh}
                 projects={projects}
+                showStatus={false}
             />
         </View>
     );

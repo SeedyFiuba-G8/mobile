@@ -19,7 +19,7 @@ export default function ProfileInfoSection(props: Props): React.ReactElement {
                     <Avatar.Icon
                         size={50}
                         icon={props.icon}
-                        color={colors.grey}
+                        color={colors.primary.light}
                         style={styles.personalInformationIcon}
                     />
                 </View>
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 16,
         alignSelf: 'center',
-        color: colors.darkGrey,
+        color: colors.primary.light,
     },
     personalInformationTextView: {
         marginLeft: 5,

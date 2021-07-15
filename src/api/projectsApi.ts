@@ -80,6 +80,10 @@ type ProjectCreationRequestPayload = {
     reviewers: Array<string>;
 };
 
+type ProjectPublishPayload = {
+    status: string;
+};
+
 type ReviewershipReplyPayload = {
     status: string;
 };
@@ -190,6 +194,23 @@ const updateProject = async (
     return apiResponse;
 };
 
+const publishProject = async (
+    id: string
+): Promise<Response<ProjectEditionApiResponse>> => {
+    const authToken = store.getState().session.token;
+    const apiResponse = apiProvider.patch<
+        ProjectEditionApiResponse,
+        ProjectPublishPayload
+    >(
+        `projects/${id}`,
+        {
+            status: 'FUNDING',
+        },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
 const deleteProject = async (
     id: string
 ): Promise<Response<ProjectDeletionApiResponse>> => {
@@ -252,4 +273,5 @@ export {
     getReviewRequests,
     acceptReviewRequest,
     rejectReviewRequest,
+    publishProject,
 };
