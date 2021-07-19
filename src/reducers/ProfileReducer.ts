@@ -1,4 +1,4 @@
-import type { updateProfileInfoActionType } from '../actions/UpdateProfileAction';
+import type { updateProfileInfoActionType } from '../actions/UpdateNameAction';
 
 type profileStatusType = {
     first_name: string;

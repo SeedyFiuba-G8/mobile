@@ -44,21 +44,6 @@ export default function DashboardTopTabs(): React.ReactElement {
                 component={DashboardScreen}
                 options={{ title: 'Magic' }}
             />
-            <DashboardTabs.Screen
-                name='Popular'
-                component={DashboardScreen}
-                options={{ title: 'Popular' }}
-            />
-            <DashboardTabs.Screen
-                name='Newest'
-                component={DashboardScreen}
-                options={{ title: 'Newest' }}
-            />
-            <DashboardTabs.Screen
-                name='EndingSoon'
-                component={DashboardScreen}
-                options={{ title: 'Ending Soon' }}
-            />
         </DashboardTabs.Navigator>
     );
 }

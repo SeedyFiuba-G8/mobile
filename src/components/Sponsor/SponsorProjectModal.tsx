@@ -6,11 +6,15 @@ import {
     Button,
     Text,
     Avatar,
+    TextInput,
     Divider,
 } from 'react-native-paper';
 import colors from '../../constants/colors';
-import { useEffect } from 'react';
-import strings from '../../constants/strings';
+
+import { useSelector } from 'react-redux';
+
+import type { RootState } from '../../reducers';
+import { Icon } from 'react-native-paper/lib/typescript/components/Avatar/Avatar';
 
 type Props = {
     visible: boolean;
@@ -21,7 +25,10 @@ type Props = {
 
 export default function SponsorProjectModal(props: Props): React.ReactElement {
     const hideModal = () => props.setVisible(false);
-
+    const currentBalance = useSelector(
+        (state: RootState) => state.balance.balance
+    );
+    const affix = <TextInput.Affix text='ETH' />;
     return (
         <Portal>
             <Modal
@@ -33,8 +40,8 @@ export default function SponsorProjectModal(props: Props): React.ReactElement {
                     <View>
                         <Avatar.Icon
                             size={50}
-                            icon='ethereum'
-                            color={colors.grey}
+                            icon='hand-heart'
+                            color={colors.primary.light}
                             style={styles.icon}
                         />
                     </View>
@@ -42,22 +49,52 @@ export default function SponsorProjectModal(props: Props): React.ReactElement {
                         <Text style={styles.text}>Sponsor project</Text>
                     </View>
                 </View>
-
-                <Text style={styles.currentBalanceText}>Your balance</Text>
-                <Divider />
-                <Button style={styles.okButton} onPress={props.onCancelClick}>
-                    <Text style={{ color: colors.primary.light }}>Cancel</Text>
-                </Button>
-                <Button style={styles.okButton} onPress={props.onOkClick}>
-                    <Text
-                        style={{
-                            color: colors.primary.light,
-                            fontWeight: 'bold',
-                        }}
+                <Text style={styles.currentBalanceText}>Current balance</Text>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        alignSelf: 'stretch',
+                    }}
+                >
+                    <Avatar.Icon
+                        style={styles.ethIcon}
+                        color={colors.grey}
+                        icon='ethereum'
+                        size={45}
+                    />
+                    <Text style={styles.balanceText}>{currentBalance}</Text>
+                </View>
+                <TextInput
+                    style={{ alignSelf: 'stretch' }}
+                    mode='outlined'
+                    label='Donation amount'
+                    keyboardType='numeric'
+                    right={affix}
+                />
+                <View style={styles.buttonsView}>
+                    <Button
+                        style={styles.cancelButton}
+                        onPress={props.onCancelClick}
                     >
-                        Sponsor
-                    </Text>
-                </Button>
+                        <Text style={{ color: colors.primary.light }}>
+                            Cancel
+                        </Text>
+                    </Button>
+                    <Button
+                        style={styles.sponsorButton}
+                        onPress={props.onOkClick}
+                    >
+                        <Text
+                            style={{
+                                color: colors.white,
+                            }}
+                        >
+                            Sponsor
+                        </Text>
+                    </Button>
+                </View>
             </Modal>
         </Portal>
     );
@@ -85,8 +122,13 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: colors.darkGrey,
     },
-    okButton: {
+    sponsorButton: {
         alignSelf: 'flex-end',
+        backgroundColor: colors.primary.light,
+    },
+    cancelButton: {
+        alignSelf: 'flex-start',
+        backgroundColor: 'transparent',
     },
     input: {
         alignSelf: 'stretch',
@@ -99,12 +141,19 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 18,
-        color: colors.darkGrey,
+        color: colors.primary.light,
     },
     currentBalanceText: {
-        fontSize: 18,
+        fontSize: 16,
         color: colors.darkerGrey,
         marginLeft: 20,
+        fontWeight: 'bold',
+        alignSelf: 'center',
+    },
+    balanceText: {
+        fontSize: 16,
+        color: colors.darkGrey,
+        margin: 0,
     },
     icon: {
         backgroundColor: 'transparent',
@@ -113,5 +162,15 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         height: 50,
         marginHorizontal: 12,
+    },
+    ethIcon: {
+        backgroundColor: 'transparent',
+        margin: 0,
+    },
+    buttonsView: {
+        flexDirection: 'row',
+        alignSelf: 'stretch',
+        justifyContent: 'space-between',
+        marginTop: 20,
     },
 });

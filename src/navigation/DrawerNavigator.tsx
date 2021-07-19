@@ -6,7 +6,7 @@ import TopTabNavigator from './TopTabNavigator';
 
 // Components
 import DrawerContent from '../components/DrawerContent';
-import { Button } from 'react-native-paper';
+import { Button, IconButton } from 'react-native-paper';
 
 // Theme
 import { useTheme } from '../contexts/ThemeProvider';
@@ -20,7 +20,11 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../reducers';
 import { getProfile } from '../api/profileApi';
-import { updateNameAction } from '../actions/UpdateProfileAction';
+import { updateNameAction } from '../actions/UpdateNameAction';
+import DashboardScreen from '../screens/DashboardScreen';
+
+// Actions
+import ToggleSearchBarAction from '../actions/ToggleSearchBarAction';
 
 type DrawerNavigatorNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -34,18 +38,14 @@ type Props = {
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
 function AddNewProjectButton(props: Props) {
+    const dispatch = useDispatch();
     return (
-        <Button
-            icon='briefcase-plus'
-            onPress={() =>
-                props.navigation.navigate('ProjectCreation', { edition: false })
-            }
-            mode='contained'
+        <IconButton
+            icon='magnify'
+            onPress={() => dispatch(ToggleSearchBarAction())}
             style={buttonStyle}
-            labelStyle={{ color: '#fff' }}
-        >
-            create
-        </Button>
+            color={colors.white}
+        />
     );
 }
 export default function DrawerNavigator(props: Props): React.ReactElement {
@@ -94,9 +94,9 @@ export default function DrawerNavigator(props: Props): React.ReactElement {
         >
             <Drawer.Screen
                 name='Dashboard'
-                component={TopTabNavigator}
+                component={DashboardScreen}
                 options={{
-                    title: 'All Projects',
+                    title: 'Dashboard',
                     headerRight: () => AddNewProjectButton(props),
                 }}
             />
@@ -105,5 +105,5 @@ export default function DrawerNavigator(props: Props): React.ReactElement {
 }
 
 const buttonStyle = {
-    marginRight: 10,
+    marginRight: 15,
 };

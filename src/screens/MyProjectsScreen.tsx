@@ -1,10 +1,17 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, DeviceEventEmitter } from 'react-native';
+import {
+    StyleSheet,
+    View,
+    DeviceEventEmitter,
+    ScrollView,
+    RefreshControl,
+} from 'react-native';
 
 // Components
 import ProjectList from '../components/Project/ProjectList';
 import { Text, Avatar, Snackbar } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
+import FilterBar from '../components/FilterBar';
 
 // Types
 import type { Project } from '../api/projectsApi';
@@ -21,6 +28,7 @@ import colors from '../constants/colors';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
 import { RouteProp } from '@react-navigation/native';
+import statuses from '../constants/statuses';
 
 type MyProjectsScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -51,7 +59,7 @@ export default function DashboardScreen(props: Props): React.ReactElement {
     };
 
     const [filter, setFilter] = React.useState('all');
-    const changeFilter = (newFilter: string, index: number) => {
+    const changeFilter = (newFilter: string) => {
         setFilter(newFilter);
     };
 
@@ -91,56 +99,52 @@ export default function DashboardScreen(props: Props): React.ReactElement {
         };
     });
     return (
-        <>
-            <View style={styles.filterBar}>
-                <Avatar.Icon
-                    icon='filter'
-                    size={25}
-                    style={styles.icon}
-                    color={colors.darkGrey}
-                />
-                <Text style={styles.filterText}>View:</Text>
-                <Picker
-                    style={styles.categorySelector}
-                    selectedValue={filter}
-                    onValueChange={changeFilter}
-                    mode='dropdown'
-                >
-                    <Picker.Item label='All' value='all' />
-                    <Picker.Item label='Draft' value='draft' />
-                    <Picker.Item label='Funding' value='funding' />
-                    <Picker.Item label='Finalized' value='finalized' />
-                </Picker>
-            </View>
-            <View style={styles.container}>
-                <ProjectList
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                    projects={projects.filter(
-                        (project, index) =>
-                            filter === 'all' ||
-                            project.status.toLowerCase() === filter
-                    )}
-                    showStatus={true}
-                />
-            </View>
-            <Snackbar
-                visible={statusBarVisible}
-                onDismiss={() => {
-                    setStatusBarVisible(false);
-                }}
+        <View style={styles.container}>
+            <ScrollView
+                style={styles.scrollview}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
             >
-                {statusBarText}
-            </Snackbar>
-        </>
+                <View style={styles.filterBar}>
+                    <FilterBar
+                        filter={filter}
+                        onChangeFilter={changeFilter}
+                        feature='Status'
+                        options={statuses}
+                    />
+                </View>
+                <View style={styles.container}>
+                    <ProjectList
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        projects={projects.filter(
+                            (project, index) =>
+                                filter === 'all' ||
+                                project.status.toLowerCase() === filter
+                        )}
+                        showStatus={true}
+                    />
+                </View>
+                <Snackbar
+                    visible={statusBarVisible}
+                    onDismiss={() => {
+                        setStatusBarVisible(false);
+                    }}
+                >
+                    {statusBarText}
+                </Snackbar>
+            </ScrollView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'flex-start',
     },
     scrollview: {
         flex: 1,
@@ -152,15 +156,6 @@ const styles = StyleSheet.create({
     },
     filterBar: {
         marginHorizontal: 20,
-        marginTop: 10,
-        marginBottom: 0,
-        backgroundColor: '#ddd',
-        alignSelf: 'stretch',
-        borderRadius: 5,
-        padding: 5,
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'center',
     },
     categorySelector: {
         alignSelf: 'stretch',

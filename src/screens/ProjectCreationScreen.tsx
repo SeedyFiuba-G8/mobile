@@ -198,7 +198,7 @@ export default function ProjectCreationScreen(
                 setDescription(project_temp.description);
                 setObjective(project_temp.objective);
                 setDate(new Date(project_temp.finalizedBy));
-                setCategory('productivity');
+                setCategory(project_temp.type);
                 setCity(project_temp.city);
                 setCountry(project_temp.country);
                 setTags(project_temp.tags);
