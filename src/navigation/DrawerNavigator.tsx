@@ -60,7 +60,8 @@ export default function DrawerNavigator(props: Props): React.ReactElement {
                 dispatch(
                     updateNameAction(
                         profileResponse.data.firstName,
-                        profileResponse.data.lastName
+                        profileResponse.data.lastName,
+                        profileResponse.data.profilePicUrl
                     )
                 );
                 if (

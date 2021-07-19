@@ -26,7 +26,8 @@ import { useSelector } from 'react-redux';
 import categories from '../constants/categories';
 import statuses from '../constants/statuses';
 
-// Hooks
+// Image Management
+import * as ImagePicker from 'expo-image-picker';
 
 export default function DashboardScreen({
     navigation,

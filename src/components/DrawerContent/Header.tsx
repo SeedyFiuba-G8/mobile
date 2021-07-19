@@ -28,12 +28,17 @@ export default function Header({
         [isDarkTheme]
     );
     const profile_info = useSelector((state: RootState) => state.profile);
+    console.log(`Profile pic url is ${profile_info.profile_pic_url}`);
     const balance = useSelector((state: RootState) => state.balance.balance);
     return (
         <View style={styles.container}>
             <View style={styles.userInfo}>
                 <Avatar.Image
-                    source={require('../../assets/images/dummy_avatar.jpg')}
+                    source={
+                        profile_info.profile_pic_url
+                            ? { uri: profile_info.profile_pic_url }
+                            : require('../../assets/images/dummy_avatar2.jpg')
+                    }
                     size={120}
                 />
 

@@ -23,6 +23,7 @@ export default function Navigation(): React.ReactElement {
     const loginState = useSelector(
         (state: RootState) => state.login.loggedInState
     );
+
     return (
         <NavigationContainer
             theme={navigationTheme}

@@ -15,7 +15,7 @@ import LocationPicker from '../components/LocationPicker';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../types';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 // API
 import { getProfile, updateProfile } from '../api/profileApi';
@@ -24,6 +24,15 @@ import { useEffect } from 'react';
 // Types
 import type { RootState } from '../reducers/index';
 import ReviewershipModal from '../components/Profile/ReviewershipModal';
+
+// Firebase
+import firebase from 'firebase';
+import firebaseConfig from '../firebase/config';
+import 'firebase/storage';
+
+// Image Picker
+import * as ImagePicker from 'expo-image-picker';
+import { updateNameAction } from '../actions/UpdateNameAction';
 
 type ProfileScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -37,6 +46,11 @@ type Props = {
 };
 
 export default function ProfileScreen(props: Props): React.ReactElement {
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    } else {
+        firebase.app();
+    }
     const [interestPickerVisible, setInterestPickerVisible] = useState(false);
     const [locationPickerVisible, setLocationPickerVisible] = useState(false);
     const [reviewershipModalVisible, setReviewershipModalVisible] =
@@ -59,6 +73,10 @@ export default function ProfileScreen(props: Props): React.ReactElement {
     const [isReviewer, setIsReviewer] = useState(false);
     const [statusBarVisible, setStatusBarVisible] = useState(false);
     const [statusBarText, setStatusBarText] = useState('');
+
+    const [profilePicURL, setProfilePicURL] = useState<string>('');
+    const [updatingProfilePic, setUpdatingProfilePic] = useState(false);
+
     const onRefresh = async () => {
         setLoading(true);
         const profileResponse = await getProfile(props.route.params.userId);
@@ -68,10 +86,71 @@ export default function ProfileScreen(props: Props): React.ReactElement {
             setCity(profile.city);
             setCountry(profile.country);
             setInterests(profile.interests);
+            setProfilePicURL(profile.profilePicUrl);
         }
         setLoading(false);
     };
 
+    const onChangePicPress = async () => {
+        const { status } =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.cancelled) {
+            console.log(result.uri);
+
+            const blob = await new Promise<Blob>((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.onload = function () {
+                    resolve(xhr.response);
+                };
+                xhr.onerror = function (e) {
+                    console.log(e);
+                    reject(new TypeError('Network request failed'));
+                };
+                xhr.responseType = 'blob';
+                xhr.open('GET', result.uri, true);
+                xhr.send(null);
+            });
+            const ref = firebase.storage().ref().child(`public/${myUserId}`);
+            setUpdatingProfilePic(true);
+            const snapshot = await ref.put(blob);
+            const newURL = await ref.getDownloadURL();
+            updateProfilePicURL(newURL);
+            await updateProfileInfo();
+            setUpdatingProfilePic(false);
+        }
+    };
+
+    const dispatch = useDispatch();
+    const updateProfileInfo = async () => {
+        const profileResponse = await getProfile(myUserId);
+        if (profileResponse.successful) {
+            dispatch(
+                updateNameAction(
+                    profileResponse.data.firstName,
+                    profileResponse.data.lastName,
+                    profileResponse.data.profilePicUrl
+                )
+            );
+        }
+    };
+
+    const updateProfilePicURL = async (newProfilePicURL: string) => {
+        await updateProfile(myUserId, { profilePicUrl: newProfilePicURL });
+        onRefresh();
+    };
     const updateInterests = async (newInterests: string[]) => {
         await updateProfile(props.route.params.userId, {
             interests: newInterests,
@@ -104,17 +183,31 @@ export default function ProfileScreen(props: Props): React.ReactElement {
                 <>
                     <View style={styles.profilePictureView}>
                         <Avatar.Image
-                            source={require('../assets/images/dummy_avatar.jpg')}
+                            source={
+                                profilePicURL
+                                    ? { uri: profilePicURL }
+                                    : require('../assets/images/dummy_avatar2.jpg')
+                            }
                             size={200}
                         />
                         {editable ? (
-                            <IconButton
-                                style={styles.changePictureButton}
-                                icon='camera'
-                                size={30}
-                                color={'white'}
-                                onPress={() => console.log('Pressed')}
-                            />
+                            !updatingProfilePic ? (
+                                <IconButton
+                                    style={styles.changePictureButton}
+                                    icon='camera'
+                                    size={30}
+                                    color={'white'}
+                                    onPress={onChangePicPress}
+                                />
+                            ) : (
+                                <ActivityIndicator
+                                    style={
+                                        styles.changePictureActivityINdicator
+                                    }
+                                    size='small'
+                                    animating={true}
+                                />
+                            )
                         ) : null}
                     </View>
                     <ProfileInfoSection title='Name' icon='account'>
@@ -273,6 +366,11 @@ const styles = StyleSheet.create({
         bottom: 0,
         right: 75,
         backgroundColor: colors.primary.light,
+    },
+    changePictureActivityINdicator: {
+        position: 'absolute',
+        bottom: 0,
+        right: 90,
     },
     personalInformationTextView: {
         marginLeft: 5,

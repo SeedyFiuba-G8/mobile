@@ -12,13 +12,11 @@ const ProfileReducer = (
 ): profileStatusType => {
     switch (action.type) {
         case 'UPDATE_NAME':
-            if (action.payload.first_name && action.payload.last_name) {
-                return {
-                    ...state,
-                    first_name: action.payload.first_name,
-                    last_name: action.payload.last_name,
-                };
-            }
+            return {
+                profile_pic_url: action.payload.profile_pic_url,
+                first_name: action.payload.first_name,
+                last_name: action.payload.last_name,
+            };
             return state;
         default:
             return state;

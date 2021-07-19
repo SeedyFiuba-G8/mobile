@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+// Firebase
+import firebase from 'firebase/app';
+import 'firebase/database';
 
 // Navigation
 import { createStackNavigator } from '@react-navigation/stack';
@@ -17,7 +20,6 @@ import ReviewRequestsScreen from '../screens/ReviewRequestsScreen';
 
 // Ts types
 import { RootStackParamList } from '../types';
-import { RootState } from '../reducers';
 
 // Constants
 import colors from '../constants/colors';
