@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     StyleSheet,
     View,
@@ -6,19 +6,25 @@ import {
     RefreshControl,
     DeviceEventEmitter,
 } from 'react-native';
-import { Button } from 'react-native-paper';
+import { FAB } from 'react-native-paper';
 
 // Components
 import ProjectList from '../components/Project/ProjectList';
+import FilterBar from '../components/FilterBar';
 
 // Navigation
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 
 // Types
 import type { Project } from '../api/projectsApi';
+import type { RootState } from '../reducers';
 
 // APIs
 import { getAllProjects } from '../api/projectsApi';
+import colors from '../constants/colors';
+import { useSelector } from 'react-redux';
+import categories from '../constants/categories';
+import statuses from '../constants/statuses';
 
 // Hooks
 
@@ -27,10 +33,42 @@ export default function DashboardScreen({
 }: MaterialTopTabBarProps): React.ReactElement {
     const [refreshing, setRefreshing] = React.useState(false);
     const [projects, setProjects] = React.useState<Array<Project>>([]);
+    const searchBarVisible = useSelector(
+        (state: RootState) => state.interface.searchBarVisible
+    );
+
+    const [searchStatus, setSearchStatus] = useState('all');
+    const [searchCategory, setSearchCategory] = useState('all');
+
+    const onSearchStatusChange = (status: string) => {
+        setSearchStatus(status);
+    };
+
+    const onSearchCategoryChange = (category: string) => {
+        setSearchCategory(category);
+    };
+
+    const onCreatePress = () => {
+        navigation.navigate('ProjectCreation', {
+            edition: false,
+        });
+    };
+
+    useEffect(() => {
+        onRefresh();
+    }, [searchStatus, searchCategory]);
 
     const onRefresh = async () => {
         setRefreshing(true);
-        const projects = await getAllProjects();
+        const querySearchStatus =
+            searchStatus === 'all' ? undefined : searchStatus.toUpperCase();
+        const querySearchCategory =
+            searchCategory === 'all' ? undefined : searchCategory;
+        const projects = await getAllProjects(
+            querySearchStatus,
+            querySearchCategory
+        );
+
         if (projects.successful) {
             setProjects(
                 projects.data.projects.filter(
@@ -60,13 +98,47 @@ export default function DashboardScreen({
             DeviceEventEmitter.removeAllListeners('viewProject');
         };
     });
+
     return (
         <View style={styles.container}>
-            <ProjectList
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                projects={projects}
-                showStatus={false}
+            <ScrollView
+                style={styles.scrollview}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
+                contentContainerStyle={styles.scrollContainer}
+            >
+                {searchBarVisible ? (
+                    <View style={{ marginHorizontal: 20 }}>
+                        <FilterBar
+                            feature='Category'
+                            options={categories}
+                            filter={searchCategory}
+                            onChangeFilter={onSearchCategoryChange}
+                        />
+                        <FilterBar
+                            feature='Status'
+                            options={statuses}
+                            filter={searchStatus}
+                            onChangeFilter={onSearchStatusChange}
+                        />
+                    </View>
+                ) : null}
+                <ProjectList
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    projects={projects}
+                    showStatus={false}
+                />
+            </ScrollView>
+            <FAB
+                style={styles.fab}
+                icon='lightbulb'
+                label='create'
+                onPress={onCreatePress}
             />
         </View>
     );
@@ -75,15 +147,23 @@ export default function DashboardScreen({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'flex-start',
     },
     scrollview: {
         flex: 1,
         alignSelf: 'stretch',
     },
+    scrollContainer: {
+        paddingBottom: 75,
+    },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
+    },
+    fab: {
+        position: 'absolute',
+        margin: 16,
+        right: 0,
+        bottom: 0,
+        backgroundColor: colors.primary.light,
     },
 });

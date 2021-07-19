@@ -28,6 +28,7 @@ export default function Header({
         [isDarkTheme]
     );
     const profile_info = useSelector((state: RootState) => state.profile);
+    const balance = useSelector((state: RootState) => state.balance.balance);
     return (
         <View style={styles.container}>
             <View style={styles.userInfo}>
@@ -46,9 +47,12 @@ export default function Header({
                             alignItems: 'center',
                         }}
                     >
-                        <IconButton icon='ethereum' color={colors.darkerGrey} />
+                        <IconButton
+                            icon='ethereum'
+                            color={colors.darkerGrey}
+                        />
                         <Text style={{ left: -10, color: colors.darkerGrey }}>
-                            0.000253
+                            {balance.toString()}
                         </Text>
                     </View>
                 </View>

@@ -16,15 +16,7 @@ type Props = {
 
 export default function ProjectList(props: Props): React.ReactElement {
     return (
-        <ScrollView
-            style={styles.scrollview}
-            refreshControl={
-                <RefreshControl
-                    refreshing={props.refreshing}
-                    onRefresh={props.onRefresh}
-                />
-            }
-        >
+        <>
             {props.projects.length > 0 ? (
                 props.projects.map((project, index) => {
                     return (
@@ -52,7 +44,7 @@ export default function ProjectList(props: Props): React.ReactElement {
             ) : (
                 <Text style={styles.noProjectsText}>No projects to show.</Text>
             )}
-        </ScrollView>
+        </>
     );
 }
 

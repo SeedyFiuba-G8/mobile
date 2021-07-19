@@ -144,7 +144,7 @@ export default function ProjectVisualizationScreen(
                                 icon='map-marker'
                                 text={`Created in ${project?.city}, ${project?.country}`}
                             />
-                            <IconLabel icon='tag' text={`Entretainment`} />
+                            <IconLabel icon='tag' text={project?.type ?? ''} />
                             <IconLabel
                                 icon='account'
                                 text={creatorName}
@@ -281,7 +281,7 @@ export default function ProjectVisualizationScreen(
             />
             <FAB
                 style={styles.fab}
-                icon='ethereum'
+                icon='hand-heart'
                 onPress={onSponsorProjectPress}
                 label='Sponsor this project'
             />
