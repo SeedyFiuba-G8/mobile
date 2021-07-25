@@ -25,13 +25,7 @@ export default function ProjectList(props: Props): React.ReactElement {
                             title={project.title}
                             city={project.city}
                             country={project.country}
-                            cover_image_uri={`https://picsum.photos/id/${
-                                randomImageIds[
-                                    Math.floor(
-                                        Math.random() * randomImageIds.length
-                                    )
-                                ]
-                            }/700`}
+                            cover_image_uri={project.coverPicUrl}
                             description={project.description}
                             progress={Math.random()}
                             backer_count={Math.floor(Math.random() * 100)}

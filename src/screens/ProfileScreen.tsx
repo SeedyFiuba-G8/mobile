@@ -91,8 +91,8 @@ export default function ProfileScreen(props: Props): React.ReactElement {
     };
 
     const onChangePicPress = async () => {
-        const result = await loadUserImage([1, 1], 400, 400);
-        if (!result) return;
+        const result = await loadUserImage([1, 1]);
+        if (!result || !result.blob) return;
 
         const ref = firebase
             .storage()

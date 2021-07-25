@@ -2,14 +2,12 @@ import * as ImagePicker from 'expo-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 
 export type loadUserImageResult = {
-    blob: Blob;
+    blob?: Blob;
     uri: string;
 };
 
 const loadUserImage = async (
-    ratio: [number, number],
-    width: number,
-    height: number
+    ratio: [number, number]
 ): Promise<loadUserImageResult | undefined> => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {

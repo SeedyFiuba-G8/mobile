@@ -15,11 +15,11 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import colors from '../constants/colors';
 import { DatePickerModal } from 'react-native-paper-dates';
-
 //Components
 import TagAdder from '../components/Project/TagAdder';
 import FundDeadlineSelector from '../components/Project/FundDeadlineSelector';
 import ReviewerList from '../components/Project/ReviewerList';
+import uuid from 'react-native-uuid';
 
 // Contexts
 import { useTheme } from '../contexts/ThemeProvider';
@@ -32,7 +32,6 @@ import {
     deleteProject,
     publishProject,
 } from '../api/projectsApi';
-
 // Hooks
 import { useSelector } from 'react-redux';
 
@@ -54,6 +53,7 @@ import type { loadUserImageResult } from '../util/image-util';
 // Firebase
 import firebase from 'firebase';
 import 'firebase/storage';
+import firebaseConfig from '../firebase/config';
 type ProjectCreationScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     'ProjectCreation'
@@ -69,6 +69,10 @@ type Props = {
     navigation: ProjectCreationScreenNavigationProp;
 };
 
+type Stage = {
+    description: string;
+    cost: string;
+};
 const IconSubtitle = (props: { icon: string; text: string }) => {
     return (
         <View style={styles.labelTitleView}>
@@ -131,7 +135,7 @@ const StageItem = (props: {
                             onChangeText={(text) =>
                                 props.onModifyTitle(props.index, text)
                             }
-                            value={props.stage.title}
+                            value={props.stage.description}
                         />
                     </View>
                     <View style={styles.goalStageView}>
@@ -144,7 +148,7 @@ const StageItem = (props: {
                             onChangeText={(text) =>
                                 props.onModifyGoal(props.index, text)
                             }
-                            value={props.stage.goal}
+                            value={props.stage.cost.toString()}
                         />
                     </View>
                 </View>
@@ -165,14 +169,14 @@ type Reviewer = {
     status: string;
 };
 
-type Stage = {
-    title?: string;
-    goal?: string;
-};
-
 export default function ProjectCreationScreen(
     props: Props
 ): React.ReactElement {
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    } else {
+        firebase.app();
+    }
     const { isDarkTheme } = useTheme();
     const [category, setCategory] = useState('');
     const [tags, setTags] = useState<Array<string>>([]);
@@ -180,7 +184,9 @@ export default function ProjectCreationScreen(
     const [title, setTitle] = React.useState('');
     const [description, setDescription] = React.useState('');
     const [objective, setObjective] = React.useState('');
-    const [stages, setStages] = React.useState<Array<Stage>>([{ title: '' }]);
+    const [stages, setStages] = React.useState<Array<Stage>>([
+        { description: '', cost: '' },
+    ]);
 
     const [statusBarVisible, setStatusBarVisible] = useState(false);
     const [statusBarText, setStatusBarText] = useState('');
@@ -190,7 +196,7 @@ export default function ProjectCreationScreen(
 
     const [image, setImage] = useState<loadUserImageResult>();
     const [loading, setLoading] = useState(false);
-
+    parseInt;
     const [creating, setCreating] = useState(false);
 
     const onEditProjectLoad = async () => {
@@ -211,6 +217,17 @@ export default function ProjectCreationScreen(
                 setCountry(project_temp.country);
                 setTags(project_temp.tags);
                 setReviewers(project_temp.reviewers);
+                setStages(
+                    project_temp.stages.map((stage, index) => {
+                        return {
+                            cost: stage.cost.toString(),
+                            description: stage.description,
+                        };
+                    })
+                );
+                if (project_temp.coverPicUrl) {
+                    setImage({ uri: project_temp.coverPicUrl });
+                }
             }
         }
         setLoading(false);
@@ -233,6 +250,12 @@ export default function ProjectCreationScreen(
             date.toJSON(),
             tags,
             reviewers.map((reviewer, index) => reviewer.email),
+            stages.map((stage, index) => {
+                return {
+                    cost: parseFloat(stage.cost),
+                    description: stage.description,
+                };
+            }),
             coverImageURL
         );
         if (projectCreationResponse.successful) {
@@ -245,6 +268,8 @@ export default function ProjectCreationScreen(
     };
 
     const onConfirmChangesButtonPress = async () => {
+        const new_image_uri = await uploadImage();
+        console.log(`Updating image to ${new_image_uri}`);
         if (props.route.params.edition) {
             const result = await updateProject(
                 props.route.params.projectId,
@@ -258,7 +283,8 @@ export default function ProjectCreationScreen(
                 tags,
                 reviewers
                     .filter((reviewer, index) => reviewer.status === 'PENDING')
-                    .map((reviewer, index) => reviewer.email)
+                    .map((reviewer, index) => reviewer.email),
+                new_image_uri ?? image?.uri
             );
             if (result.successful) {
                 setStatusBarText('Project modified successfully!');
@@ -294,18 +320,18 @@ export default function ProjectCreationScreen(
     };
     const onModifyStageTitle = (index: number, title: string) => {
         const stage_modified = [...stages];
-        stage_modified[index].title = title;
+        stage_modified[index].description = title;
         setStages(stage_modified);
     };
 
     const onModifyStageGoal = (index: number, goal: string) => {
         const stage_modified = [...stages];
-        stage_modified[index].goal = goal;
+        stage_modified[index].cost = goal;
         setStages(stage_modified);
     };
 
     const onAddStagePress = () => {
-        const stage_modified = [...stages, { title: '' }];
+        const stage_modified = [...stages, { description: '', cost: '' }];
         setStages(stage_modified);
     };
 
@@ -315,12 +341,12 @@ export default function ProjectCreationScreen(
             console.log(`Deletting index ${index}: ${index === delete_index}`);
             return index !== delete_index;
         });
-        console.log(stage_modified.map((stage, index) => stage.title));
+        console.log(stage_modified.map((stage, index) => stage.description));
         setStages(stage_modified);
     };
 
     const onSelectCoverImagePress = async () => {
-        const result = await loadUserImage([5, 3], 500, 300);
+        const result = await loadUserImage([5, 3]);
         if (!result) {
             return;
         }
@@ -328,8 +354,11 @@ export default function ProjectCreationScreen(
     };
 
     const uploadImage = async (): Promise<string | undefined> => {
-        if (!image) return;
-        const ref = firebase.storage().ref().child(`public/project/1234.png`);
+        if (!image || !image.blob) return;
+        const ref = firebase
+            .storage()
+            .ref()
+            .child(`public/project/${uuid.v4()}`);
         await ref.put(image.blob);
         const newURL = await ref.getDownloadURL();
         console.log(newURL);

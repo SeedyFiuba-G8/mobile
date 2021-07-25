@@ -13,6 +13,7 @@ import {
     Chip,
     ActivityIndicator,
     Button,
+    IconButton,
 } from 'react-native-paper';
 import SponsorProjectModal from '../components/Sponsor/SponsorProjectModal';
 
@@ -20,6 +21,7 @@ import SponsorProjectModal from '../components/Sponsor/SponsorProjectModal';
 import type { GetProjectApiResponse } from '../api/projectsApi';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import type { Stage } from '../api/projectsApi';
 
 // APIs
 import { getProject } from '../api/projectsApi';
@@ -68,6 +70,61 @@ const IconLabel = (props: {
     );
 };
 
+const StageItem = (props: {
+    index: number;
+    totalItems: number;
+    stage: Stage;
+    completed: boolean;
+}): React.ReactElement => {
+    return (
+        <>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text
+                    style={
+                        props.completed
+                            ? styles.stageTextCompleted
+                            : styles.stageText
+                    }
+                >{`Stage ${props.index + 1}`}</Text>
+                {props.completed ? (
+                    <IconButton
+                        icon='check-bold'
+                        style={{ margin: 0 }}
+                        size={20}
+                        color={colors.primary.light}
+                    />
+                ) : null}
+            </View>
+            <Text
+                style={
+                    props.completed
+                        ? styles.stageItemTextCompleted
+                        : styles.stageItemText
+                }
+            >
+                {props.stage.description}
+            </Text>
+            <Text
+                style={
+                    props.completed
+                        ? styles.stageItemTextCompleted
+                        : styles.stageItemText
+                }
+            >{`${props.stage.cost} ETH`}</Text>
+            {props.index < props.totalItems - 1 ? (
+                <View
+                    style={{
+                        borderWidth: 0.25,
+                        height: 25,
+                        borderColor: props.completed
+                            ? colors.primary.light
+                            : colors.grey,
+                    }}
+                />
+            ) : null}
+        </>
+    );
+};
 export default function ProjectVisualizationScreen(
     props: Props
 ): React.ReactElement {
@@ -134,12 +191,10 @@ export default function ProjectVisualizationScreen(
                     <>
                         <Image
                             style={styles.coverImage}
-                            source={{ uri: 'https://picsum.photos/350/300' }}
+                            source={{ uri: project?.coverPicUrl }}
                         />
                         <View style={styles.basicInfoView}>
-                            <Title style={styles.title}>
-                                {project?.title}
-                            </Title>
+                            <Title style={styles.title}>{project?.title}</Title>
                             <IconLabel
                                 icon='map-marker'
                                 text={`Created in ${project?.city}, ${project?.country}`}
@@ -166,16 +221,10 @@ export default function ProjectVisualizationScreen(
 
                             <Divider style={styles.divider} />
 
-                            <Title style={styles.objectiveTitle}>
-                                Progress
-                            </Title>
+                            <Title style={styles.objectiveTitle}>Funding</Title>
                             <IconLabel
                                 icon='calendar'
                                 text={`Published on ${publishedDate.getDate()}/${publishedDate.getMonth()}/${publishedDate.getFullYear()}`}
-                            />
-                            <IconLabel
-                                icon='stairs-up'
-                                text={`Currently on stage ${3}`}
                             />
                             <ProgressBar
                                 progress={0.7}
@@ -251,6 +300,21 @@ export default function ProjectVisualizationScreen(
 
                             <Divider style={styles.divider} />
 
+                            <Title style={styles.objectiveTitle}>
+                                Progress
+                            </Title>
+                            <View style={{ alignItems: 'center' }}>
+                                {project?.stages.map((stage, index) => (
+                                    <StageItem
+                                        key={index}
+                                        index={index}
+                                        stage={stage}
+                                        totalItems={project?.stages.length}
+                                        completed={index % 2 === 0}
+                                    />
+                                ))}
+                            </View>
+                            <Divider style={styles.divider} />
                             <Title style={styles.objectiveTitle}>Tags</Title>
                             <View style={styles.tagView}>
                                 {project?.tags.map((tag, index) => {
@@ -314,11 +378,11 @@ const styles = StyleSheet.create({
     },
     coverImage: {
         width: 350,
-        height: 300,
+        height: 245,
         alignSelf: 'center',
     },
     objectiveTitle: {
-        color: colors.darkGrey,
+        color: colors.primary.light,
     },
     divider: {
         marginVertical: 10,
@@ -347,5 +411,23 @@ const styles = StyleSheet.create({
     },
     tag: {
         margin: 2,
+    },
+    stageText: {
+        fontWeight: 'bold',
+        color: colors.darkGrey,
+        fontSize: 16,
+    },
+    stageItemText: {
+        color: colors.darkGrey,
+        fontSize: 14,
+    },
+    stageTextCompleted: {
+        fontWeight: 'bold',
+        color: colors.primary.light,
+        fontSize: 16,
+    },
+    stageItemTextCompleted: {
+        color: colors.primary.light,
+        fontSize: 14,
     },
 });

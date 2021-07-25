@@ -71,15 +71,12 @@ export default function DashboardScreen({
         );
 
         if (projects.successful) {
-            /* REMOVE MOCK
             setProjects(
                 projects.data.projects.filter(
                     (project, index) =>
                         project.status.toLowerCase() === 'funding'
                 )
-            );*/
-            setProjects(MockProjects);
-            console.log(projects.data.projects);
+            );
         }
         setRefreshing(false);
     };

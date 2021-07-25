@@ -4,6 +4,11 @@ import type { Response } from './utilities/provider';
 import store from '../stores/MainStore';
 import ReviewershipModal from '../components/Profile/ReviewershipModal';
 
+export type Stage = {
+    description: string;
+    cost: number;
+};
+
 export type Project = {
     id: string;
     title: string;
@@ -16,7 +21,8 @@ export type Project = {
     finalizedBy: string;
     tags: Array<string>;
     status: string;
-    coverImageUrl?: string;
+    stages: Array<Stage>;
+    coverPicUrl?: string;
 };
 
 // Responses
@@ -73,6 +79,20 @@ type ProjectRequestPayload =
     | { status?: string; type?: string };
 
 type ProjectCreationRequestPayload = {
+    title: string;
+    description: string;
+    type: string;
+    objective: string;
+    country: string;
+    city: string;
+    finalizedBy: string;
+    tags: Array<string>;
+    reviewers: Array<string>;
+    stages: Array<Stage>;
+    coverPicUrl?: string;
+};
+
+type ProjectEditionRequestPayload = {
     title: string;
     description: string;
     type: string;
@@ -149,6 +169,7 @@ const createProject = async (
     finalizedBy: string,
     tags: Array<string>,
     reviewers: Array<string>,
+    stages: Array<Stage>,
     coverPicUrl?: string
 ): Promise<Response<ProjectCreationApiResponse>> => {
     const authToken = store.getState().session.token;
@@ -168,6 +189,7 @@ const createProject = async (
             tags: tags,
             reviewers: reviewers,
             coverPicUrl: coverPicUrl,
+            stages: stages,
         },
         { headers: { Authorization: `Bearer ${authToken}` } }
     );
@@ -184,12 +206,13 @@ const updateProject = async (
     city: string,
     finalizedBy: string,
     tags: Array<string>,
-    reviewers: Array<string>
+    reviewers: Array<string>,
+    coverPicUrl?: string
 ): Promise<Response<ProjectEditionApiResponse>> => {
     const authToken = store.getState().session.token;
     const apiResponse = apiProvider.patch<
         ProjectEditionApiResponse,
-        ProjectCreationRequestPayload
+        ProjectEditionRequestPayload
     >(
         `projects/${id}`,
         {
@@ -202,6 +225,7 @@ const updateProject = async (
             finalizedBy: finalizedBy,
             tags: tags,
             reviewers: reviewers,
+            coverPicUrl: coverPicUrl,
         },
         { headers: { Authorization: `Bearer ${authToken}` } }
     );

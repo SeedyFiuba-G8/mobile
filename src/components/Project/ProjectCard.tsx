@@ -15,7 +15,7 @@ type Props = {
     title: string;
     city: string;
     country: string;
-    cover_image_uri: string;
+    cover_image_uri?: string;
     description: string;
     progress: number;
     backer_count: number;
@@ -48,17 +48,13 @@ export default function ProjectCard(props: Props): React.ReactElement {
                     );
                 case 'funding':
                     return (
-                        <View
-                            style={{ backgroundColor: colors.primary.light }}
-                        >
+                        <View style={{ backgroundColor: colors.primary.light }}>
                             <Text style={styles.statusText}>Funding</Text>
                         </View>
                     );
                 case 'finished':
                     return (
-                        <View
-                            style={{ backgroundColor: colors.primary.light }}
-                        >
+                        <View style={{ backgroundColor: colors.primary.light }}>
                             <Text style={styles.statusText}>Finished</Text>
                         </View>
                     );
