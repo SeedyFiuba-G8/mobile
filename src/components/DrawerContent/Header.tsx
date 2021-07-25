@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Avatar, Caption, Title, IconButton } from 'react-native-paper';
+import { Avatar, Title, IconButton, Button } from 'react-native-paper';
+import Clipboard from 'expo-clipboard';
 
 // Navigation
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
@@ -28,8 +29,24 @@ export default function Header({
         [isDarkTheme]
     );
     const profile_info = useSelector((state: RootState) => state.profile);
-    console.log(`Profile pic url is ${profile_info.profile_pic_url}`);
+
     const balance = useSelector((state: RootState) => state.balance.balance);
+    const wallet_address = useSelector(
+        (state: RootState) => state.balance.address
+    );
+    const [copyWalletAddressText, setCopyWalletAdressText] =
+        useState('wallet address');
+    const [copyWalletAdressIcon, setcopyWalletAdressIcon] =
+        useState('clipboard-text');
+    const copyAdressToClipboard = () => {
+        setCopyWalletAdressText('Copied to clipboard');
+        setcopyWalletAdressIcon('check');
+        Clipboard.setString(wallet_address);
+        setTimeout(() => {
+            setCopyWalletAdressText('wallet address');
+            setcopyWalletAdressIcon('clipboard-text');
+        }, 1500);
+    };
     return (
         <View style={styles.container}>
             <View style={styles.userInfo}>
@@ -52,14 +69,19 @@ export default function Header({
                             alignItems: 'center',
                         }}
                     >
-                        <IconButton
-                            icon='ethereum'
-                            color={colors.darkerGrey}
-                        />
+                        <IconButton icon='ethereum' color={colors.darkerGrey} />
                         <Text style={{ left: -10, color: colors.darkerGrey }}>
                             {balance.toString()}
                         </Text>
                     </View>
+                    <Button
+                        color={colors.darkerGrey}
+                        icon={copyWalletAdressIcon}
+                        mode='outlined'
+                        onPress={copyAdressToClipboard}
+                    >
+                        {copyWalletAddressText}
+                    </Button>
                 </View>
             </View>
         </View>

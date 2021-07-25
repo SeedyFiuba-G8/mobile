@@ -1,5 +1,5 @@
 export type updateBalanceActionType = {
-    type: string;
+    type: 'UPDATE_BALANCE';
     payload: {
         balance: number;
     };

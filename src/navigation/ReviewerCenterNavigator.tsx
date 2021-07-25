@@ -5,6 +5,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 
 // Screens
 import ReviewRequestsScreen from '../screens/ReviewRequestsScreen';
+import ReviewedProjectsScreen from '../screens/ReviewedProjectsScreen';
 
 // Theme
 import { useTheme } from '../contexts/ThemeProvider';
@@ -34,7 +35,7 @@ export default function ReviewerCenterNavigator(): React.ReactElement {
         >
             <ReviewerCenterTabs.Screen
                 name='ReviewingProjects'
-                component={ReviewRequestsScreen}
+                component={ReviewedProjectsScreen}
                 options={{ title: 'Projects' }}
             />
             <ReviewerCenterTabs.Screen

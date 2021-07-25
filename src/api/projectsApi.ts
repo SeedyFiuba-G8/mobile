@@ -16,6 +16,7 @@ export type Project = {
     finalizedBy: string;
     tags: Array<string>;
     status: string;
+    coverImageUrl?: string;
 };
 
 // Responses
@@ -81,6 +82,7 @@ type ProjectCreationRequestPayload = {
     finalizedBy: string;
     tags: Array<string>;
     reviewers: Array<string>;
+    coverPicUrl?: string;
 };
 
 type ProjectPublishPayload = {
@@ -146,7 +148,8 @@ const createProject = async (
     city: string,
     finalizedBy: string,
     tags: Array<string>,
-    reviewers: Array<string>
+    reviewers: Array<string>,
+    coverPicUrl?: string
 ): Promise<Response<ProjectCreationApiResponse>> => {
     const authToken = store.getState().session.token;
     const apiResponse = apiProvider.post<
@@ -164,6 +167,7 @@ const createProject = async (
             finalizedBy: finalizedBy,
             tags: tags,
             reviewers: reviewers,
+            coverPicUrl: coverPicUrl,
         },
         { headers: { Authorization: `Bearer ${authToken}` } }
     );

@@ -7,8 +7,8 @@ import InterfaceReducer from './InterfaceReducer';
 
 const rootReducer = combineReducers({
     login: loginReducer,
-    session: sessionReducer,
     profile: ProfileReducer,
+    session: sessionReducer,
     balance: balanceReducer,
     interface: InterfaceReducer,
 });

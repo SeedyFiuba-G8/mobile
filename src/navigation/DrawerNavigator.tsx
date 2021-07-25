@@ -20,12 +20,13 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../reducers';
 import { getProfile } from '../api/profileApi';
-import { updateNameAction } from '../actions/UpdateNameAction';
 import DashboardScreen from '../screens/DashboardScreen';
 
 // Actions
 import ToggleSearchBarAction from '../actions/ToggleSearchBarAction';
-
+import { updateNameAction } from '../actions/UpdateNameAction';
+import { updateBalanceAction } from '../actions/UpdateBalanceAction';
+import { updateWalletAddressAction } from '../actions/UpdateWalletAddressAction';
 type DrawerNavigatorNavigationProp = StackNavigationProp<
     RootStackParamList,
     'Drawer'
@@ -53,9 +54,11 @@ export default function DrawerNavigator(props: Props): React.ReactElement {
 
     const dispatch = useDispatch();
     const userId = useSelector((state: RootState) => state.session.id);
+    /*
     useEffect(() => {
         const updateProfileInfo = async () => {
             const profileResponse = await getProfile(userId);
+            console.log('Performing profile update');
             if (profileResponse.successful) {
                 dispatch(
                     updateNameAction(
@@ -75,10 +78,18 @@ export default function DrawerNavigator(props: Props): React.ReactElement {
                             'To complete your register, enter your interests and location. ',
                     });
                 }
+                if (profileResponse.data.balance) {
+                    dispatch(updateBalanceAction(profileResponse.data.balance));
+                }
+                if (profileResponse.data.address) {
+                    dispatch(
+                        updateWalletAddressAction(profileResponse.data.address)
+                    );
+                }
             }
         };
         updateProfileInfo();
-    }, []);
+    }, [userId]);*/
     return (
         <Drawer.Navigator
             initialRouteName='Dashboard'

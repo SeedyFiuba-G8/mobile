@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
-import {
-    ActivityIndicator,
-    Button,
-    Divider,
-    Snackbar,
-    Text,
-} from 'react-native-paper';
+import { ActivityIndicator, Divider, Snackbar, Text } from 'react-native-paper';
 import { Avatar, IconButton } from 'react-native-paper';
 import colors from '../constants/colors';
 import ProfileInfoSection from '../components/Profile/ProfileInfoSection';
@@ -33,6 +27,9 @@ import 'firebase/storage';
 // Image Picker
 import * as ImagePicker from 'expo-image-picker';
 import { updateNameAction } from '../actions/UpdateNameAction';
+
+// Util
+import { loadUserImage } from '../util/image-util';
 
 type ProfileScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -86,51 +83,27 @@ export default function ProfileScreen(props: Props): React.ReactElement {
             setCity(profile.city);
             setCountry(profile.country);
             setInterests(profile.interests);
-            setProfilePicURL(profile.profilePicUrl);
+            if (profile.profilePicUrl) {
+                setProfilePicURL(profile.profilePicUrl);
+            }
         }
         setLoading(false);
     };
 
     const onChangePicPress = async () => {
-        const { status } =
-            await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-            return;
-        }
+        const result = await loadUserImage([1, 1], 400, 400);
+        if (!result) return;
 
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
-        });
-
-        console.log(result);
-
-        if (!result.cancelled) {
-            console.log(result.uri);
-
-            const blob = await new Promise<Blob>((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                xhr.onload = function () {
-                    resolve(xhr.response);
-                };
-                xhr.onerror = function (e) {
-                    console.log(e);
-                    reject(new TypeError('Network request failed'));
-                };
-                xhr.responseType = 'blob';
-                xhr.open('GET', result.uri, true);
-                xhr.send(null);
-            });
-            const ref = firebase.storage().ref().child(`public/${myUserId}`);
-            setUpdatingProfilePic(true);
-            const snapshot = await ref.put(blob);
-            const newURL = await ref.getDownloadURL();
-            updateProfilePicURL(newURL);
-            await updateProfileInfo();
-            setUpdatingProfilePic(false);
-        }
+        const ref = firebase
+            .storage()
+            .ref()
+            .child(`public/profile/${myUserId}`);
+        setUpdatingProfilePic(true);
+        await ref.put(result.blob);
+        const newURL = await ref.getDownloadURL();
+        updateProfilePicURL(newURL);
+        await updateProfileInfo();
+        setUpdatingProfilePic(false);
     };
 
     const dispatch = useDispatch();
@@ -281,9 +254,7 @@ export default function ProfileScreen(props: Props): React.ReactElement {
                                 }
                             >
                                 <View
-                                    style={
-                                        styles.profileInfoSectionContentView
-                                    }
+                                    style={styles.profileInfoSectionContentView}
                                 >
                                     {isReviewer ? (
                                         <Text

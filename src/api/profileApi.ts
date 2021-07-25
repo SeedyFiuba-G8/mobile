@@ -8,10 +8,12 @@ export type Profile = {
     lastName: string;
     banned: boolean;
     signupDate: string;
-    profilePicUrl: string;
+    profilePicUrl?: string;
     country: string;
     city: string;
     interests: Array<string>;
+    address?: string;
+    balance?: number;
 };
 
 // Resposes

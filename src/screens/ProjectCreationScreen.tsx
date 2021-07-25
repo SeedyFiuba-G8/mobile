@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView, Image } from 'react-native';
 import {
     Text,
     TextInput,
@@ -47,6 +47,13 @@ import { useEffect } from 'react';
 // Constants
 import categories from '../constants/categories';
 
+// Util
+import { loadUserImage } from '../util/image-util';
+import type { loadUserImageResult } from '../util/image-util';
+
+// Firebase
+import firebase from 'firebase';
+import 'firebase/storage';
 type ProjectCreationScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     'ProjectCreation'
@@ -181,6 +188,7 @@ export default function ProjectCreationScreen(
     const [country, setCountry] = useState('');
     const [reviewers, setReviewers] = useState<Array<Reviewer>>([]);
 
+    const [image, setImage] = useState<loadUserImageResult>();
     const [loading, setLoading] = useState(false);
 
     const [creating, setCreating] = useState(false);
@@ -212,9 +220,9 @@ export default function ProjectCreationScreen(
         onEditProjectLoad();
     }, [props.route.params.edition]);
 
-    const element = <TextInput.Affix text='ETH' />;
     const onCreateButtonPress = async () => {
         setCreating(true);
+        const coverImageURL = await uploadImage();
         const projectCreationResponse = await createProject(
             title,
             description,
@@ -224,7 +232,8 @@ export default function ProjectCreationScreen(
             city,
             date.toJSON(),
             tags,
-            reviewers.map((reviewer, index) => reviewer.email)
+            reviewers.map((reviewer, index) => reviewer.email),
+            coverImageURL
         );
         if (projectCreationResponse.successful) {
             setCreating(false);
@@ -310,6 +319,27 @@ export default function ProjectCreationScreen(
         setStages(stage_modified);
     };
 
+    const onSelectCoverImagePress = async () => {
+        const result = await loadUserImage([5, 3], 500, 300);
+        if (!result) {
+            return;
+        }
+        setImage(result);
+    };
+
+    const uploadImage = async (): Promise<string | undefined> => {
+        if (!image) return;
+        const ref = firebase.storage().ref().child(`public/project/1234.png`);
+        await ref.put(image.blob);
+        const newURL = await ref.getDownloadURL();
+        console.log(newURL);
+        return newURL;
+    };
+
+    const onRemoveImagePress = () => {
+        setImage(undefined);
+    };
+
     const isPublishable = reviewers.some(
         (reviewer, index) => reviewer.status === 'ACCEPTED'
     );
@@ -355,6 +385,57 @@ export default function ProjectCreationScreen(
                         numberOfLines={10}
                         value={description}
                     />
+
+                    <IconSubtitle icon='image' text='Cover Image' />
+                    <View
+                        style={{
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            alignSelf: 'stretch',
+                            marginHorizontal: 28,
+                            flexDirection: 'row',
+                        }}
+                    >
+                        {!image ? (
+                            <>
+                                <Button
+                                    icon='image-plus'
+                                    color={colors.darkerGrey}
+                                    onPress={onSelectCoverImagePress}
+                                    labelStyle={{ fontSize: 14 }}
+                                >
+                                    Add Image
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button
+                                    icon='image-edit'
+                                    color={colors.darkerGrey}
+                                    labelStyle={{ fontSize: 14 }}
+                                    onPress={onSelectCoverImagePress}
+                                >
+                                    Change
+                                </Button>
+                                <Button
+                                    icon='image-remove'
+                                    color={colors.red}
+                                    labelStyle={{ fontSize: 14 }}
+                                    onPress={onRemoveImagePress}
+                                >
+                                    Remove
+                                </Button>
+                            </>
+                        )}
+                    </View>
+                    {image ? (
+                        <Image
+                            source={{
+                                uri: image.uri,
+                            }}
+                            style={styles.coverImagePreview}
+                        />
+                    ) : null}
 
                     <Divider style={styles.divider} />
                     <IconSubtitle icon='shape' text='Category' />
@@ -505,9 +586,7 @@ export default function ProjectCreationScreen(
                                     icon='content-save'
                                     color='white'
                                 >
-                                    <Text style={{ color: 'white' }}>
-                                        Save
-                                    </Text>
+                                    <Text style={{ color: 'white' }}>Save</Text>
                                 </Button>
                                 <Button
                                     style={styles.deleteProjectButon}
@@ -707,5 +786,14 @@ const styles = StyleSheet.create({
     stageItemText: {
         color: colors.darkGrey,
         marginRight: 4,
+    },
+    coverImagePreview: {
+        alignSelf: 'center',
+        flex: 1,
+        width: 280,
+        height: 168,
+        borderWidth: 1,
+        borderRadius: 5,
+        borderColor: colors.darkGrey,
     },
 });

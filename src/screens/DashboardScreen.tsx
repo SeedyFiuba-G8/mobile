@@ -71,12 +71,14 @@ export default function DashboardScreen({
         );
 
         if (projects.successful) {
+            /* REMOVE MOCK
             setProjects(
                 projects.data.projects.filter(
                     (project, index) =>
                         project.status.toLowerCase() === 'funding'
                 )
-            );
+            );*/
+            setProjects(MockProjects);
             console.log(projects.data.projects);
         }
         setRefreshing(false);
@@ -144,6 +146,37 @@ export default function DashboardScreen({
         </View>
     );
 }
+
+const MockProjects = [
+    {
+        id: '123123123',
+        title: 'Que se me deje de enfriar el mate',
+        description: 'Necesito que el mate deje de enfriarse',
+        type: 'Productivity',
+        objective: 'Lograr que mi mate no se enfrie mais',
+        country: 'Argentina',
+        city: 'Buenos Aires',
+        publishedOn: '2021-07-24T21:12:40.070Z',
+        finalizedBy: '2021-07-24T21:12:40.070Z',
+        tags: ['mate', 'falopa', 'plastipinturitas'],
+        status: 'FUNDING',
+        coverImageUrl: 'https://picsum.photos/500/300',
+    },
+    {
+        id: '123123123',
+        title: 'Torta que no engorda',
+        description: 'Necesito que la torta deje de engordar',
+        type: 'Productivity',
+        objective: 'Lograr la una torta que no engorde',
+        country: 'Argentina',
+        city: 'Buenos Aires',
+        publishedOn: '2021-07-24T21:12:40.070Z',
+        finalizedBy: '2021-07-24T21:12:40.070Z',
+        tags: ['mate', 'falopa', 'plastipinturitas'],
+        status: 'FUNDING',
+        coverImageUrl: 'https://picsum.photos/500/300',
+    },
+];
 
 const styles = StyleSheet.create({
     container: {

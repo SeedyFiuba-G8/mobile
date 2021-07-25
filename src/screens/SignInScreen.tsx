@@ -8,10 +8,13 @@ import { DeviceEventEmitter } from 'react-native';
 import { useTheme } from '../contexts/ThemeProvider';
 
 // Hooks
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 //Actions
-import { LoggingInFlowState } from '../actions/UpdateLoginStatusAction';
+import {
+    LoggingInFlowState,
+    updateLoginStatusAction,
+} from '../actions/UpdateLoginStatusAction';
 
 // Constants
 import colors from '../constants/colors';
@@ -22,6 +25,13 @@ import type { RootState } from '../reducers/index';
 
 // Facebook
 import * as Facebook from 'expo-facebook';
+import { createSession, createSessionFacebook } from '../api/sessionApi';
+import { persistSessionData } from '../session/SessionUtil';
+import { updateSessionCredentialsAction } from '../actions/UpdateSessionCredentialsAction';
+import { getProfile } from '../api/profileApi';
+import { updateNameAction } from '../actions/UpdateNameAction';
+import { updateBalanceAction } from '../actions/UpdateBalanceAction';
+import { updateWalletAddressAction } from '../actions/UpdateWalletAddressAction';
 
 type SignInScreenNavigationProp = StackNavigationProp<
     AuthStackParamList,
@@ -43,12 +53,71 @@ export default function SignInScreen(props: Props): React.ReactElement {
         email: '',
         password: '',
     });
+    const updateProfileInfo = async (userId: string) => {
+        const profileResponse = await getProfile(userId);
+        if (profileResponse.successful) {
+            dispatch(
+                updateNameAction(
+                    profileResponse.data.firstName,
+                    profileResponse.data.lastName,
+                    profileResponse.data.profilePicUrl
+                )
+            );
+            console.log(`Balance is ${profileResponse.data.balance}`);
+            if (profileResponse.data.balance !== undefined) {
+                dispatch(updateBalanceAction(profileResponse.data.balance));
+            }
+            if (profileResponse.data.address !== undefined) {
+                dispatch(
+                    updateWalletAddressAction(profileResponse.data.address)
+                );
+            }
+        }
+    };
+    const dispatch = useDispatch();
+    const loginFunction = async (email: string, password: string) => {
+        dispatch(
+            updateLoginStatusAction(LoggingInFlowState.WaitingForAuthResponse)
+        );
+        const loginResult = await createSession(email, password);
 
+        if (loginResult.successful) {
+            persistSessionData(loginResult.data.id, loginResult.data.token);
+            dispatch(
+                updateSessionCredentialsAction(
+                    loginResult.data.id,
+                    loginResult.data.token
+                )
+            );
+            await updateProfileInfo(loginResult.data.id);
+            dispatch(updateLoginStatusAction(LoggingInFlowState.LoggedIn));
+            return;
+        }
+        dispatch(updateLoginStatusAction(LoggingInFlowState.CredentialsError));
+    };
+
+    const loginFunctionFacebook = async (fbToken: string) => {
+        dispatch(
+            updateLoginStatusAction(LoggingInFlowState.WaitingForAuthResponse)
+        );
+        const loginResult = await createSessionFacebook(fbToken);
+
+        if (loginResult.successful) {
+            persistSessionData(loginResult.data.id, loginResult.data.token);
+            dispatch(
+                updateSessionCredentialsAction(
+                    loginResult.data.id,
+                    loginResult.data.token
+                )
+            );
+            await updateProfileInfo(loginResult.data.id);
+            dispatch(updateLoginStatusAction(LoggingInFlowState.LoggedIn));
+            return;
+        }
+        dispatch(updateLoginStatusAction(LoggingInFlowState.CredentialsError));
+    };
     const onLoginButtonClick = async () => {
-        DeviceEventEmitter.emit('login', {
-            email: loginData.email,
-            password: loginData.password,
-        });
+        loginFunction(loginData.email, loginData.password);
     };
 
     const onLoginWithFacebookButtonClick = async () => {
@@ -62,7 +131,7 @@ export default function SignInScreen(props: Props): React.ReactElement {
             });
             if (loginResult.type == 'success') {
                 const { token } = loginResult;
-                DeviceEventEmitter.emit('loginFacebook', token);
+                loginFunctionFacebook(token);
             }
         } catch (e) {
             console.log(e);
