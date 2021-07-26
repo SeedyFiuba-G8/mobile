@@ -1,12 +1,21 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, DeviceEventEmitter } from 'react-native';
-import { Text, Card, ProgressBar, Button } from 'react-native-paper';
+import {
+    Text,
+    Card,
+    ProgressBar,
+    Button,
+    IconButton,
+} from 'react-native-paper';
 import colors from '../../constants/colors';
 
 import {
     acceptReviewRequest,
     rejectReviewRequest,
 } from '../../api/projectsApi';
+import ProjectStagesModal from './ProjectStagesModal';
+
+import type { Stage } from '../../api/projectsApi';
 
 type Props = {
     title: string;
@@ -16,12 +25,16 @@ type Props = {
     description: string;
     projectId: string;
     onRefresh: () => void;
+    stages: Array<Stage>;
 };
 
 export default function ReviewRequestCard(props: Props): React.ReactElement {
     const onCardPress = () => {
-        console.log('Pressed review request card');
+        console.log(props.stages);
     };
+
+    const [projectStagesModalVisible, setProjectStagesModalVisible] =
+        useState(false);
 
     const onAccept = async () => {
         setAccepting(true);
@@ -58,42 +71,48 @@ export default function ReviewRequestCard(props: Props): React.ReactElement {
             </Card.Content>
 
             <View style={styles.statusSection}>
-                <View style={{ flexDirection: 'row' }}>
-                    <View style={{ flex: 1, alignItems: 'center' }}>
-                        <Button
-                            icon='check-bold'
-                            color={colors.primary.light}
-                            mode='contained'
-                            onPress={onAccept}
-                            loading={accepting}
-                            disabled={accepting || rejecting}
-                        >
-                            <Text style={{ color: colors.white }}>Accept</Text>
-                        </Button>
-                    </View>
-
-                    <View
-                        style={{
-                            flex: 1,
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-                        }}
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-around',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Button
+                        icon='check-bold'
+                        color={colors.primary.light}
+                        mode='contained'
+                        onPress={onAccept}
+                        loading={accepting}
+                        disabled={accepting || rejecting}
                     >
-                        <Button
-                            icon='close-thick'
-                            color={colors.darkerGrey}
-                            mode='contained'
-                            onPress={onReject}
-                            loading={rejecting}
-                            disabled={accepting || rejecting}
-                        >
-                            <Text style={{ color: colors.white }}>
-                                Decline
-                            </Text>
-                        </Button>
-                    </View>
+                        <Text style={{ color: colors.white }}>Accept</Text>
+                    </Button>
+                    <Button
+                        icon='close-thick'
+                        color={colors.darkerGrey}
+                        mode='contained'
+                        onPress={onReject}
+                        loading={rejecting}
+                        disabled={accepting || rejecting}
+                    >
+                        <Text style={{ color: colors.white }}>Decline</Text>
+                    </Button>
+                    <IconButton
+                        size={20}
+                        style={{ margin: 0 }}
+                        icon='format-list-numbered'
+                        color={colors.primary.light}
+                        onPress={() => setProjectStagesModalVisible(true)}
+                        disabled={accepting || rejecting}
+                    />
                 </View>
             </View>
+            <ProjectStagesModal
+                visible={projectStagesModalVisible}
+                setVisible={setProjectStagesModalVisible}
+                stages={props.stages}
+            />
         </Card>
     );
 }

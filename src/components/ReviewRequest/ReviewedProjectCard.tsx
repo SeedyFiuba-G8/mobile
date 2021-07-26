@@ -8,16 +8,19 @@ import {
     rejectReviewRequest,
 } from '../../api/projectsApi';
 
+import type { Stage } from '../../api/projectsApi';
+
 import ProjectStagesModal from './ProjectStagesModal';
 
 type Props = {
     title: string;
     city: string;
     country: string;
-    cover_image_uri: string;
+    cover_image_uri?: string;
     description: string;
     projectId: string;
     onRefresh: () => void;
+    stages: Array<Stage>;
 };
 
 export default function ReviewedProjectCard(props: Props): React.ReactElement {
@@ -111,6 +114,7 @@ export default function ReviewedProjectCard(props: Props): React.ReactElement {
             <ProjectStagesModal
                 visible={projectStagesModalVisible}
                 setVisible={setProjectStagesModalVisible}
+                stages={props.stages}
             />
         </Card>
     );

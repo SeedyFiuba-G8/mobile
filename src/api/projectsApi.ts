@@ -23,6 +23,8 @@ export type Project = {
     status: string;
     stages: Array<Stage>;
     coverPicUrl?: string;
+    totalFunded: number;
+    currentStage: number;
 };
 
 // Responses
@@ -67,6 +69,8 @@ export type ReviewRequest = {
     publishedOn: string;
     finalizedBy: string;
     status: string;
+    stages: Array<Stage>;
+    coverPicUrl: string;
 };
 
 type ReviewRequestApiResponse = {
@@ -76,7 +80,8 @@ type ReviewRequestApiResponse = {
 type ProjectRequestPayload =
     | Record<string, never>
     | { userId: string }
-    | { status?: string; type?: string };
+    | { status?: string; type?: string }
+    | { reviewerId: string };
 
 type ProjectCreationRequestPayload = {
     title: string;
@@ -111,6 +116,10 @@ type ProjectPublishPayload = {
 
 type ReviewershipReplyPayload = {
     status: string;
+};
+
+type FundProjectPayload = {
+    amount: number;
 };
 
 const getAllProjects = async (
@@ -301,6 +310,37 @@ const rejectReviewRequest = async (
     );
     return apiResponse;
 };
+
+const getReviewingProjects = async (): Promise<
+    Response<GetProjectsApiResponse>
+> => {
+    const authToken = store.getState().session.token;
+    const myUserId = store.getState().session.id;
+    const apiResponse = apiProvider.get<
+        GetProjectsApiResponse,
+        ProjectRequestPayload
+    >(
+        'projects',
+        { reviewerId: myUserId },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
+const fundProject = async (
+    projectId: string,
+    donation: number
+): Promise<Response<null>> => {
+    const authToken = store.getState().session.token;
+    const apiResponse = apiProvider.post<null, FundProjectPayload>(
+        `projects/${projectId}/funds`,
+        {
+            amount: donation,
+        },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
 export {
     getAllProjects,
     getUserProjects,
@@ -312,4 +352,6 @@ export {
     acceptReviewRequest,
     rejectReviewRequest,
     publishProject,
+    fundProject,
+    getReviewingProjects,
 };

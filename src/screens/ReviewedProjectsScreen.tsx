@@ -2,10 +2,10 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ReviewedProjectList from '../components/ReviewRequest/ReviewedProjectList';
-import { getReviewRequests } from '../api/projectsApi';
+import { getReviewingProjects } from '../api/projectsApi';
 
 import { ReviewerCenterTabParamList } from '../types';
-import type { ReviewRequest } from '../api/projectsApi';
+import type { Project } from '../api/projectsApi';
 
 import { MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
 import { RouteProp } from '@react-navigation/native';
@@ -28,22 +28,14 @@ export default function ReviewedProjectsScreen(
     props: Props
 ): React.ReactElement {
     const [refreshing, setRefreshing] = useState(false);
-    const [reviewRequests, setReviewRequests] = useState<Array<ReviewRequest>>(
-        []
-    );
+    const [projects, setProjects] = useState<Array<Project>>([]);
     const onRefresh = async () => {
         setRefreshing(true);
-        const reviewRequestResponse = await getReviewRequests();
+        const reviewRequestResponse = await getReviewingProjects();
         if (reviewRequestResponse.successful) {
-            console.log(reviewRequestResponse.data.requests);
-            /* REMOVE MOCK
-            setReviewRequests(
-                reviewRequestResponse.data.requests.filter(
-                    (request, index) => request.status === 'PENDING'
-                )
-            );*/
+            console.log(reviewRequestResponse.data.projects);
+            setProjects(reviewRequestResponse.data.projects);
         }
-        setReviewRequests(MockProjects);
         setRefreshing(false);
     };
 
@@ -55,7 +47,7 @@ export default function ReviewedProjectsScreen(
             <ReviewedProjectList
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                reviewRequests={reviewRequests}
+                projects={projects}
             />
         </View>
     );

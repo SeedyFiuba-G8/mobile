@@ -33,16 +33,11 @@ export default function ReviewRequestList(props: Props): React.ReactElement {
                             title={reviewRequest.title}
                             city={reviewRequest.city}
                             country={reviewRequest.country}
-                            cover_image_uri={`https://picsum.photos/id/${
-                                randomImageIds[
-                                    Math.floor(
-                                        Math.random() * randomImageIds.length
-                                    )
-                                ]
-                            }/700`}
+                            cover_image_uri={reviewRequest.coverPicUrl}
                             description={reviewRequest.description}
                             projectId={reviewRequest.projectId}
                             onRefresh={props.onRefresh}
+                            stages={reviewRequest.stages}
                         />
                     );
                 })

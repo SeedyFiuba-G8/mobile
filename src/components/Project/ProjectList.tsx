@@ -19,6 +19,9 @@ export default function ProjectList(props: Props): React.ReactElement {
         <>
             {props.projects.length > 0 ? (
                 props.projects.map((project, index) => {
+                    const totalFunds = project.stages
+                        .map((stage) => stage.cost)
+                        .reduce((a, b) => a + b);
                     return (
                         <ProjectCard
                             key={index}
@@ -27,7 +30,7 @@ export default function ProjectList(props: Props): React.ReactElement {
                             country={project.country}
                             cover_image_uri={project.coverPicUrl}
                             description={project.description}
-                            progress={Math.random()}
+                            progress={project.totalFunded / totalFunds}
                             backer_count={Math.floor(Math.random() * 100)}
                             id={project.id}
                             status={project.status}

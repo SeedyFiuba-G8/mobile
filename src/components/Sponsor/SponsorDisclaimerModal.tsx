@@ -4,16 +4,18 @@ import { Portal, Modal, Button, Text, Avatar } from 'react-native-paper';
 import colors from '../../constants/colors';
 import { useEffect } from 'react';
 import strings from '../../constants/strings';
-import type { Stage } from '../../api/projectsApi';
-import StageItem from '../Project/StageItem';
 
 type Props = {
     visible: boolean;
     setVisible: (visible: boolean) => void;
-    stages: Array<Stage>;
+    onOkClick: () => void;
+    onCancelClick: () => void;
+    processingDonation: boolean;
 };
 
-export default function ReviewershipModal(props: Props): React.ReactElement {
+export default function SponsorDisclaimerModal(
+    props: Props
+): React.ReactElement {
     const hideModal = () => props.setVisible(false);
 
     return (
@@ -27,48 +29,41 @@ export default function ReviewershipModal(props: Props): React.ReactElement {
                     <View>
                         <Avatar.Icon
                             size={50}
-                            icon='stairs'
+                            icon='hand-heart'
                             color={colors.grey}
                             style={styles.icon}
                         />
                     </View>
                     <View style={{ justifyContent: 'center' }}>
-                        <Text style={styles.text}>Stages</Text>
+                        <Text style={styles.text}>Sponsor Project</Text>
                     </View>
                 </View>
 
-                <ScrollView
-                    contentContainerStyle={{
-                        alignSelf: 'stretch',
-                        alignItems: 'center',
-                    }}
-                    style={{ alignSelf: 'stretch' }}
-                >
-                    {props.stages.map((stage, index) => {
-                        return (
-                            <StageItem
-                                key={index}
-                                index={index}
-                                stage={stage}
-                                totalItems={props.stages.length}
-                                completed={false}
-                            />
-                        );
-                    })}
-                </ScrollView>
-                <Button
-                    style={styles.okButton}
-                    onPress={() => props.setVisible(false)}
-                >
-                    <Text
-                        style={{
-                            color: colors.primary.light,
-                            fontWeight: 'bold',
-                        }}
-                    >
-                        ok
+                <ScrollView>
+                    <Text style={styles.pickerTitleText}>
+                        {strings.reviewershipDisclaimer}
                     </Text>
-                </Button>
+                </ScrollView>
+
+                <View style={styles.buttonsView}>
+                    <Button
+                        style={styles.okButton}
+                        onPress={props.onCancelClick}
+                    >
+                        <Text style={{ color: colors.primary.light }}>
+                            Cancel
+                        </Text>
+                    </Button>
+                    <Button
+                        style={styles.okButton}
+                        onPress={props.onOkClick}
+                        mode='contained'
+                        loading={props.processingDonation}
+                        disabled={props.processingDonation}
+                    >
+                        <Text style={{ color: colors.white }}>Confirm</Text>
+                    </Button>
+                </View>
             </Modal>
         </Portal>
     );
@@ -124,5 +119,11 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         height: 50,
         marginHorizontal: 12,
+    },
+    buttonsView: {
+        flexDirection: 'row',
+        alignSelf: 'stretch',
+        justifyContent: 'space-between',
+        marginTop: 20,
     },
 });

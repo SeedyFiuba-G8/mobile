@@ -5,11 +5,11 @@ import { Text } from 'react-native-paper';
 // Types
 import colors from '../../constants/colors';
 import ReviewedProjectCard from './ReviewedProjectCard';
-import type { ReviewRequest } from '../../api/projectsApi';
+import type { Project } from '../../api/projectsApi';
 type Props = {
     refreshing: boolean;
     onRefresh: () => void;
-    reviewRequests: Array<ReviewRequest>;
+    projects: Array<Project>;
     editable?: boolean;
 };
 
@@ -24,24 +24,19 @@ export default function ReviewedProjectList(props: Props): React.ReactElement {
                 />
             }
         >
-            {props.reviewRequests.length > 0 ? (
-                props.reviewRequests.map((reviewRequest, index) => {
+            {props.projects.length > 0 ? (
+                props.projects.map((project, index) => {
                     return (
                         <ReviewedProjectCard
                             key={index}
-                            title={reviewRequest.title}
-                            city={reviewRequest.city}
-                            country={reviewRequest.country}
-                            cover_image_uri={`https://picsum.photos/id/${
-                                randomImageIds[
-                                    Math.floor(
-                                        Math.random() * randomImageIds.length
-                                    )
-                                ]
-                            }/700`}
-                            description={reviewRequest.description}
-                            projectId={reviewRequest.projectId}
+                            title={project.title}
+                            city={project.city}
+                            country={project.country}
+                            cover_image_uri={project.coverPicUrl}
+                            description={project.description}
+                            projectId={project.id}
                             onRefresh={props.onRefresh}
+                            stages={project.stages}
                         />
                     );
                 })

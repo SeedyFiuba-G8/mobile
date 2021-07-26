@@ -16,6 +16,7 @@ import {
     IconButton,
 } from 'react-native-paper';
 import SponsorProjectModal from '../components/Sponsor/SponsorProjectModal';
+import StageItem from '../components/Project/StageItem';
 
 // Types
 import type { GetProjectApiResponse } from '../api/projectsApi';
@@ -24,12 +25,17 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import type { Stage } from '../api/projectsApi';
 
 // APIs
-import { getProject } from '../api/projectsApi';
+import { getProject, fundProject } from '../api/projectsApi';
 import { getProfile, Profile } from '../api/profileApi';
 
 // Hooks
 import { RootStackParamList } from '../types';
 import colors from '../constants/colors';
+import SponsorDisclaimerModal from '../components/Sponsor/SponsorDisclaimerModal';
+
+// Util
+import { updateBalance } from '../util/transactions';
+import ProfileScreen from './ProfileScreen';
 
 type ProjectVisualizationScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -70,61 +76,6 @@ const IconLabel = (props: {
     );
 };
 
-const StageItem = (props: {
-    index: number;
-    totalItems: number;
-    stage: Stage;
-    completed: boolean;
-}): React.ReactElement => {
-    return (
-        <>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text
-                    style={
-                        props.completed
-                            ? styles.stageTextCompleted
-                            : styles.stageText
-                    }
-                >{`Stage ${props.index + 1}`}</Text>
-                {props.completed ? (
-                    <IconButton
-                        icon='check-bold'
-                        style={{ margin: 0 }}
-                        size={20}
-                        color={colors.primary.light}
-                    />
-                ) : null}
-            </View>
-            <Text
-                style={
-                    props.completed
-                        ? styles.stageItemTextCompleted
-                        : styles.stageItemText
-                }
-            >
-                {props.stage.description}
-            </Text>
-            <Text
-                style={
-                    props.completed
-                        ? styles.stageItemTextCompleted
-                        : styles.stageItemText
-                }
-            >{`${props.stage.cost} ETH`}</Text>
-            {props.index < props.totalItems - 1 ? (
-                <View
-                    style={{
-                        borderWidth: 0.25,
-                        height: 25,
-                        borderColor: props.completed
-                            ? colors.primary.light
-                            : colors.grey,
-                    }}
-                />
-            ) : null}
-        </>
-    );
-};
 export default function ProjectVisualizationScreen(
     props: Props
 ): React.ReactElement {
@@ -135,8 +86,14 @@ export default function ProjectVisualizationScreen(
     const [endDate, setEndDate] = useState(new Date());
 
     const [creatorName, setCreatorName] = useState('');
+    const [totalGoal, setTotalGoal] = useState(0);
 
+    const [donation, setDonation] = useState(0);
     const [sponsorProjectModalVisible, setSponsorProjectModalVisible] =
+        useState(false);
+
+    const [processingDonation, setProcessingDonation] = useState(false);
+    const [sponsorDisclaimerModalVisible, setSponsorDisclaimerModalVisible] =
         useState(false);
     const onRefresh = async () => {
         setLoading(true);
@@ -146,6 +103,11 @@ export default function ProjectVisualizationScreen(
             setPublishedDate(new Date(project_temp.publishedOn));
             setEndDate(new Date(project_temp.finalizedBy));
             setProject(project_temp);
+            setTotalGoal(
+                project_temp.stages
+                    .map((stage) => stage.cost)
+                    .reduce((a, b) => a + b)
+            );
             const creatorProfileResponse = await getProfile(
                 project_temp.userId
             );
@@ -176,6 +138,26 @@ export default function ProjectVisualizationScreen(
     const onCreatorNamePress = () => {
         if (project) {
             props.navigation.navigate('Profile', { userId: project?.userId });
+        }
+    };
+
+    const onSponsorModalOkPress = (enteredDonation: string) => {
+        setDonation(parseFloat(enteredDonation));
+        setSponsorProjectModalVisible(false);
+        setSponsorDisclaimerModalVisible(true);
+    };
+
+    const onConfirmDonation = async () => {
+        setProcessingDonation(true);
+        const response = await fundProject(
+            props.route.params.projectId,
+            donation
+        );
+        setProcessingDonation(false);
+        if (response.successful) {
+            setSponsorDisclaimerModalVisible(false);
+            onRefresh();
+            updateBalance();
         }
     };
     console.log(remainingDays);
@@ -227,13 +209,19 @@ export default function ProjectVisualizationScreen(
                                 text={`Published on ${publishedDate.getDate()}/${publishedDate.getMonth()}/${publishedDate.getFullYear()}`}
                             />
                             <ProgressBar
-                                progress={0.7}
+                                progress={
+                                    (project?.totalFunded ?? 0) / totalGoal
+                                }
                                 style={{ height: 10 }}
                             />
-                            <View style={{ flexDirection: 'row' }}>
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                }}
+                            >
                                 <View
                                     style={{
-                                        flex: 1,
                                         alignItems: 'flex-start',
                                     }}
                                 >
@@ -242,17 +230,16 @@ export default function ProjectVisualizationScreen(
                                             ...styles.statTextMain,
                                             color: colors.primary.light,
                                         }}
-                                    >{`ETH ${25}`}</Text>
+                                    >{`ETH ${project?.totalFunded}`}</Text>
                                     <Text
                                         style={{
                                             ...styles.statTextSecondary,
                                             color: colors.primary.light,
                                         }}
-                                    >{`out of ETH ${55}`}</Text>
+                                    >{`out of ETH ${totalGoal}`}</Text>
                                 </View>
                                 <View
                                     style={{
-                                        flex: 1,
                                         alignItems: 'flex-start',
                                     }}
                                 >
@@ -275,7 +262,6 @@ export default function ProjectVisualizationScreen(
                                 </View>
                                 <View
                                     style={{
-                                        flex: 1,
                                         alignItems: 'flex-start',
                                     }}
                                 >
@@ -310,7 +296,9 @@ export default function ProjectVisualizationScreen(
                                         index={index}
                                         stage={stage}
                                         totalItems={project?.stages.length}
-                                        completed={index % 2 === 0}
+                                        completed={
+                                            index < project?.currentStage
+                                        }
                                     />
                                 ))}
                             </View>
@@ -340,8 +328,15 @@ export default function ProjectVisualizationScreen(
             <SponsorProjectModal
                 visible={sponsorProjectModalVisible}
                 setVisible={setSponsorProjectModalVisible}
-                onOkClick={() => setSponsorProjectModalVisible(false)}
+                onOkClick={onSponsorModalOkPress}
                 onCancelClick={() => setSponsorProjectModalVisible(false)}
+            />
+            <SponsorDisclaimerModal
+                visible={sponsorDisclaimerModalVisible}
+                setVisible={setSponsorDisclaimerModalVisible}
+                onOkClick={() => onConfirmDonation()}
+                onCancelClick={() => setSponsorDisclaimerModalVisible(false)}
+                processingDonation={processingDonation}
             />
             <FAB
                 style={styles.fab}

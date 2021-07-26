@@ -19,7 +19,7 @@ import { Icon } from 'react-native-paper/lib/typescript/components/Avatar/Avatar
 type Props = {
     visible: boolean;
     setVisible: (visible: boolean) => void;
-    onOkClick: () => void;
+    onOkClick: (donation: string) => void;
     onCancelClick: () => void;
 };
 
@@ -29,6 +29,7 @@ export default function SponsorProjectModal(props: Props): React.ReactElement {
         (state: RootState) => state.balance.balance
     );
     const affix = <TextInput.Affix text='ETH' />;
+    const [donation, setDonation] = useState('');
     return (
         <Portal>
             <Modal
@@ -72,6 +73,8 @@ export default function SponsorProjectModal(props: Props): React.ReactElement {
                     label='Donation amount'
                     keyboardType='numeric'
                     right={affix}
+                    onChangeText={(newDonation) => setDonation(newDonation)}
+                    value={donation}
                 />
                 <View style={styles.buttonsView}>
                     <Button
@@ -84,7 +87,7 @@ export default function SponsorProjectModal(props: Props): React.ReactElement {
                     </Button>
                     <Button
                         style={styles.sponsorButton}
-                        onPress={props.onOkClick}
+                        onPress={() => props.onOkClick(donation)}
                     >
                         <Text
                             style={{
