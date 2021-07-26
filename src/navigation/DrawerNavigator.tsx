@@ -27,6 +27,7 @@ import ToggleSearchBarAction from '../actions/ToggleSearchBarAction';
 import { updateNameAction } from '../actions/UpdateNameAction';
 import { updateBalanceAction } from '../actions/UpdateBalanceAction';
 import { updateWalletAddressAction } from '../actions/UpdateWalletAddressAction';
+
 type DrawerNavigatorNavigationProp = StackNavigationProp<
     RootStackParamList,
     'Drawer'
@@ -51,45 +52,6 @@ function AddNewProjectButton(props: Props) {
 }
 export default function DrawerNavigator(props: Props): React.ReactElement {
     const { isDarkTheme } = useTheme();
-
-    const dispatch = useDispatch();
-    const userId = useSelector((state: RootState) => state.session.id);
-    /*
-    useEffect(() => {
-        const updateProfileInfo = async () => {
-            const profileResponse = await getProfile(userId);
-            console.log('Performing profile update');
-            if (profileResponse.successful) {
-                dispatch(
-                    updateNameAction(
-                        profileResponse.data.firstName,
-                        profileResponse.data.lastName,
-                        profileResponse.data.profilePicUrl
-                    )
-                );
-                if (
-                    profileResponse.data.interests.length === 0 ||
-                    !profileResponse.data.city ||
-                    !profileResponse.data.country
-                ) {
-                    props.navigation.navigate('Profile', {
-                        userId: userId,
-                        showNotification:
-                            'To complete your register, enter your interests and location. ',
-                    });
-                }
-                if (profileResponse.data.balance) {
-                    dispatch(updateBalanceAction(profileResponse.data.balance));
-                }
-                if (profileResponse.data.address) {
-                    dispatch(
-                        updateWalletAddressAction(profileResponse.data.address)
-                    );
-                }
-            }
-        };
-        updateProfileInfo();
-    }, [userId]);*/
     return (
         <Drawer.Navigator
             initialRouteName='Dashboard'

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Avatar, Title, IconButton, Button } from 'react-native-paper';
 import Clipboard from 'expo-clipboard';
@@ -18,6 +18,7 @@ import { useSelector } from 'react-redux';
 
 // Types
 import type { RootState } from '../../reducers';
+import { updateBalance } from '../../util/transactions';
 
 export default function Header({
     ...props
@@ -47,6 +48,10 @@ export default function Header({
             setcopyWalletAdressIcon('clipboard-text');
         }, 1500);
     };
+
+    useEffect(() => {
+        setInterval(updateBalance, 5000);
+    }, []);
     return (
         <View style={styles.container}>
             <View style={styles.userInfo}>
@@ -69,8 +74,12 @@ export default function Header({
                             alignItems: 'center',
                         }}
                     >
-                        <IconButton icon='ethereum' color={colors.darkerGrey} />
-                        <Text style={{ left: -10, color: colors.darkerGrey }}>
+                        <IconButton
+                            icon='ethereum'
+                            color={colors.darkerGrey}
+                            style={{ margin: 0 }}
+                        />
+                        <Text style={{ left: -6, color: colors.darkerGrey }}>
                             {balance.toString()}
                         </Text>
                     </View>
