@@ -36,7 +36,6 @@ const getProfile = async (
         null,
         { headers: { Authorization: `Bearer ${authToken}` } }
     );
-    console.log(apiResponse);
     return apiResponse;
 };
 

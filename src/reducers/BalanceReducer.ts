@@ -12,7 +12,6 @@ const BalanceReducer = (
 ): balanceStatusType => {
     switch (action.type) {
         case 'UPDATE_BALANCE':
-            console.log(`Updating balance to ${action.payload.balance}`);
             return {
                 ...state,
                 balance: action.payload.balance,
