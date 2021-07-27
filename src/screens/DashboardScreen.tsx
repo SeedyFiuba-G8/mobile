@@ -27,8 +27,6 @@ import categories from '../constants/categories';
 import statuses from '../constants/statuses';
 
 // Image Management
-import * as ImagePicker from 'expo-image-picker';
-
 export default function DashboardScreen({
     navigation,
 }: MaterialTopTabBarProps): React.ReactElement {
@@ -134,6 +132,7 @@ export default function DashboardScreen({
                     projects={projects}
                     showStatus={false}
                     showAdvanceStageButton={false}
+                    dashboardNavigation={navigation}
                 />
             </ScrollView>
             <FAB

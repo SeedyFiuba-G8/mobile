@@ -43,8 +43,8 @@ export default function ReviewedProjectCard(props: Props): React.ReactElement {
         }
     };
 
-    const allStagesReleased = props.currentStage === props.stages.length - 1;
-    const projectIsFinished = props.status.toLowerCase() === 'finished';
+    const allStagesReleased = props.currentStage >= props.stages.length - 1;
+    const projectIsFinished = props.status.toLowerCase() === 'completed';
 
     const projectIsFunding = props.status.toLowerCase() === 'funding';
 
@@ -87,11 +87,13 @@ export default function ReviewedProjectCard(props: Props): React.ReactElement {
                                     fontWeight: 'bold',
                                 }}
                             >
-                                {`Stage ${props.currentStage + 1} out of ${
-                                    props.stages.length
-                                }`}
+                                {!projectIsFinished
+                                    ? `Stage ${
+                                          props.currentStage + 1
+                                      } out of ${props.stages.length}`
+                                    : 'Project Finished'}
                             </Text>
-                            {!allStagesReleased ? (
+                            {!allStagesReleased && !projectIsFinished ? (
                                 <Text style={styles.stageInfoText}>
                                     {`Next release is ${
                                         props.stages[props.currentStage + 1]

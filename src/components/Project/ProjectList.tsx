@@ -6,6 +6,15 @@ import { Text } from 'react-native-paper';
 // Types
 import type { Project } from '../../api/projectsApi';
 import colors from '../../constants/colors';
+import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../../types';
+
+type MyProjectsScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'MyProjects'
+>;
+
 type Props = {
     refreshing: boolean;
     onRefresh: () => void;
@@ -13,6 +22,8 @@ type Props = {
     editable?: boolean;
     showStatus: boolean;
     showAdvanceStageButton: boolean;
+    myProjectsNavigation?: MyProjectsScreenNavigationProp;
+    dashboardNavigation?: MaterialTopTabBarProps['navigation'];
 };
 
 export default function ProjectList(props: Props): React.ReactElement {
@@ -41,6 +52,8 @@ export default function ProjectList(props: Props): React.ReactElement {
                             }
                             currentStage={project.currentStage}
                             totalStages={project.stages.length}
+                            myProjectsNavigation={props.myProjectsNavigation}
+                            dashboardNavigation={props.dashboardNavigation}
                         />
                     );
                 })

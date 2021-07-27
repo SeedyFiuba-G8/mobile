@@ -26,9 +26,10 @@ import { useSelector } from 'react-redux';
 // Constant
 import colors from '../constants/colors';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../types';
+import { DrawerParamList, RootStackParamList } from '../types';
 import { RouteProp } from '@react-navigation/native';
 import statuses from '../constants/statuses';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
 
 type MyProjectsScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -128,17 +129,18 @@ export default function DashboardScreen(props: Props): React.ReactElement {
                         )}
                         showStatus={true}
                         showAdvanceStageButton={true}
+                        myProjectsNavigation={props.navigation}
                     />
                 </View>
-                <Snackbar
-                    visible={statusBarVisible}
-                    onDismiss={() => {
-                        setStatusBarVisible(false);
-                    }}
-                >
-                    {statusBarText}
-                </Snackbar>
             </ScrollView>
+            <Snackbar
+                visible={statusBarVisible}
+                onDismiss={() => {
+                    setStatusBarVisible(false);
+                }}
+            >
+                {statusBarText}
+            </Snackbar>
         </View>
     );
 }

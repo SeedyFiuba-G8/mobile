@@ -9,8 +9,20 @@ import { useTheme } from '../contexts/ThemeProvider';
 
 // Constants
 import colors from '../constants/colors';
+import { useState } from 'react';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { AuthStackParamList } from '../types';
 
-export default function SignInScreen(): React.ReactElement {
+type SignUpScreenNavigationProp = StackNavigationProp<
+    AuthStackParamList,
+    'SignUp'
+>;
+
+type Props = {
+    navigation: SignUpScreenNavigationProp;
+};
+
+export default function SignInScreen(props: Props): React.ReactElement {
     const { isDarkTheme } = useTheme();
     const styles = React.useMemo(
         () => createThemedStyles(isDarkTheme),
@@ -27,23 +39,21 @@ export default function SignInScreen(): React.ReactElement {
 
     const [emailAlreadyUsed, setEmailAlreadyUsed] = React.useState(false);
 
+    const [creatingAccount, setCreatingAccount] = useState(false);
     const onSignUpButtonClick = async () => {
         setEmailAlreadyUsed(false);
+        setCreatingAccount(true);
         const registerResult = await register(
             signUpData.email,
             signUpData.password,
             signUpData.firstname,
             signUpData.lastname
         );
+        setCreatingAccount(false);
         if (registerResult.successful) {
-            console.log(
-                `User ${signUpData.firstname} ${signUpData.lastname} was registered successfully.`
-            );
-
-            // Log the user in automatically after successful register
-            DeviceEventEmitter.emit('login', {
+            props.navigation.navigate('SignIn', {
                 email: signUpData.email,
-                password: signUpData.password,
+                justRegistered: true,
             });
         } else {
             console.log('Error en el registro.');
@@ -62,6 +72,7 @@ export default function SignInScreen(): React.ReactElement {
 
             <View style={styles.inputWithHelperTextView}>
                 <TextInput
+                    mode='outlined'
                     style={styles.input}
                     onChangeText={(text) => {
                         setSignUpData({
@@ -83,6 +94,7 @@ export default function SignInScreen(): React.ReactElement {
                 </HelperText>
             </View>
             <TextInput
+                mode='outlined'
                 style={styles.input}
                 onChangeText={(text) => {
                     setSignUpData({
@@ -95,6 +107,7 @@ export default function SignInScreen(): React.ReactElement {
                 error={loginWasNotSuccesful()}
             />
             <TextInput
+                mode='outlined'
                 style={styles.input}
                 onChangeText={(text) => {
                     setSignUpData({
@@ -107,6 +120,7 @@ export default function SignInScreen(): React.ReactElement {
                 error={loginWasNotSuccesful()}
             />
             <TextInput
+                mode='outlined'
                 style={styles.input}
                 secureTextEntry={true}
                 onChangeText={(text) => {
@@ -121,6 +135,7 @@ export default function SignInScreen(): React.ReactElement {
             />
             <View style={styles.inputWithHelperTextView}>
                 <TextInput
+                    mode='outlined'
                     style={styles.input}
                     secureTextEntry={true}
                     onChangeText={(text) => {
@@ -141,7 +156,14 @@ export default function SignInScreen(): React.ReactElement {
                     Passwords do not mach.
                 </HelperText>
             </View>
-            <Button style={styles.button} onPress={onSignUpButtonClick}>
+            <Button
+                style={styles.button}
+                onPress={onSignUpButtonClick}
+                color={colors.primary.light}
+                mode='contained'
+                loading={creatingAccount}
+                disabled={creatingAccount}
+            >
                 <Text style={{ color: 'white' }}>Create account</Text>
             </Button>
         </View>
@@ -157,9 +179,6 @@ const createThemedStyles = (isDarkTheme: boolean) => {
             backgroundColor: isDarkTheme ? colors.black : colors.white,
         },
         button: {
-            backgroundColor: isDarkTheme
-                ? colors.primary.dark
-                : colors.primary.light,
             justifyContent: 'center',
             alignSelf: 'stretch',
             paddingVertical: 12,

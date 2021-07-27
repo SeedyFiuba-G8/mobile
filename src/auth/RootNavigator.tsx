@@ -22,7 +22,11 @@ export default function RootNavigator(): React.ReactElement {
                 headerShown: false,
             }}
         >
-            <AuthStack.Screen name='SignIn' component={SignInScreen} />
+            <AuthStack.Screen
+                name='SignIn'
+                component={SignInScreen}
+                initialParams={{}}
+            />
 
             <AuthStack.Screen name='SignUp' component={SignUpScreen} />
 

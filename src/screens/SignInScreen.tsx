@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Text, Button, TextInput, HelperText } from 'react-native-paper';
+import {
+    Text,
+    Button,
+    TextInput,
+    HelperText,
+    Snackbar,
+} from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { DeviceEventEmitter } from 'react-native';
 
@@ -32,14 +38,19 @@ import { getProfile } from '../api/profileApi';
 import { updateNameAction } from '../actions/UpdateNameAction';
 import { updateBalanceAction } from '../actions/UpdateBalanceAction';
 import { updateWalletAddressAction } from '../actions/UpdateWalletAddressAction';
+import { RouteProp } from '@react-navigation/native';
+import { useEffect, useState } from 'react';
 
 type SignInScreenNavigationProp = StackNavigationProp<
     AuthStackParamList,
     'SignIn'
 >;
 
+type SignInScreenRouteProp = RouteProp<AuthStackParamList, 'SignIn'>;
+
 type Props = {
     navigation: SignInScreenNavigationProp;
+    route: SignInScreenRouteProp;
 };
 
 export default function SignInScreen(props: Props): React.ReactElement {
@@ -47,6 +58,9 @@ export default function SignInScreen(props: Props): React.ReactElement {
         email: '',
         password: '',
     });
+
+    const [snackbarVisible, setSnackbarVisible] = useState(false);
+
     const updateProfileInfo = async (userId: string) => {
         const profileResponse = await getProfile(userId);
         if (profileResponse.successful) {
@@ -68,6 +82,16 @@ export default function SignInScreen(props: Props): React.ReactElement {
             }
         }
     };
+
+    useEffect(() => {
+        if (props.route.params.email !== undefined) {
+            setLoginData({ ...loginData, email: props.route.params.email });
+        }
+        if (props.route.params.justRegistered) {
+            setSnackbarVisible(true);
+        }
+    }, [props.route.params]);
+
     const dispatch = useDispatch();
     const loginFunction = async (email: string, password: string) => {
         dispatch(
@@ -208,6 +232,13 @@ export default function SignInScreen(props: Props): React.ReactElement {
             >
                 <Text style={{ color: 'white' }}>Sign in with Facebook</Text>
             </Button>
+            <Snackbar
+                visible={snackbarVisible}
+                onDismiss={() => setSnackbarVisible(false)}
+                duration={2000}
+            >
+                Registered successfully!
+            </Snackbar>
         </View>
     );
 }

@@ -1,19 +1,18 @@
+import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
+import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { StyleSheet, View, DeviceEventEmitter } from 'react-native';
-import {
-    Text,
-    Card,
-    Paragraph,
-    Button,
-    TouchableRipple,
-    ProgressBar,
-    Divider,
-    Badge,
-} from 'react-native-paper';
-import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
+import { baseProps } from 'react-native-gesture-handler/lib/typescript/handlers/gestureHandlers';
+import { Text, Card, ProgressBar } from 'react-native-paper';
 import colors from '../../constants/colors';
+import Navigation from '../../navigation';
+import { RootStackParamList } from '../../types';
+type MyProjectsScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'MyProjects'
+>;
 
-import { completeProjectStage } from '../../api/projectsApi';
 type Props = {
     title: string;
     city: string;
@@ -28,40 +27,69 @@ type Props = {
     showAdvanceStageButton: boolean;
     currentStage: number;
     totalStages: number;
+    myProjectsNavigation?: MyProjectsScreenNavigationProp;
+    dashboardNavigation?: MaterialTopTabBarProps['navigation'];
 };
-
 export default function ProjectCard(props: Props): React.ReactElement {
     const onCardPress = () => {
         if (props.status?.toLowerCase() === 'draft' ?? false) {
-            DeviceEventEmitter.emit('editProject', { projectId: props.id });
+            if (props.myProjectsNavigation) {
+                props.myProjectsNavigation.navigate('ProjectCreation', {
+                    projectId: props.id,
+                    edition: true,
+                });
+            }
         } else {
-            DeviceEventEmitter.emit('viewProject', { projectId: props.id });
+            if (props.myProjectsNavigation) {
+                props.myProjectsNavigation.navigate('ProjectVisualization', {
+                    projectId: props.id,
+                });
+            } else if (props.dashboardNavigation) {
+                props.dashboardNavigation.navigate('ProjectVisualization', {
+                    projectId: props.id,
+                });
+            }
         }
     };
 
     const isInProgress = props.status.toLowerCase() === 'in_progress';
 
-    const generateFundingOrProgressStat = (): React.ReactElement => {
-        if (isInProgress) {
-            return (
-                <View style={{ flex: 1, alignItems: 'center' }}>
-                    <Text style={styles.progressTextPercentage}>
-                        Working on
-                    </Text>
-                    <Text style={styles.progressText}>{`stage ${
-                        props.currentStage + 1
-                    } of ${props.totalStages}`}</Text>
-                </View>
-            );
-        } else {
-            return (
-                <View style={{ flex: 1, alignItems: 'center' }}>
-                    <Text style={styles.progressTextPercentage}>
-                        {`${Math.round(props.progress * 100)}%`}
-                    </Text>
-                    <Text style={styles.progressText}>Funded</Text>
-                </View>
-            );
+    const generateFundingOrProgressStat = (): React.ReactElement | null => {
+        switch (props.status.toLowerCase()) {
+            case 'in_progress':
+                return (
+                    <View style={{ flex: 1, alignItems: 'center' }}>
+                        <Text style={styles.progressTextPercentage}>
+                            Working on
+                        </Text>
+                        <Text style={styles.progressText}>{`stage ${
+                            props.currentStage + 1
+                        } of ${props.totalStages}`}</Text>
+                    </View>
+                );
+            case 'funding':
+                return (
+                    <View style={{ flex: 1, alignItems: 'center' }}>
+                        <Text style={styles.progressTextPercentage}>
+                            {`${Math.round(props.progress * 100)}%`}
+                        </Text>
+                        <Text style={styles.progressText}>Funded</Text>
+                    </View>
+                );
+            case 'completed':
+                return (
+                    <View
+                        style={{
+                            flex: 1,
+                            alignItems: 'center',
+                            justifyContent: 'flex-end',
+                        }}
+                    >
+                        <Text style={styles.progressText}>Completed</Text>
+                    </View>
+                );
+            default:
+                return null;
         }
     };
 
@@ -103,7 +131,7 @@ export default function ProjectCard(props: Props): React.ReactElement {
                             <Text style={styles.statusText}>Funding</Text>
                         </View>
                     );
-                case 'finished':
+                case 'completed':
                     return (
                         <View
                             style={{ backgroundColor: colors.primary.light }}
