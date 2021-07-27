@@ -12,6 +12,7 @@ type Props = {
     projects: Array<Project>;
     editable?: boolean;
     showStatus: boolean;
+    showAdvanceStageButton: boolean;
 };
 
 export default function ProjectList(props: Props): React.ReactElement {
@@ -35,6 +36,11 @@ export default function ProjectList(props: Props): React.ReactElement {
                             id={project.id}
                             status={project.status}
                             showStatus={props.showStatus}
+                            showAdvanceStageButton={
+                                props.showAdvanceStageButton
+                            }
+                            currentStage={project.currentStage}
+                            totalStages={project.stages.length}
                         />
                     );
                 })

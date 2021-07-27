@@ -3,10 +3,7 @@ import { StyleSheet, View, DeviceEventEmitter } from 'react-native';
 import { Text, Card, Button, IconButton } from 'react-native-paper';
 import colors from '../../constants/colors';
 
-import {
-    acceptReviewRequest,
-    rejectReviewRequest,
-} from '../../api/projectsApi';
+import { completeProjectStage } from '../../api/projectsApi';
 
 import type { Stage } from '../../api/projectsApi';
 
@@ -21,6 +18,9 @@ type Props = {
     projectId: string;
     onRefresh: () => void;
     stages: Array<Stage>;
+    currentStage: number;
+    approvedStage: number;
+    status: string;
 };
 
 export default function ReviewedProjectCard(props: Props): React.ReactElement {
@@ -28,26 +28,25 @@ export default function ReviewedProjectCard(props: Props): React.ReactElement {
         console.log('Pressed review request card');
     };
 
-    const onAccept = async () => {
-        setAccepting(true);
-        const response = await acceptReviewRequest(props.projectId);
+    const [releasing, setReleasing] = useState(false);
+
+    const onReleaseFundsPress = async () => {
+        setReleasing(true);
+        const response = await completeProjectStage(
+            props.projectId,
+            props.currentStage
+        );
+        setReleasing(false);
         if (response.successful) {
-            console.log('Successfully accepted reviewership');
+            console.log('Successfully approved fund release');
             props.onRefresh();
         }
     };
 
-    const onReject = async () => {
-        setRejecting(true);
-        const response = await rejectReviewRequest(props.projectId);
-        if (response.successful) {
-            console.log('Successfully rejected reviewership');
-            props.onRefresh();
-        }
-    };
+    const allStagesReleased = props.currentStage === props.stages.length - 1;
+    const projectIsFinished = props.status.toLowerCase() === 'finished';
 
-    const [accepting, setAccepting] = useState(false);
-    const [rejecting, setRejecting] = useState(false);
+    const projectIsFunding = props.status.toLowerCase() === 'funding';
 
     const [projectStagesModalVisible, setProjectStagesModalVisible] =
         useState(false);
@@ -71,14 +70,37 @@ export default function ReviewedProjectCard(props: Props): React.ReactElement {
                         marginTop: 20,
                     }}
                 >
-                    <Text
-                        style={{ ...styles.stageInfoText, fontWeight: 'bold' }}
-                    >
-                        Currently in stage 3 out of 5
-                    </Text>
-                    <Text style={styles.stageInfoText}>
-                        Next stage release is 0.00025 ETH
-                    </Text>
+                    {projectIsFunding ? (
+                        <Text
+                            style={{
+                                ...styles.stageInfoText,
+                                fontWeight: 'bold',
+                            }}
+                        >
+                            Project is in funding stage
+                        </Text>
+                    ) : (
+                        <>
+                            <Text
+                                style={{
+                                    ...styles.stageInfoText,
+                                    fontWeight: 'bold',
+                                }}
+                            >
+                                {`Stage ${props.currentStage + 1} out of ${
+                                    props.stages.length
+                                }`}
+                            </Text>
+                            {!allStagesReleased ? (
+                                <Text style={styles.stageInfoText}>
+                                    {`Next release is ${
+                                        props.stages[props.currentStage + 1]
+                                            .cost
+                                    } ETH`}
+                                </Text>
+                            ) : null}
+                        </>
+                    )}
                 </View>
             </Card.Content>
 
@@ -91,23 +113,24 @@ export default function ReviewedProjectCard(props: Props): React.ReactElement {
                         justifyContent: 'center',
                     }}
                 >
-                    <Button
-                        icon='lock-open-variant'
-                        color={colors.primary.light}
-                        mode='contained'
-                        onPress={onAccept}
-                        loading={accepting}
-                        disabled={accepting || rejecting}
-                    >
-                        <Text style={{ color: colors.white }}>
-                            Release funds
-                        </Text>
-                    </Button>
+                    {!projectIsFinished && !projectIsFunding ? (
+                        <Button
+                            icon='lock-open-variant'
+                            color={colors.primary.light}
+                            mode='contained'
+                            onPress={onReleaseFundsPress}
+                            loading={releasing}
+                            disabled={releasing}
+                        >
+                            <Text style={{ color: colors.white }}>
+                                Advance Stage
+                            </Text>
+                        </Button>
+                    ) : null}
                     <IconButton
                         icon='format-list-numbered'
                         color={colors.primary.light}
                         onPress={() => setProjectStagesModalVisible(true)}
-                        disabled={accepting || rejecting}
                     />
                 </View>
             </View>
@@ -115,6 +138,7 @@ export default function ReviewedProjectCard(props: Props): React.ReactElement {
                 visible={projectStagesModalVisible}
                 setVisible={setProjectStagesModalVisible}
                 stages={props.stages}
+                currentStage={props.currentStage}
             />
         </Card>
     );

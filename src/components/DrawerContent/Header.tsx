@@ -50,7 +50,10 @@ export default function Header({
     };
 
     useEffect(() => {
-        setInterval(updateBalance, 5000);
+        const intervalId = setInterval(updateBalance, 5000);
+        return () => {
+            clearInterval(intervalId);
+        };
     }, []);
     return (
         <View style={styles.container}>

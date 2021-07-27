@@ -127,6 +127,7 @@ export default function DashboardScreen(props: Props): React.ReactElement {
                                 project.status.toLowerCase() === filter
                         )}
                         showStatus={true}
+                        showAdvanceStageButton={true}
                     />
                 </View>
                 <Snackbar

@@ -176,7 +176,9 @@ export default function ProjectVisualizationScreen(
                             source={{ uri: project?.coverPicUrl }}
                         />
                         <View style={styles.basicInfoView}>
-                            <Title style={styles.title}>{project?.title}</Title>
+                            <Title style={styles.title}>
+                                {project?.title}
+                            </Title>
                             <IconLabel
                                 icon='map-marker'
                                 text={`Created in ${project?.city}, ${project?.country}`}
@@ -203,7 +205,9 @@ export default function ProjectVisualizationScreen(
 
                             <Divider style={styles.divider} />
 
-                            <Title style={styles.objectiveTitle}>Funding</Title>
+                            <Title style={styles.objectiveTitle}>
+                                Funding
+                            </Title>
                             <IconLabel
                                 icon='calendar'
                                 text={`Published on ${publishedDate.getDate()}/${publishedDate.getMonth()}/${publishedDate.getFullYear()}`}
@@ -338,12 +342,14 @@ export default function ProjectVisualizationScreen(
                 onCancelClick={() => setSponsorDisclaimerModalVisible(false)}
                 processingDonation={processingDonation}
             />
-            <FAB
-                style={styles.fab}
-                icon='hand-heart'
-                onPress={onSponsorProjectPress}
-                label='Sponsor this project'
-            />
+            {project?.status.toLowerCase() === 'funding' ? (
+                <FAB
+                    style={styles.fab}
+                    icon='hand-heart'
+                    onPress={onSponsorProjectPress}
+                    label='Sponsor this project'
+                />
+            ) : null}
         </View>
     );
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, DeviceEventEmitter } from 'react-native';
 import {
     Text,
@@ -8,9 +8,12 @@ import {
     TouchableRipple,
     ProgressBar,
     Divider,
+    Badge,
 } from 'react-native-paper';
+import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
 import colors from '../../constants/colors';
 
+import { completeProjectStage } from '../../api/projectsApi';
 type Props = {
     title: string;
     city: string;
@@ -20,8 +23,11 @@ type Props = {
     progress: number;
     backer_count: number;
     id: string;
-    status?: string;
+    status: string;
     showStatus: boolean;
+    showAdvanceStageButton: boolean;
+    currentStage: number;
+    totalStages: number;
 };
 
 export default function ProjectCard(props: Props): React.ReactElement {
@@ -33,6 +39,49 @@ export default function ProjectCard(props: Props): React.ReactElement {
         }
     };
 
+    const isInProgress = props.status.toLowerCase() === 'in_progress';
+
+    const generateFundingOrProgressStat = (): React.ReactElement => {
+        if (isInProgress) {
+            return (
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                    <Text style={styles.progressTextPercentage}>
+                        Working on
+                    </Text>
+                    <Text style={styles.progressText}>{`stage ${
+                        props.currentStage + 1
+                    } of ${props.totalStages}`}</Text>
+                </View>
+            );
+        } else {
+            return (
+                <View style={{ flex: 1, alignItems: 'center' }}>
+                    <Text style={styles.progressTextPercentage}>
+                        {`${Math.round(props.progress * 100)}%`}
+                    </Text>
+                    <Text style={styles.progressText}>Funded</Text>
+                </View>
+            );
+        }
+    };
+
+    const generateProgressBar = (): React.ReactElement => {
+        if (isInProgress) {
+            return (
+                <ProgressBar
+                    progress={props.currentStage / props.totalStages}
+                    style={{ alignSelf: 'stretch' }}
+                />
+            );
+        } else {
+            return (
+                <ProgressBar
+                    progress={props.progress}
+                    style={{ alignSelf: 'stretch' }}
+                />
+            );
+        }
+    };
     const generateStatusText = (): React.ReactElement | null => {
         if (props.status && props.showStatus) {
             switch (props.status.toLowerCase()) {
@@ -48,23 +97,35 @@ export default function ProjectCard(props: Props): React.ReactElement {
                     );
                 case 'funding':
                     return (
-                        <View style={{ backgroundColor: colors.primary.light }}>
+                        <View
+                            style={{ backgroundColor: colors.primary.light }}
+                        >
                             <Text style={styles.statusText}>Funding</Text>
                         </View>
                     );
                 case 'finished':
                     return (
-                        <View style={{ backgroundColor: colors.primary.light }}>
+                        <View
+                            style={{ backgroundColor: colors.primary.light }}
+                        >
                             <Text style={styles.statusText}>Finished</Text>
                         </View>
                     );
-
+                case 'in_progress':
+                    return (
+                        <View
+                            style={{ backgroundColor: colors.primary.light }}
+                        >
+                            <Text style={styles.statusText}>In Progress</Text>
+                        </View>
+                    );
                 default:
                     return null;
             }
         }
         return null;
     };
+
     return (
         <Card style={styles.card} onPress={onCardPress}>
             {generateStatusText()}
@@ -82,12 +143,7 @@ export default function ProjectCard(props: Props): React.ReactElement {
 
             <View style={styles.statusSection}>
                 <View style={{ flexDirection: 'row' }}>
-                    <View style={{ flex: 1, alignItems: 'center' }}>
-                        <Text style={styles.progressTextPercentage}>
-                            {`${Math.round(props.progress * 100)}%`}
-                        </Text>
-                        <Text style={styles.progressText}>Funded</Text>
-                    </View>
+                    {generateFundingOrProgressStat()}
 
                     <View
                         style={{
@@ -102,10 +158,7 @@ export default function ProjectCard(props: Props): React.ReactElement {
                         <Text style={styles.progressText}>Backers</Text>
                     </View>
                 </View>
-                <ProgressBar
-                    progress={props.progress}
-                    style={{ alignSelf: 'stretch' }}
-                />
+                {generateProgressBar()}
             </View>
         </Card>
     );
@@ -117,7 +170,7 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         marginVertical: 10,
         marginHorizontal: 20,
-        height: 400,
+        height: 450,
     },
     title: {
         alignSelf: 'flex-start',
@@ -161,5 +214,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontStyle: 'italic',
         margin: 5,
+    },
+    advanceButton: {
+        marginTop: 10,
+        marginHorizontal: 40,
     },
 });

@@ -11,6 +11,7 @@ type Props = {
     visible: boolean;
     setVisible: (visible: boolean) => void;
     stages: Array<Stage>;
+    currentStage: number;
 };
 
 export default function ReviewershipModal(props: Props): React.ReactElement {
@@ -51,7 +52,7 @@ export default function ReviewershipModal(props: Props): React.ReactElement {
                                 index={index}
                                 stage={stage}
                                 totalItems={props.stages.length}
-                                completed={false}
+                                completed={index < props.currentStage}
                             />
                         );
                     })}

@@ -25,6 +25,7 @@ export type Project = {
     coverPicUrl?: string;
     totalFunded: number;
     currentStage: number;
+    approvedStage: number;
 };
 
 // Responses
@@ -120,6 +121,14 @@ type ReviewershipReplyPayload = {
 
 type FundProjectPayload = {
     amount: number;
+};
+
+type FundApprovalPayload = {
+    approvedStage: number;
+};
+
+type ProjectAdvancePayload = {
+    lastCompletedStage: number;
 };
 
 const getAllProjects = async (
@@ -341,6 +350,25 @@ const fundProject = async (
     );
     return apiResponse;
 };
+
+const completeProjectStage = async (
+    projectId: string,
+    stage: number
+): Promise<Response<ProjectEditionApiResponse>> => {
+    const authToken = store.getState().session.token;
+    const apiResponse = apiProvider.patch<
+        ProjectEditionApiResponse,
+        ProjectAdvancePayload
+    >(
+        `projects/${projectId}`,
+        {
+            lastCompletedStage: stage,
+        },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
 export {
     getAllProjects,
     getUserProjects,
@@ -354,4 +382,5 @@ export {
     publishProject,
     fundProject,
     getReviewingProjects,
+    completeProjectStage,
 };

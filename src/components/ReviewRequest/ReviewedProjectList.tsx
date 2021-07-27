@@ -37,6 +37,9 @@ export default function ReviewedProjectList(props: Props): React.ReactElement {
                             projectId={project.id}
                             onRefresh={props.onRefresh}
                             stages={project.stages}
+                            currentStage={project.currentStage}
+                            approvedStage={project.approvedStage}
+                            status={project.status}
                         />
                     );
                 })

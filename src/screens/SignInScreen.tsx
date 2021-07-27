@@ -43,12 +43,6 @@ type Props = {
 };
 
 export default function SignInScreen(props: Props): React.ReactElement {
-    const { isDarkTheme } = useTheme();
-    const styles = React.useMemo(
-        () => createThemedStyles(isDarkTheme),
-        [isDarkTheme]
-    );
-
     const [loginData, setLoginData] = React.useState({
         email: '',
         password: '',
@@ -162,12 +156,13 @@ export default function SignInScreen(props: Props): React.ReactElement {
                     });
                 }}
                 label='Email'
-                theme={createThemedTextInputTheme(isDarkTheme)}
+                mode='outlined'
                 error={loginWasNotSuccesful()}
             />
 
             <TextInput
                 style={styles.input}
+                mode='outlined'
                 secureTextEntry={true}
                 onChangeText={(text) => {
                     setLoginData({
@@ -176,13 +171,14 @@ export default function SignInScreen(props: Props): React.ReactElement {
                     });
                 }}
                 label='Password'
-                theme={createThemedTextInputTheme(isDarkTheme)}
                 error={loginWasNotSuccesful()}
             />
             <HelperText type='error' visible={loginWasNotSuccesful()}>
                 Invalid email or password.
             </HelperText>
             <Button
+                mode='contained'
+                color={colors.primary.light}
                 style={styles.button}
                 onPress={onLoginButtonClick}
                 loading={
@@ -192,14 +188,21 @@ export default function SignInScreen(props: Props): React.ReactElement {
                     loginState === LoggingInFlowState.WaitingForAuthResponse
                 }
             >
-                <Text style={{ color: 'white' }}>Sign in</Text>
+                <Text style={{ color: 'white' }}>Sign In</Text>
             </Button>
             <Text style={styles.loginOptionSeparator}>or</Text>
 
-            <Button style={styles.button} onPress={onCreateNewAccountClick}>
+            <Button
+                style={styles.button}
+                color={colors.primary.light}
+                mode='contained'
+                onPress={onCreateNewAccountClick}
+            >
                 <Text style={{ color: 'white' }}>Create new account</Text>
             </Button>
             <Button
+                color='#3b5998'
+                mode='contained'
                 style={styles.facebookLoginButton}
                 onPress={onLoginWithFacebookButtonClick}
             >
@@ -209,78 +212,60 @@ export default function SignInScreen(props: Props): React.ReactElement {
     );
 }
 
-const createThemedStyles = (isDarkTheme: boolean) => {
-    const styles = StyleSheet.create({
-        container: {
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: isDarkTheme ? colors.black : colors.white,
-        },
-        button: {
-            backgroundColor: isDarkTheme
-                ? colors.primary.dark
-                : colors.primary.light,
-            justifyContent: 'center',
-            alignSelf: 'stretch',
-            paddingVertical: 12,
-            paddingHorizontal: 32,
-            height: 50,
-            marginHorizontal: 32,
-            borderRadius: 6,
-        },
-        facebookLoginButton: {
-            backgroundColor: '#3b5998',
-            justifyContent: 'center',
-            alignSelf: 'stretch',
-            paddingVertical: 12,
-            paddingHorizontal: 32,
-            marginTop: 10,
-            marginHorizontal: 32,
-            height: 50,
-            borderRadius: 6,
-        },
-        debug: {
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: 64,
-            color: colors.primary.dark,
-        },
-        input: {
-            alignSelf: 'stretch',
-            margin: 32,
-            marginTop: 0,
-            backgroundColor: isDarkTheme ? colors.white : '#EEEEEE',
-            fontWeight: '300',
-        },
-        inputText: {
-            fontSize: 20,
-            fontWeight: '200',
-        },
-        logo: {
-            fontSize: 40,
-            fontWeight: '300',
-            margin: 32,
-            color: isDarkTheme ? colors.white : colors.black,
-        },
-        loginOptionSeparator: {
-            fontSize: 20,
-            fontWeight: '200',
-            marginTop: 16,
-            marginBottom: 16,
-            color: isDarkTheme ? colors.white : colors.black,
-        },
-    });
-    return styles;
-};
-
-const createThemedTextInputTheme = (isDarkTheme: boolean) => {
-    const theme = {
-        colors: {
-            placeholder: colors.grey,
-            primary: isDarkTheme ? colors.primary.dark : colors.primary.light,
-            text: colors.black,
-        },
-    };
-    return theme;
-};
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.white,
+    },
+    button: {
+        alignSelf: 'stretch',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        paddingHorizontal: 32,
+        height: 50,
+        marginHorizontal: 32,
+        borderRadius: 6,
+    },
+    facebookLoginButton: {
+        justifyContent: 'center',
+        alignSelf: 'stretch',
+        paddingVertical: 12,
+        paddingHorizontal: 32,
+        marginTop: 10,
+        marginHorizontal: 32,
+        height: 50,
+        borderRadius: 6,
+    },
+    debug: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 64,
+        color: colors.primary.dark,
+    },
+    input: {
+        alignSelf: 'stretch',
+        margin: 32,
+        marginTop: 0,
+        backgroundColor: '#EEEEEE',
+        fontWeight: '300',
+    },
+    inputText: {
+        fontSize: 20,
+        fontWeight: '200',
+    },
+    logo: {
+        fontSize: 40,
+        fontWeight: '300',
+        margin: 32,
+        color: colors.black,
+    },
+    loginOptionSeparator: {
+        fontSize: 20,
+        fontWeight: '200',
+        marginTop: 16,
+        marginBottom: 16,
+        color: colors.black,
+    },
+});
