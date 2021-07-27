@@ -71,7 +71,6 @@ export default function SignInScreen(props: Props): React.ReactElement {
                     profileResponse.data.profilePicUrl
                 )
             );
-            console.log(`Balance is ${profileResponse.data.balance}`);
             if (profileResponse.data.balance !== undefined) {
                 dispatch(updateBalanceAction(profileResponse.data.balance));
             }
