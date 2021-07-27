@@ -20,11 +20,13 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../reducers';
 import { getProfile } from '../api/profileApi';
-import { updateNameAction } from '../actions/UpdateNameAction';
 import DashboardScreen from '../screens/DashboardScreen';
 
 // Actions
 import ToggleSearchBarAction from '../actions/ToggleSearchBarAction';
+import { updateNameAction } from '../actions/UpdateNameAction';
+import { updateBalanceAction } from '../actions/UpdateBalanceAction';
+import { updateWalletAddressAction } from '../actions/UpdateWalletAddressAction';
 
 type DrawerNavigatorNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -50,34 +52,6 @@ function AddNewProjectButton(props: Props) {
 }
 export default function DrawerNavigator(props: Props): React.ReactElement {
     const { isDarkTheme } = useTheme();
-
-    const dispatch = useDispatch();
-    const userId = useSelector((state: RootState) => state.session.id);
-    useEffect(() => {
-        const updateProfileInfo = async () => {
-            const profileResponse = await getProfile(userId);
-            if (profileResponse.successful) {
-                dispatch(
-                    updateNameAction(
-                        profileResponse.data.firstName,
-                        profileResponse.data.lastName
-                    )
-                );
-                if (
-                    profileResponse.data.interests.length === 0 ||
-                    !profileResponse.data.city ||
-                    !profileResponse.data.country
-                ) {
-                    props.navigation.navigate('Profile', {
-                        userId: userId,
-                        showNotification:
-                            'To complete your register, enter your interests and location. ',
-                    });
-                }
-            }
-        };
-        updateProfileInfo();
-    }, []);
     return (
         <Drawer.Navigator
             initialRouteName='Dashboard'

@@ -13,21 +13,29 @@ import {
     Chip,
     ActivityIndicator,
     Button,
+    IconButton,
 } from 'react-native-paper';
 import SponsorProjectModal from '../components/Sponsor/SponsorProjectModal';
+import StageItem from '../components/Project/StageItem';
 
 // Types
 import type { GetProjectApiResponse } from '../api/projectsApi';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import type { Stage } from '../api/projectsApi';
 
 // APIs
-import { getProject } from '../api/projectsApi';
+import { getProject, fundProject } from '../api/projectsApi';
 import { getProfile, Profile } from '../api/profileApi';
 
 // Hooks
 import { RootStackParamList } from '../types';
 import colors from '../constants/colors';
+import SponsorDisclaimerModal from '../components/Sponsor/SponsorDisclaimerModal';
+
+// Util
+import { updateBalance } from '../util/transactions';
+import ProfileScreen from './ProfileScreen';
 
 type ProjectVisualizationScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -78,8 +86,14 @@ export default function ProjectVisualizationScreen(
     const [endDate, setEndDate] = useState(new Date());
 
     const [creatorName, setCreatorName] = useState('');
+    const [totalGoal, setTotalGoal] = useState(0);
 
+    const [donation, setDonation] = useState(0);
     const [sponsorProjectModalVisible, setSponsorProjectModalVisible] =
+        useState(false);
+
+    const [processingDonation, setProcessingDonation] = useState(false);
+    const [sponsorDisclaimerModalVisible, setSponsorDisclaimerModalVisible] =
         useState(false);
     const onRefresh = async () => {
         setLoading(true);
@@ -89,6 +103,11 @@ export default function ProjectVisualizationScreen(
             setPublishedDate(new Date(project_temp.publishedOn));
             setEndDate(new Date(project_temp.finalizedBy));
             setProject(project_temp);
+            setTotalGoal(
+                project_temp.stages
+                    .map((stage) => stage.cost)
+                    .reduce((a, b) => a + b)
+            );
             const creatorProfileResponse = await getProfile(
                 project_temp.userId
             );
@@ -121,6 +140,26 @@ export default function ProjectVisualizationScreen(
             props.navigation.navigate('Profile', { userId: project?.userId });
         }
     };
+
+    const onSponsorModalOkPress = (enteredDonation: string) => {
+        setDonation(parseFloat(enteredDonation));
+        setSponsorProjectModalVisible(false);
+        setSponsorDisclaimerModalVisible(true);
+    };
+
+    const onConfirmDonation = async () => {
+        setProcessingDonation(true);
+        const response = await fundProject(
+            props.route.params.projectId,
+            donation
+        );
+        setProcessingDonation(false);
+        if (response.successful) {
+            setSponsorDisclaimerModalVisible(false);
+            onRefresh();
+            updateBalance();
+        }
+    };
     console.log(remainingDays);
     return (
         <View style={{ flex: 1 }}>
@@ -134,7 +173,7 @@ export default function ProjectVisualizationScreen(
                     <>
                         <Image
                             style={styles.coverImage}
-                            source={{ uri: 'https://picsum.photos/350/300' }}
+                            source={{ uri: project?.coverPicUrl }}
                         />
                         <View style={styles.basicInfoView}>
                             <Title style={styles.title}>
@@ -167,24 +206,26 @@ export default function ProjectVisualizationScreen(
                             <Divider style={styles.divider} />
 
                             <Title style={styles.objectiveTitle}>
-                                Progress
+                                Funding
                             </Title>
                             <IconLabel
                                 icon='calendar'
                                 text={`Published on ${publishedDate.getDate()}/${publishedDate.getMonth()}/${publishedDate.getFullYear()}`}
                             />
-                            <IconLabel
-                                icon='stairs-up'
-                                text={`Currently on stage ${3}`}
-                            />
                             <ProgressBar
-                                progress={0.7}
+                                progress={
+                                    (project?.totalFunded ?? 0) / totalGoal
+                                }
                                 style={{ height: 10 }}
                             />
-                            <View style={{ flexDirection: 'row' }}>
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                }}
+                            >
                                 <View
                                     style={{
-                                        flex: 1,
                                         alignItems: 'flex-start',
                                     }}
                                 >
@@ -193,17 +234,16 @@ export default function ProjectVisualizationScreen(
                                             ...styles.statTextMain,
                                             color: colors.primary.light,
                                         }}
-                                    >{`ETH ${25}`}</Text>
+                                    >{`ETH ${project?.totalFunded}`}</Text>
                                     <Text
                                         style={{
                                             ...styles.statTextSecondary,
                                             color: colors.primary.light,
                                         }}
-                                    >{`out of ETH ${55}`}</Text>
+                                    >{`out of ETH ${totalGoal}`}</Text>
                                 </View>
                                 <View
                                     style={{
-                                        flex: 1,
                                         alignItems: 'flex-start',
                                     }}
                                 >
@@ -226,7 +266,6 @@ export default function ProjectVisualizationScreen(
                                 </View>
                                 <View
                                     style={{
-                                        flex: 1,
                                         alignItems: 'flex-start',
                                     }}
                                 >
@@ -251,6 +290,23 @@ export default function ProjectVisualizationScreen(
 
                             <Divider style={styles.divider} />
 
+                            <Title style={styles.objectiveTitle}>
+                                Progress
+                            </Title>
+                            <View style={{ alignItems: 'center' }}>
+                                {project?.stages.map((stage, index) => (
+                                    <StageItem
+                                        key={index}
+                                        index={index}
+                                        stage={stage}
+                                        totalItems={project?.stages.length}
+                                        completed={
+                                            index < project?.currentStage
+                                        }
+                                    />
+                                ))}
+                            </View>
+                            <Divider style={styles.divider} />
                             <Title style={styles.objectiveTitle}>Tags</Title>
                             <View style={styles.tagView}>
                                 {project?.tags.map((tag, index) => {
@@ -276,15 +332,24 @@ export default function ProjectVisualizationScreen(
             <SponsorProjectModal
                 visible={sponsorProjectModalVisible}
                 setVisible={setSponsorProjectModalVisible}
-                onOkClick={() => setSponsorProjectModalVisible(false)}
+                onOkClick={onSponsorModalOkPress}
                 onCancelClick={() => setSponsorProjectModalVisible(false)}
             />
-            <FAB
-                style={styles.fab}
-                icon='hand-heart'
-                onPress={onSponsorProjectPress}
-                label='Sponsor this project'
+            <SponsorDisclaimerModal
+                visible={sponsorDisclaimerModalVisible}
+                setVisible={setSponsorDisclaimerModalVisible}
+                onOkClick={() => onConfirmDonation()}
+                onCancelClick={() => setSponsorDisclaimerModalVisible(false)}
+                processingDonation={processingDonation}
             />
+            {project?.status.toLowerCase() === 'funding' ? (
+                <FAB
+                    style={styles.fab}
+                    icon='hand-heart'
+                    onPress={onSponsorProjectPress}
+                    label='Sponsor this project'
+                />
+            ) : null}
         </View>
     );
 }
@@ -314,11 +379,11 @@ const styles = StyleSheet.create({
     },
     coverImage: {
         width: 350,
-        height: 300,
+        height: 245,
         alignSelf: 'center',
     },
     objectiveTitle: {
-        color: colors.darkGrey,
+        color: colors.primary.light,
     },
     divider: {
         marginVertical: 10,
@@ -347,5 +412,23 @@ const styles = StyleSheet.create({
     },
     tag: {
         margin: 2,
+    },
+    stageText: {
+        fontWeight: 'bold',
+        color: colors.darkGrey,
+        fontSize: 16,
+    },
+    stageItemText: {
+        color: colors.darkGrey,
+        fontSize: 14,
+    },
+    stageTextCompleted: {
+        fontWeight: 'bold',
+        color: colors.primary.light,
+        fontSize: 16,
+    },
+    stageItemTextCompleted: {
+        color: colors.primary.light,
+        fontSize: 14,
     },
 });

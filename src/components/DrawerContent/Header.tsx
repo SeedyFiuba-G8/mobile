@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Avatar, Caption, Title, IconButton } from 'react-native-paper';
+import { Avatar, Title, IconButton, Button } from 'react-native-paper';
+import Clipboard from 'expo-clipboard';
 
 // Navigation
 import { DrawerContentComponentProps } from '@react-navigation/drawer';
@@ -17,6 +18,7 @@ import { useSelector } from 'react-redux';
 
 // Types
 import type { RootState } from '../../reducers';
+import { updateBalance } from '../../util/transactions';
 
 export default function Header({
     ...props
@@ -28,12 +30,40 @@ export default function Header({
         [isDarkTheme]
     );
     const profile_info = useSelector((state: RootState) => state.profile);
+
     const balance = useSelector((state: RootState) => state.balance.balance);
+    const wallet_address = useSelector(
+        (state: RootState) => state.balance.address
+    );
+    const [copyWalletAddressText, setCopyWalletAdressText] =
+        useState('wallet address');
+    const [copyWalletAdressIcon, setcopyWalletAdressIcon] =
+        useState('clipboard-text');
+    const copyAdressToClipboard = () => {
+        setCopyWalletAdressText('Copied to clipboard');
+        setcopyWalletAdressIcon('check');
+        Clipboard.setString(wallet_address);
+        setTimeout(() => {
+            setCopyWalletAdressText('wallet address');
+            setcopyWalletAdressIcon('clipboard-text');
+        }, 1500);
+    };
+
+    useEffect(() => {
+        const intervalId = setInterval(updateBalance, 5000);
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, []);
     return (
         <View style={styles.container}>
             <View style={styles.userInfo}>
                 <Avatar.Image
-                    source={require('../../assets/images/dummy_avatar.jpg')}
+                    source={
+                        profile_info.profile_pic_url
+                            ? { uri: profile_info.profile_pic_url }
+                            : require('../../assets/images/dummy_avatar2.jpg')
+                    }
                     size={120}
                 />
 
@@ -50,11 +80,20 @@ export default function Header({
                         <IconButton
                             icon='ethereum'
                             color={colors.darkerGrey}
+                            style={{ margin: 0 }}
                         />
-                        <Text style={{ left: -10, color: colors.darkerGrey }}>
+                        <Text style={{ left: -6, color: colors.darkerGrey }}>
                             {balance.toString()}
                         </Text>
                     </View>
+                    <Button
+                        color={colors.darkerGrey}
+                        icon={copyWalletAdressIcon}
+                        mode='outlined'
+                        onPress={copyAdressToClipboard}
+                    >
+                        {copyWalletAddressText}
+                    </Button>
                 </View>
             </View>
         </View>

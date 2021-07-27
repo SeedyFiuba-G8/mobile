@@ -4,6 +4,11 @@ import type { Response } from './utilities/provider';
 import store from '../stores/MainStore';
 import ReviewershipModal from '../components/Profile/ReviewershipModal';
 
+export type Stage = {
+    description: string;
+    cost: number;
+};
+
 export type Project = {
     id: string;
     title: string;
@@ -16,6 +21,11 @@ export type Project = {
     finalizedBy: string;
     tags: Array<string>;
     status: string;
+    stages: Array<Stage>;
+    coverPicUrl?: string;
+    totalFunded: number;
+    currentStage: number;
+    approvedStage: number;
 };
 
 // Responses
@@ -60,6 +70,8 @@ export type ReviewRequest = {
     publishedOn: string;
     finalizedBy: string;
     status: string;
+    stages: Array<Stage>;
+    coverPicUrl: string;
 };
 
 type ReviewRequestApiResponse = {
@@ -69,7 +81,8 @@ type ReviewRequestApiResponse = {
 type ProjectRequestPayload =
     | Record<string, never>
     | { userId: string }
-    | { status?: string; type?: string };
+    | { status?: string; type?: string }
+    | { reviewerId: string };
 
 type ProjectCreationRequestPayload = {
     title: string;
@@ -81,6 +94,21 @@ type ProjectCreationRequestPayload = {
     finalizedBy: string;
     tags: Array<string>;
     reviewers: Array<string>;
+    stages: Array<Stage>;
+    coverPicUrl?: string;
+};
+
+type ProjectEditionRequestPayload = {
+    title: string;
+    description: string;
+    type: string;
+    objective: string;
+    country: string;
+    city: string;
+    finalizedBy: string;
+    tags: Array<string>;
+    reviewers: Array<string>;
+    coverPicUrl?: string;
 };
 
 type ProjectPublishPayload = {
@@ -89,6 +117,18 @@ type ProjectPublishPayload = {
 
 type ReviewershipReplyPayload = {
     status: string;
+};
+
+type FundProjectPayload = {
+    amount: number;
+};
+
+type FundApprovalPayload = {
+    approvedStage: number;
+};
+
+type ProjectAdvancePayload = {
+    lastCompletedStage: number;
 };
 
 const getAllProjects = async (
@@ -146,7 +186,9 @@ const createProject = async (
     city: string,
     finalizedBy: string,
     tags: Array<string>,
-    reviewers: Array<string>
+    reviewers: Array<string>,
+    stages: Array<Stage>,
+    coverPicUrl?: string
 ): Promise<Response<ProjectCreationApiResponse>> => {
     const authToken = store.getState().session.token;
     const apiResponse = apiProvider.post<
@@ -164,6 +206,8 @@ const createProject = async (
             finalizedBy: finalizedBy,
             tags: tags,
             reviewers: reviewers,
+            coverPicUrl: coverPicUrl,
+            stages: stages,
         },
         { headers: { Authorization: `Bearer ${authToken}` } }
     );
@@ -180,12 +224,13 @@ const updateProject = async (
     city: string,
     finalizedBy: string,
     tags: Array<string>,
-    reviewers: Array<string>
+    reviewers: Array<string>,
+    coverPicUrl?: string
 ): Promise<Response<ProjectEditionApiResponse>> => {
     const authToken = store.getState().session.token;
     const apiResponse = apiProvider.patch<
         ProjectEditionApiResponse,
-        ProjectCreationRequestPayload
+        ProjectEditionRequestPayload
     >(
         `projects/${id}`,
         {
@@ -198,6 +243,7 @@ const updateProject = async (
             finalizedBy: finalizedBy,
             tags: tags,
             reviewers: reviewers,
+            coverPicUrl: coverPicUrl,
         },
         { headers: { Authorization: `Bearer ${authToken}` } }
     );
@@ -273,6 +319,56 @@ const rejectReviewRequest = async (
     );
     return apiResponse;
 };
+
+const getReviewingProjects = async (): Promise<
+    Response<GetProjectsApiResponse>
+> => {
+    const authToken = store.getState().session.token;
+    const myUserId = store.getState().session.id;
+    const apiResponse = apiProvider.get<
+        GetProjectsApiResponse,
+        ProjectRequestPayload
+    >(
+        'projects',
+        { reviewerId: myUserId },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
+const fundProject = async (
+    projectId: string,
+    donation: number
+): Promise<Response<null>> => {
+    const authToken = store.getState().session.token;
+    const apiResponse = apiProvider.post<null, FundProjectPayload>(
+        `projects/${projectId}/funds`,
+        {
+            amount: donation,
+        },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
+const completeProjectStage = async (
+    projectId: string,
+    stage: number
+): Promise<Response<ProjectEditionApiResponse>> => {
+    const authToken = store.getState().session.token;
+    const apiResponse = apiProvider.patch<
+        ProjectEditionApiResponse,
+        ProjectAdvancePayload
+    >(
+        `projects/${projectId}`,
+        {
+            lastCompletedStage: stage,
+        },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
 export {
     getAllProjects,
     getUserProjects,
@@ -284,4 +380,7 @@ export {
     acceptReviewRequest,
     rejectReviewRequest,
     publishProject,
+    fundProject,
+    getReviewingProjects,
+    completeProjectStage,
 };

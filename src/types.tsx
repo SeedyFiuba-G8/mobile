@@ -5,7 +5,7 @@
 
 // Auth
 export type AuthStackParamList = {
-    SignIn: undefined;
+    SignIn: { email?: string; justRegistered?: boolean };
     SignUp: undefined;
 
     // Error

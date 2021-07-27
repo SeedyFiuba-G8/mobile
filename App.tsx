@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 
 // Providers
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import ThemeProvider from './src/contexts/ThemeProvider';
+import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 
 // Wrappers
 import Navigation from './src/navigation';
@@ -19,6 +19,7 @@ import 'intl/locale-data/jsonp/en';
 
 // Stores
 import store from './src/stores/MainStore';
+import colors from './src/constants/colors';
 
 if (Platform.OS === 'android') {
     // See https://github.com/expo/expo/issues/6536 for this issue.
@@ -26,15 +27,22 @@ if (Platform.OS === 'android') {
         (Intl as any).__disableRegExpRestore();
     }
 }
+const theme = {
+    ...DefaultTheme,
+    colors: {
+        ...DefaultTheme.colors,
+        primary: colors.primary.light,
+    },
+};
 
 export default function App(): React.ReactElement {
     return (
         <SafeAreaProvider>
-            <ThemeProvider>
+            <PaperProvider theme={theme}>
                 <Provider store={store}>
                     <Navigation />
                 </Provider>
-            </ThemeProvider>
+            </PaperProvider>
         </SafeAreaProvider>
     );
 }

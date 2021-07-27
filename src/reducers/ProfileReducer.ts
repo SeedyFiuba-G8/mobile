@@ -1,25 +1,23 @@
 import type { updateProfileInfoActionType } from '../actions/UpdateNameAction';
+import { Reducer } from 'redux';
 
-type profileStatusType = {
+type profileState = {
     first_name: string;
     last_name: string;
-    profile_pic_url: string;
+    profile_pic_url?: string;
 };
 
-const ProfileReducer = (
+const ProfileReducer: Reducer<profileState, updateProfileInfoActionType> = (
     state = initialState,
     action: updateProfileInfoActionType
-): profileStatusType => {
+): profileState => {
     switch (action.type) {
         case 'UPDATE_NAME':
-            if (action.payload.first_name && action.payload.last_name) {
-                return {
-                    ...state,
-                    first_name: action.payload.first_name,
-                    last_name: action.payload.last_name,
-                };
-            }
-            return state;
+            return {
+                profile_pic_url: action.payload.profile_pic_url,
+                first_name: action.payload.first_name,
+                last_name: action.payload.last_name,
+            };
         default:
             return state;
     }

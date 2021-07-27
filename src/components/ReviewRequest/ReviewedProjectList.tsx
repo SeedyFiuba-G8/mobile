@@ -3,18 +3,17 @@ import { ScrollView, RefreshControl, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
 
 // Types
-import type { Project } from '../../api/projectsApi';
 import colors from '../../constants/colors';
-import ReviewRequestCard from './ReviewRequestCard';
-import type { ReviewRequest } from '../../api/projectsApi';
+import ReviewedProjectCard from './ReviewedProjectCard';
+import type { Project } from '../../api/projectsApi';
 type Props = {
     refreshing: boolean;
     onRefresh: () => void;
-    reviewRequests: Array<ReviewRequest>;
+    projects: Array<Project>;
     editable?: boolean;
 };
 
-export default function ReviewRequestList(props: Props): React.ReactElement {
+export default function ReviewedProjectList(props: Props): React.ReactElement {
     return (
         <ScrollView
             style={styles.scrollview}
@@ -25,25 +24,28 @@ export default function ReviewRequestList(props: Props): React.ReactElement {
                 />
             }
         >
-            {props.reviewRequests.length > 0 ? (
-                props.reviewRequests.map((reviewRequest, index) => {
+            {props.projects.length > 0 ? (
+                props.projects.map((project, index) => {
                     return (
-                        <ReviewRequestCard
+                        <ReviewedProjectCard
                             key={index}
-                            title={reviewRequest.title}
-                            city={reviewRequest.city}
-                            country={reviewRequest.country}
-                            cover_image_uri={reviewRequest.coverPicUrl}
-                            description={reviewRequest.description}
-                            projectId={reviewRequest.projectId}
+                            title={project.title}
+                            city={project.city}
+                            country={project.country}
+                            cover_image_uri={project.coverPicUrl}
+                            description={project.description}
+                            projectId={project.id}
                             onRefresh={props.onRefresh}
-                            stages={reviewRequest.stages}
+                            stages={project.stages}
+                            currentStage={project.currentStage}
+                            approvedStage={project.approvedStage}
+                            status={project.status}
                         />
                     );
                 })
             ) : (
                 <Text style={styles.noProjectsText}>
-                    You have no review requests.
+                    You are currently not reviewing any projects.
                 </Text>
             )}
         </ScrollView>

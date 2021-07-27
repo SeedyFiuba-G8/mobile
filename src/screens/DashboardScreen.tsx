@@ -26,8 +26,7 @@ import { useSelector } from 'react-redux';
 import categories from '../constants/categories';
 import statuses from '../constants/statuses';
 
-// Hooks
-
+// Image Management
 export default function DashboardScreen({
     navigation,
 }: MaterialTopTabBarProps): React.ReactElement {
@@ -70,13 +69,13 @@ export default function DashboardScreen({
         );
 
         if (projects.successful) {
+            console.log(projects.data);
             setProjects(
                 projects.data.projects.filter(
                     (project, index) =>
-                        project.status.toLowerCase() === 'funding'
+                        project.status.toLowerCase() !== 'draft'
                 )
             );
-            console.log(projects.data.projects);
         }
         setRefreshing(false);
     };
@@ -132,6 +131,8 @@ export default function DashboardScreen({
                     onRefresh={onRefresh}
                     projects={projects}
                     showStatus={false}
+                    showAdvanceStageButton={false}
+                    dashboardNavigation={navigation}
                 />
             </ScrollView>
             <FAB
