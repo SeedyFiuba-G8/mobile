@@ -49,34 +49,16 @@ export default function App(): React.ReactElement {
                 setExpoPushToken(token);
                 console.log('Registered for push notifications');
             }
-            setTimeout(() => {
-                console.log('Sent push notification');
-                sendPushNotification(expoPushToken);
-            }, 5000);
         });
 
         // This listener is fired whenever a notification is received while the app is foregrounded
-        notificationListener.current =
-            Notifications.addNotificationReceivedListener((notification) => {
-                setNotification(notification);
-            });
-
-        // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-        responseListener.current =
-            Notifications.addNotificationResponseReceivedListener(
-                (response) => {
-                    console.log(response);
-                }
-            );
-
-        return () => {
-            Notifications.removeNotificationSubscription(
-                notificationListener.current
-            );
-            Notifications.removeNotificationSubscription(
-                responseListener.current
-            );
-        };
+        Notifications.setNotificationHandler({
+            handleNotification: async () => ({
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+                shouldSetBadge: true,
+            }),
+        });
     }, []);
 
     return (
@@ -114,30 +96,12 @@ async function registerForPushNotificationsAsync() {
         Notifications.setNotificationChannelAsync('default', {
             name: 'default',
             importance: Notifications.AndroidImportance.MAX,
+            sound: 'default',
             vibrationPattern: [0, 250, 250, 250],
             lightColor: '#FF231F7C',
+            enableVibrate: true,
         });
     }
 
     return token;
-}
-
-async function sendPushNotification(expoPushToken: string) {
-    const message = {
-        to: expoPushToken,
-        sound: 'default',
-        title: 'Original Title',
-        body: 'And here is the body!',
-        data: { someData: 'goes here' },
-    };
-
-    await fetch('https://exp.host/--/api/v2/push/send', {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Accept-encoding': 'gzip, deflate',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(message),
-    });
 }

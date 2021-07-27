@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "210892183417",
+    "firebase_url": "https://seedyfiubag8-81297-default-rtdb.firebaseio.com",
+    "project_id": "seedyfiubag8-81297",
+    "storage_bucket": "seedyfiubag8-81297.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:210892183417:android:f198a9ac4c07af125581a8",
+        "android_client_info": {
+          "package_name": "com.seedyfiuba"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "210892183417-79dvgprc8nl3vg6s0rergrulcv2e64da.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCC7BWv1l_VF2tmOX5Yx78Tu2kid8bfcrM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "210892183417-79dvgprc8nl3vg6s0rergrulcv2e64da.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
