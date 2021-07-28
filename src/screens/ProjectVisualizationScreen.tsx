@@ -25,7 +25,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import type { Stage } from '../api/projectsApi';
 
 // APIs
-import { getProject, fundProject } from '../api/projectsApi';
+import {
+    getProject,
+    fundProject,
+    likeProject,
+    dislikeProject,
+} from '../api/projectsApi';
 import { getProfile, Profile } from '../api/profileApi';
 
 // Hooks
@@ -160,6 +165,18 @@ export default function ProjectVisualizationScreen(
             updateBalance();
         }
     };
+
+    const onLikePress = async () => {
+        if (project === undefined) return;
+
+        if (project.liked) {
+            const result = await dislikeProject(project.id);
+            if (result.successful) onRefresh();
+        } else {
+            const result = await likeProject(project.id);
+            if (result.successful) onRefresh();
+        }
+    };
     console.log(remainingDays);
     return (
         <View style={{ flex: 1 }}>
@@ -176,9 +193,44 @@ export default function ProjectVisualizationScreen(
                             source={{ uri: project?.coverPicUrl }}
                         />
                         <View style={styles.basicInfoView}>
-                            <Title style={styles.title}>
-                                {project?.title}
-                            </Title>
+                            <View
+                                style={{
+                                    alignSelf: 'stretch',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                }}
+                            >
+                                <Title style={styles.title}>
+                                    {project?.title}
+                                </Title>
+                                <View
+                                    style={{
+                                        alignItems: 'center',
+                                        flexDirection: 'row',
+                                    }}
+                                >
+                                    <Text
+                                        style={{
+                                            color: colors.darkGrey,
+                                            margin: 0,
+                                        }}
+                                    >
+                                        {project?.likes}
+                                    </Text>
+                                    <IconButton
+                                        icon='heart'
+                                        color={
+                                            project?.liked
+                                                ? colors.red
+                                                : colors.darkGrey
+                                        }
+                                        style={{ margin: 0 }}
+                                        size={30}
+                                        onPress={onLikePress}
+                                    />
+                                </View>
+                            </View>
                             <IconLabel
                                 icon='map-marker'
                                 text={`Created in ${project?.city}, ${project?.country}`}
@@ -253,7 +305,7 @@ export default function ProjectVisualizationScreen(
                                             color: colors.darkGrey,
                                         }}
                                     >
-                                        {145}
+                                        {project?.contributors}
                                     </Text>
                                     <Text
                                         style={{

@@ -26,6 +26,9 @@ export type Project = {
     totalFunded: number;
     currentStage: number;
     approvedStage: number;
+    contributors: number;
+    contributions: number;
+    liked: boolean;
 };
 
 // Responses
@@ -44,6 +47,7 @@ export type Reviewer = {
 export type GetProjectApiResponse = Project & {
     userId: string;
     reviewers: Array<Reviewer>;
+    likes: number;
 };
 
 type ProjectCreationApiResponse = {
@@ -121,10 +125,6 @@ type ReviewershipReplyPayload = {
 
 type FundProjectPayload = {
     amount: number;
-};
-
-type FundApprovalPayload = {
-    approvedStage: number;
 };
 
 type ProjectAdvancePayload = {
@@ -351,6 +351,26 @@ const fundProject = async (
     return apiResponse;
 };
 
+const likeProject = async (projectId: string): Promise<Response<null>> => {
+    const authToken = store.getState().session.token;
+    const apiResponse = apiProvider.post<null, null>(
+        `projects/${projectId}/like`,
+        null,
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
+const dislikeProject = async (projectId: string): Promise<Response<null>> => {
+    const authToken = store.getState().session.token;
+    const apiResponse = apiProvider.del<null, null>(
+        `projects/${projectId}/like`,
+        null,
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
 const completeProjectStage = async (
     projectId: string,
     stage: number
@@ -383,4 +403,6 @@ export {
     fundProject,
     getReviewingProjects,
     completeProjectStage,
+    likeProject,
+    dislikeProject,
 };

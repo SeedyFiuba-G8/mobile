@@ -43,7 +43,7 @@ export default function ProjectList(props: Props): React.ReactElement {
                             cover_image_uri={project.coverPicUrl}
                             description={project.description}
                             progress={project.totalFunded / totalFunds}
-                            backer_count={Math.floor(Math.random() * 100)}
+                            backer_count={project.contributors}
                             id={project.id}
                             status={project.status}
                             showStatus={props.showStatus}

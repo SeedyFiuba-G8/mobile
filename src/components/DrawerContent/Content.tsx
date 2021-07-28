@@ -33,12 +33,11 @@ export default function Content({
 }: DrawerContentComponentProps): React.ReactNode {
     const dispatch = useDispatch();
     const onLogoutClick = async () => {
-        const response = await deleteSession();
+        // Hope for the best
+        deleteSession();
 
-        if (response.successful) {
-            await clearSessionData();
-            dispatch(updateLoginStatusAction(LoggingInFlowState.NotLoggedIn));
-        }
+        await clearSessionData();
+        dispatch(updateLoginStatusAction(LoggingInFlowState.NotLoggedIn));
     };
 
     return (
