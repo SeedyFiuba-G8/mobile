@@ -1,5 +1,6 @@
 import { apiProvider } from './utilities/provider';
 import type { Response } from './utilities/provider';
+import store from '../stores/MainStore';
 
 //Responses
 type postSessionApiResponse = {
@@ -11,15 +12,18 @@ type postSessionApiResponse = {
 type postSessionPayload = {
     email: string;
     password: string;
+    expoToken: string;
 };
 
 type postFacebookSessionPayload = {
     fbToken: string;
+    expoToken: string;
 };
 
 const createSession = async (
     email: string,
-    password: string
+    password: string,
+    expoToken: string
 ): Promise<Response<postSessionApiResponse>> => {
     const apiResponse = apiProvider.post<
         postSessionApiResponse,
@@ -27,20 +31,35 @@ const createSession = async (
     >('users/session', {
         email: email,
         password: password,
+        expoToken: expoToken,
+    });
+    return apiResponse;
+};
+
+const deleteSession = async (): Promise<Response<null>> => {
+    const authToken = store.getState().session.token;
+    const expoToken = store.getState().expoToken.expoToken;
+    const apiResponse = apiProvider.del<null, null>('users/session', null, {
+        headers: {
+            Authorization: `Bearer ${authToken}`,
+            ['expo-token']: expoToken,
+        },
     });
     return apiResponse;
 };
 
 const createSessionFacebook = async (
-    fbToken: string
+    fbToken: string,
+    expoToken: string
 ): Promise<Response<postSessionApiResponse>> => {
     const apiResponse = apiProvider.post<
         postSessionApiResponse,
         postFacebookSessionPayload
     >('users/session', {
         fbToken: fbToken,
+        expoToken: expoToken,
     });
     return apiResponse;
 };
 
-export { createSession, createSessionFacebook };
+export { createSession, createSessionFacebook, deleteSession };

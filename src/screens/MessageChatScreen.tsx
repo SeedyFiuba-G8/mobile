@@ -14,7 +14,7 @@ import type { RootState } from '../reducers';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
 import { RouteProp } from '@react-navigation/native';
-import { min } from 'react-native-reanimated';
+import { notifyMessage } from '../api/notifsApi';
 
 type MessageChatScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -68,6 +68,7 @@ export default function MessageChatScreen(props: Props): React.ReactElement {
                 senderId: myUserId,
                 receiverId: otherUserId,
             });
+            notifyMessage(typingMessage, otherUserId);
             setTypingMessage('');
         }
 

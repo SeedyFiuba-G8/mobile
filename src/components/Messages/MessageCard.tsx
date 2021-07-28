@@ -4,7 +4,7 @@ import { Avatar, Title, Text, TouchableRipple } from 'react-native-paper';
 import colors from '../../constants/colors';
 
 type Props = {
-    pictureUri: string;
+    pictureUri?: string;
     name: string;
     previewMessage: string;
     onPress: () => void;
@@ -18,7 +18,14 @@ export default function MessageCard(props: Props): React.ReactElement {
             borderless={true}
         >
             <View style={styles.container}>
-                <Avatar.Image size={70} source={{ uri: props.pictureUri }} />
+                <Avatar.Image
+                    size={70}
+                    source={
+                        props.pictureUri !== undefined
+                            ? { uri: props.pictureUri }
+                            : require('../../assets/images/dummy_avatar2.jpg')
+                    }
+                />
                 <View style={styles.nameView}>
                     <Title>{props.name}</Title>
                     <Text numberOfLines={1} style={styles.previewMessage}>

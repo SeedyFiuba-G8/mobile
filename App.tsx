@@ -24,6 +24,19 @@ import colors from './src/constants/colors';
 import Constants from 'expo-constants';
 import { useEffect } from 'react';
 
+// Actions
+import { updateExpoTokenAction } from './src/actions/UpdateExpoTokenAction';
+
+import {
+    retrieveSessionData,
+    updateProfileInfo,
+} from './src/session/SessionUtil';
+import { updateSessionCredentialsAction } from './src/actions/UpdateSessionCredentialsAction';
+import {
+    LoggingInFlowState,
+    updateLoginStatusAction,
+} from './src/actions/UpdateLoginStatusAction';
+
 if (Platform.OS === 'android') {
     // See https://github.com/expo/expo/issues/6536 for this issue.
     if (typeof (Intl as any).__disableRegExpRestore === 'function') {
@@ -39,14 +52,10 @@ const theme = {
 };
 
 export default function App(): React.ReactElement {
-    const [expoPushToken, setExpoPushToken] = useState('');
-    const notificationListener = useRef();
-    const responseListener = useRef();
-    const [notification, setNotification] = useState(false);
     useEffect(() => {
         registerForPushNotificationsAsync().then((token) => {
             if (token) {
-                setExpoPushToken(token);
+                store.dispatch(updateExpoTokenAction(token));
                 console.log('Registered for push notifications');
             }
         });
@@ -59,6 +68,29 @@ export default function App(): React.ReactElement {
                 shouldSetBadge: true,
             }),
         });
+
+        const checkSession = async () => {
+            const sessionData = await retrieveSessionData();
+            if (sessionData) {
+                store.dispatch(
+                    updateLoginStatusAction(
+                        LoggingInFlowState.WaitingForAuthResponse
+                    )
+                );
+                store.dispatch(
+                    updateSessionCredentialsAction(
+                        sessionData.id,
+                        sessionData.token
+                    )
+                );
+                await updateProfileInfo(sessionData.id);
+                store.dispatch(
+                    updateLoginStatusAction(LoggingInFlowState.LoggedIn)
+                );
+            }
+        };
+
+        checkSession();
     }, []);
 
     return (

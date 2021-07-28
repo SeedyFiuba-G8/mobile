@@ -1,7 +1,7 @@
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import MessageCard from '../components/Messages/MessageCard';
 import { RootStackParamList } from '../types';
 
@@ -13,6 +13,9 @@ import { useEffect, useState } from 'react';
 
 import { useSelector } from 'react-redux';
 import type { RootState } from '../reducers';
+import { getProfile } from '../api/profileApi';
+import { ActivityIndicator } from 'react-native-paper';
+
 type ProfileScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     'Messages'
@@ -21,6 +24,13 @@ type ProfileScreenNavigationProp = StackNavigationProp<
 type Props = {
     navigation: ProfileScreenNavigationProp;
 };
+
+type ChatEntry = {
+    pictureUri?: string;
+    name: string;
+    userId: string;
+};
+
 export default function MessagesScreen(props: Props): React.ReactElement {
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
@@ -28,33 +38,65 @@ export default function MessagesScreen(props: Props): React.ReactElement {
         firebase.app();
     }
 
-    const [chatIds, setChatIds] = useState<Array<string>>([]);
+    const [chatEntries, setChatEntries] = useState<Array<ChatEntry>>([]);
     const myUserId = useSelector((state: RootState) => state.session.id);
+    const [refreshing, setRefreshing] = useState(false);
 
     const onRefresh = async () => {
+        setRefreshing(true);
         const existingChatRefs = firebase
             .database()
             .ref('unique_chat/' + myUserId);
         const myChats = await (await existingChatRefs.get()).val();
-        setChatIds(myChats);
+        if (!myChats) {
+            setChatEntries([]);
+            setRefreshing(false);
+            return;
+        }
+
+        const profiles = [] as Array<ChatEntry>;
+
+        await Promise.all(
+            (myChats as Array<string>).map(async (userId, index) => {
+                const profile = await getProfile(userId);
+                if (profile.successful) {
+                    console.log(`Pushing data for ${profile.data.firstName}`);
+                    profiles.push({
+                        pictureUri: profile.data.profilePicUrl,
+                        name: `${profile.data.firstName} ${profile.data.lastName}`,
+                        userId: userId,
+                    });
+                }
+            })
+        );
+        setChatEntries(profiles);
+        setRefreshing(false);
     };
     useEffect(() => {
         onRefresh();
     }, []);
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            {chatIds.map((otherId, index) => {
+        <ScrollView
+            contentContainerStyle={styles.container}
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                />
+            }
+        >
+            {chatEntries.map((entry, index) => {
                 return (
                     <MessageCard
                         key={index}
-                        pictureUri='https://therminic2018.eu/wp-content/uploads/2018/07/dummy-avatar.jpg'
-                        name='Nicolas Aguerre'
-                        previewMessage='Holis'
+                        pictureUri={entry.pictureUri}
+                        name={entry.name}
+                        previewMessage='Tap to see messages'
                         onPress={() =>
                             props.navigation.navigate('MessagesChat', {
-                                userId: otherId,
-                                name: 'Nicolas Aguerre',
+                                userId: entry.userId,
+                                name: entry.name,
                             })
                         }
                     />
