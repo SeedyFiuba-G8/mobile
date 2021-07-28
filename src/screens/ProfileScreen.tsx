@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
-import { ActivityIndicator, Divider, Snackbar, Text } from 'react-native-paper';
+import {
+    ActivityIndicator,
+    Divider,
+    FAB,
+    Snackbar,
+    Text,
+} from 'react-native-paper';
 import { Avatar, IconButton } from 'react-native-paper';
 import colors from '../constants/colors';
 import ProfileInfoSection from '../components/Profile/ProfileInfoSection';
@@ -149,153 +155,162 @@ export default function ProfileScreen(props: Props): React.ReactElement {
         }
     }, []);
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            {loading ? (
-                <ActivityIndicator size='large' animating={true} />
-            ) : (
-                <>
-                    <View style={styles.profilePictureView}>
-                        <Avatar.Image
-                            source={
-                                profilePicURL
-                                    ? { uri: profilePicURL }
-                                    : require('../assets/images/dummy_avatar2.jpg')
-                            }
-                            size={200}
-                        />
-                        {editable ? (
-                            !updatingProfilePic ? (
-                                <IconButton
-                                    style={styles.changePictureButton}
-                                    icon='camera'
-                                    size={30}
-                                    color={'white'}
-                                    onPress={onChangePicPress}
-                                />
-                            ) : (
-                                <ActivityIndicator
-                                    style={
-                                        styles.changePictureActivityINdicator
-                                    }
-                                    size='small'
-                                    animating={true}
-                                />
-                            )
-                        ) : null}
-                    </View>
-                    <ProfileInfoSection title='Name' icon='account'>
-                        <View style={styles.profileInfoSectionContentView}>
-                            <Text style={styles.contentText}>{name}</Text>
+        <View style={{ flex: 1 }}>
+            <ScrollView contentContainerStyle={styles.container}>
+                {loading ? (
+                    <ActivityIndicator size='large' animating={true} />
+                ) : (
+                    <>
+                        <View style={styles.profilePictureView}>
+                            <Avatar.Image
+                                source={
+                                    profilePicURL
+                                        ? { uri: profilePicURL }
+                                        : require('../assets/images/dummy_avatar2.jpg')
+                                }
+                                size={200}
+                            />
+                            {editable ? (
+                                !updatingProfilePic ? (
+                                    <IconButton
+                                        style={styles.changePictureButton}
+                                        icon='camera'
+                                        size={30}
+                                        color={'white'}
+                                        onPress={onChangePicPress}
+                                    />
+                                ) : (
+                                    <ActivityIndicator
+                                        style={
+                                            styles.changePictureActivityINdicator
+                                        }
+                                        size='small'
+                                        animating={true}
+                                    />
+                                )
+                            ) : null}
                         </View>
-                    </ProfileInfoSection>
-                    <Divider style={styles.divider} />
+                        <ProfileInfoSection title='Name' icon='account'>
+                            <View style={styles.profileInfoSectionContentView}>
+                                <Text style={styles.contentText}>{name}</Text>
+                            </View>
+                        </ProfileInfoSection>
+                        <Divider style={styles.divider} />
 
-                    <ProfileInfoSection
-                        title='Interests'
-                        icon='cards-heart'
-                        editable={editable}
-                        onEditPress={() => setInterestPickerVisible(true)}
-                    >
-                        <Picker
-                            visible={interestPickerVisible}
-                            setVisible={setInterestPickerVisible}
-                            interests={interests}
-                            onOkClick={(newInterests) => {
-                                setInterestPickerVisible(false);
-                                updateInterests(newInterests);
-                            }}
-                            onCancelClick={() =>
-                                setInterestPickerVisible(false)
-                            }
-                        />
-                        <View style={styles.profileInfoSectionContentView}>
-                            <Text style={styles.contentText}>
-                                {generateInterestsString()}
-                            </Text>
-                        </View>
-                    </ProfileInfoSection>
-
-                    <Divider style={styles.divider} />
-
-                    <ProfileInfoSection
-                        title='Location'
-                        icon='map-marker'
-                        editable={editable}
-                        onEditPress={() => setLocationPickerVisible(true)}
-                    >
-                        <View style={styles.profileInfoSectionContentView}>
-                            <LocationPicker
-                                visible={locationPickerVisible}
-                                setVisible={setLocationPickerVisible}
-                                onOkClick={(newCity, newCountry) => {
-                                    setLocationPickerVisible(false);
-                                    updateLocation(newCity, newCountry);
+                        <ProfileInfoSection
+                            title='Interests'
+                            icon='cards-heart'
+                            editable={editable}
+                            onEditPress={() => setInterestPickerVisible(true)}
+                        >
+                            <Picker
+                                visible={interestPickerVisible}
+                                setVisible={setInterestPickerVisible}
+                                interests={interests}
+                                onOkClick={(newInterests) => {
+                                    setInterestPickerVisible(false);
+                                    updateInterests(newInterests);
                                 }}
                                 onCancelClick={() =>
-                                    setLocationPickerVisible(false)
+                                    setInterestPickerVisible(false)
                                 }
-                                city={city}
-                                country={country}
                             />
-                            <Text style={styles.contentText}>
-                                {`${city}, ${country}`}
-                            </Text>
-                        </View>
-                    </ProfileInfoSection>
-                    {editable && enableReviewership ? (
-                        <>
-                            <Divider style={styles.divider} />
-                            <ProfileInfoSection
-                                title='Reviewership'
-                                icon='shield-account'
-                                editable={true}
-                                onEditPress={() =>
-                                    setReviewershipModalVisible(true)
-                                }
-                            >
-                                <View
-                                    style={styles.profileInfoSectionContentView}
-                                >
-                                    {isReviewer ? (
-                                        <Text
-                                            style={{
-                                                color: colors.primary.light,
-                                                fontWeight: 'bold',
-                                            }}
-                                        >
-                                            {'You are a project reviewer.'}
-                                        </Text>
-                                    ) : (
-                                        <Text
-                                            style={{
-                                                color: colors.darkerGrey,
-                                            }}
-                                        >
-                                            {'You are not a project reviewer.'}
-                                        </Text>
-                                    )}
-                                </View>
-                                <ReviewershipModal
-                                    isReviewer={isReviewer}
-                                    visible={reviewershipModalVisible}
-                                    setVisible={setReviewershipModalVisible}
-                                    onOkClick={() => {
-                                        setReviewershipModalVisible(false);
-                                        setIsReviewer(true);
-                                    }}
-                                    onRevokeClick={() => {
-                                        setReviewershipModalVisible(false);
-                                        setIsReviewer(false);
+                            <View style={styles.profileInfoSectionContentView}>
+                                <Text style={styles.contentText}>
+                                    {generateInterestsString()}
+                                </Text>
+                            </View>
+                        </ProfileInfoSection>
+
+                        <Divider style={styles.divider} />
+
+                        <ProfileInfoSection
+                            title='Location'
+                            icon='map-marker'
+                            editable={editable}
+                            onEditPress={() => setLocationPickerVisible(true)}
+                        >
+                            <View style={styles.profileInfoSectionContentView}>
+                                <LocationPicker
+                                    visible={locationPickerVisible}
+                                    setVisible={setLocationPickerVisible}
+                                    onOkClick={(newCity, newCountry) => {
+                                        setLocationPickerVisible(false);
+                                        updateLocation(newCity, newCountry);
                                     }}
                                     onCancelClick={() =>
-                                        setReviewershipModalVisible(false)
+                                        setLocationPickerVisible(false)
                                     }
+                                    city={city}
+                                    country={country}
                                 />
-                            </ProfileInfoSection>
-                        </>
-                    ) : null}
-                </>
-            )}
+                                <Text style={styles.contentText}>
+                                    {`${city}, ${country}`}
+                                </Text>
+                            </View>
+                        </ProfileInfoSection>
+                        {editable && enableReviewership ? (
+                            <>
+                                <Divider style={styles.divider} />
+                                <ProfileInfoSection
+                                    title='Reviewership'
+                                    icon='shield-account'
+                                    editable={true}
+                                    onEditPress={() =>
+                                        setReviewershipModalVisible(true)
+                                    }
+                                >
+                                    <View
+                                        style={
+                                            styles.profileInfoSectionContentView
+                                        }
+                                    >
+                                        {isReviewer ? (
+                                            <Text
+                                                style={{
+                                                    color: colors.primary
+                                                        .light,
+                                                    fontWeight: 'bold',
+                                                }}
+                                            >
+                                                {'You are a project reviewer.'}
+                                            </Text>
+                                        ) : (
+                                            <Text
+                                                style={{
+                                                    color: colors.darkerGrey,
+                                                }}
+                                            >
+                                                {
+                                                    'You are not a project reviewer.'
+                                                }
+                                            </Text>
+                                        )}
+                                    </View>
+                                    <ReviewershipModal
+                                        isReviewer={isReviewer}
+                                        visible={reviewershipModalVisible}
+                                        setVisible={
+                                            setReviewershipModalVisible
+                                        }
+                                        onOkClick={() => {
+                                            setReviewershipModalVisible(false);
+                                            setIsReviewer(true);
+                                        }}
+                                        onRevokeClick={() => {
+                                            setReviewershipModalVisible(false);
+                                            setIsReviewer(false);
+                                        }}
+                                        onCancelClick={() =>
+                                            setReviewershipModalVisible(false)
+                                        }
+                                    />
+                                </ProfileInfoSection>
+                            </>
+                        ) : null}
+                    </>
+                )}
+            </ScrollView>
             <Snackbar
                 visible={statusBarVisible}
                 onDismiss={() => {
@@ -305,7 +320,20 @@ export default function ProfileScreen(props: Props): React.ReactElement {
             >
                 {statusBarText}
             </Snackbar>
-        </ScrollView>
+            {!editable ? (
+                <FAB
+                    icon='android-messages'
+                    style={styles.messageFab}
+                    color={colors.white}
+                    onPress={() =>
+                        props.navigation.navigate('MessagesChat', {
+                            userId: props.route.params.userId,
+                            name: name,
+                        })
+                    }
+                />
+            ) : null}
+        </View>
     );
 }
 
@@ -359,5 +387,12 @@ const styles = StyleSheet.create({
     },
     contentText: {
         color: colors.black,
+    },
+    messageFab: {
+        position: 'absolute',
+        margin: 16,
+        bottom: 0,
+        right: 0,
+        backgroundColor: colors.primary.light,
     },
 });

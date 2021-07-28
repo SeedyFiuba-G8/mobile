@@ -71,7 +71,6 @@ export default function SignInScreen(props: Props): React.ReactElement {
                     profileResponse.data.profilePicUrl
                 )
             );
-            console.log(`Balance is ${profileResponse.data.balance}`);
             if (profileResponse.data.balance !== undefined) {
                 dispatch(updateBalanceAction(profileResponse.data.balance));
             }
@@ -92,12 +91,16 @@ export default function SignInScreen(props: Props): React.ReactElement {
         }
     }, [props.route.params]);
 
+    const expoToken = useSelector(
+        (state: RootState) => state.expoToken.expoToken
+    );
+
     const dispatch = useDispatch();
     const loginFunction = async (email: string, password: string) => {
         dispatch(
             updateLoginStatusAction(LoggingInFlowState.WaitingForAuthResponse)
         );
-        const loginResult = await createSession(email, password);
+        const loginResult = await createSession(email, password, expoToken);
 
         if (loginResult.successful) {
             persistSessionData(loginResult.data.id, loginResult.data.token);
@@ -118,7 +121,7 @@ export default function SignInScreen(props: Props): React.ReactElement {
         dispatch(
             updateLoginStatusAction(LoggingInFlowState.WaitingForAuthResponse)
         );
-        const loginResult = await createSessionFacebook(fbToken);
+        const loginResult = await createSessionFacebook(fbToken, expoToken);
 
         if (loginResult.successful) {
             persistSessionData(loginResult.data.id, loginResult.data.token);

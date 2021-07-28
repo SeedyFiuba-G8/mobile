@@ -207,7 +207,6 @@ export default function ProjectCreationScreen(
             );
             if (projectResponse.successful) {
                 const project_temp = projectResponse.data;
-                console.log(project_temp);
                 setTitle(project_temp.title);
                 setDescription(project_temp.description);
                 setObjective(project_temp.objective);
@@ -269,7 +268,6 @@ export default function ProjectCreationScreen(
 
     const onConfirmChangesButtonPress = async () => {
         const new_image_uri = await uploadImage();
-        console.log(`Updating image to ${new_image_uri}`);
         if (props.route.params.edition) {
             const result = await updateProject(
                 props.route.params.projectId,
@@ -336,12 +334,9 @@ export default function ProjectCreationScreen(
     };
 
     const onDeleteStagePress = (delete_index: number) => {
-        console.log(`Deleting item on index ${delete_index}`);
         const stage_modified = stages.filter((stage, index) => {
-            console.log(`Deletting index ${index}: ${index === delete_index}`);
             return index !== delete_index;
         });
-        console.log(stage_modified.map((stage, index) => stage.description));
         setStages(stage_modified);
     };
 

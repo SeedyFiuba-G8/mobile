@@ -35,6 +35,7 @@ export default {
                 ReviewRequests: 'reviewCenter/requests',
                 ReviewingProjects: 'reviewCenter/projects',
             },
+            MessageChat: 'chat',
         },
     },
 };

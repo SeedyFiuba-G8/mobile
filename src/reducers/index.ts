@@ -4,6 +4,7 @@ import ProfileReducer from './ProfileReducer';
 import sessionReducer from './SessionReducer';
 import balanceReducer from './BalanceReducer';
 import InterfaceReducer from './InterfaceReducer';
+import ExpoTokenReducer from './ExpoTokenReducer';
 
 const rootReducer = combineReducers({
     login: loginReducer,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
     session: sessionReducer,
     balance: balanceReducer,
     interface: InterfaceReducer,
+    expoToken: ExpoTokenReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
