@@ -1,32 +1,38 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Avatar, Title, Text } from 'react-native-paper';
+import { View, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import { Avatar, Title, Text, TouchableRipple } from 'react-native-paper';
 import colors from '../../constants/colors';
 
 type Props = {
     pictureUri: string;
     name: string;
     previewMessage: string;
+    onPress: () => void;
 };
 
 export default function MessageCard(props: Props): React.ReactElement {
     return (
-        <View style={styles.container}>
-            <Avatar.Image size={70} source={{ uri: props.pictureUri }} />
-            <View style={styles.nameView}>
-                <Title>{props.name}</Title>
-                <Text numberOfLines={1} style={{ color: colors.darkGrey }}>
-                    {props.previewMessage}
-                </Text>
+        <TouchableRipple
+            onPress={props.onPress}
+            style={styles.ripple}
+            borderless={true}
+        >
+            <View style={styles.container}>
+                <Avatar.Image size={70} source={{ uri: props.pictureUri }} />
+                <View style={styles.nameView}>
+                    <Title>{props.name}</Title>
+                    <Text numberOfLines={1} style={styles.previewMessage}>
+                        {props.previewMessage}
+                    </Text>
+                </View>
             </View>
-        </View>
+        </TouchableRipple>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         alignSelf: 'stretch',
-        margin: 10,
         backgroundColor: 'white',
         borderRadius: 5,
         flexDirection: 'row',
@@ -36,5 +42,14 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         flexWrap: 'nowrap',
         flex: 1,
+    },
+    previewMessage: {
+        color: colors.darkGrey,
+    },
+    ripple: {
+        alignSelf: 'stretch',
+        marginHorizontal: 10,
+        marginTop: 10,
+        borderRadius: 5,
     },
 });

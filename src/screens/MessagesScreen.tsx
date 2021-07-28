@@ -1,38 +1,65 @@
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Card, Paragraph, Text, Title, Avatar } from 'react-native-paper';
-import colors from '../constants/colors';
+import MessageCard from '../components/Messages/MessageCard';
+import { RootStackParamList } from '../types';
 
-export default function MessagesScreen(): React.ReactElement {
+import firebase from 'firebase';
+import firebaseConfig from '../firebase/config';
+import 'firebase/database';
+import 'firebase/storage';
+import { useEffect, useState } from 'react';
+
+import { useSelector } from 'react-redux';
+import type { RootState } from '../reducers';
+type ProfileScreenNavigationProp = StackNavigationProp<
+    RootStackParamList,
+    'Messages'
+>;
+
+type Props = {
+    navigation: ProfileScreenNavigationProp;
+};
+export default function MessagesScreen(props: Props): React.ReactElement {
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    } else {
+        firebase.app();
+    }
+
+    const [chatIds, setChatIds] = useState<Array<string>>([]);
+    const myUserId = useSelector((state: RootState) => state.session.id);
+
+    const onRefresh = async () => {
+        const existingChatRefs = firebase
+            .database()
+            .ref('unique_chat/' + myUserId);
+        const myChats = await (await existingChatRefs.get()).val();
+        setChatIds(myChats);
+    };
+    useEffect(() => {
+        onRefresh();
+    }, []);
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <View
-                style={{
-                    alignSelf: 'stretch',
-                    margin: 10,
-                    backgroundColor: 'white',
-                    borderRadius: 5,
-                    flexDirection: 'row',
-                    padding: 10,
-                }}
-            >
-                <Avatar.Image
-                    size={70}
-                    source={require('../assets/images/dummy_avatar2.jpg')}
-                />
-                <View
-                    style={{
-                        marginLeft: 10,
-                        flexWrap: 'nowrap',
-                        flex: 1,
-                    }}
-                >
-                    <Title>Nicolas Aguerre</Title>
-                    <Text numberOfLines={1} style={{ color: colors.darkGrey }}>
-                        Te llego a cruzar en la calle y te re cago
-                    </Text>
-                </View>
-            </View>
+            {chatIds.map((otherId, index) => {
+                return (
+                    <MessageCard
+                        key={index}
+                        pictureUri='https://therminic2018.eu/wp-content/uploads/2018/07/dummy-avatar.jpg'
+                        name='Nicolas Aguerre'
+                        previewMessage='Holis'
+                        onPress={() =>
+                            props.navigation.navigate('MessagesChat', {
+                                userId: otherId,
+                                name: 'Nicolas Aguerre',
+                            })
+                        }
+                    />
+                );
+            })}
         </ScrollView>
     );
 }
