@@ -41,7 +41,7 @@ export default function SponsorDisclaimerModal(
 
                 <ScrollView>
                     <Text style={styles.pickerTitleText}>
-                        {strings.reviewershipDisclaimer}
+                        {strings.sponsorshipDisclaimer}
                     </Text>
                 </ScrollView>
 

@@ -1,6 +1,6 @@
 const strings = {
-    reviewershipDisclaimer:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum orci turpis, rutrum ut ex non, cursus facilisis ex. Fusce sem urna, euismod eget enim nec, interdum pulvinar sem. Proin finibus pretium blandit. Proin tempor tellus eros, vel mollis nunc ornare sed. Phasellus tincidunt enim sit amet magna rutrum volutpat sed vitae eros. Pellentesque sed aliquet diam. Aliquam pretium dui sed turpis luctus venenatis. In hac habitasse platea dictumst. Ut tincidunt sodales libero sit amet ornare. Etiam interdum sodales ex vitae congue. Integer ac mi lorem. Aenean mollis lorem vitae iaculis dapibus. Aenean ornare est velit, in interdum ligula ullamcorper ut. Etiam hendrerit efficitur elit, elementum bibendum orci auctor lobortis. Etiam lobortis, enim et placerat euismod, nibh elit condimentum est, et pretium augue sapien vel ipsum.Nunc convallis nulla arcu, in iaculis quam dapibus vitae. Morbi elementum eros vel nibh ultrices, non accumsan lorem luctus. Quisque id metus et enim auctor blandit ornare eget ipsum. Nulla elit dui, congue ac eros vel, tincidunt blandit ipsum. Aliquam ultricies id nisl a pretium. Nulla consectetur nisi a rhoncus porttitor. Vestibulum cursus ex eu nulla aliquet accumsan. Suspendisse potenti. Integer eu posuere mauris. Maecenas porta tortor eu sapien facilisis, non dignissim eros interdum.',
+    sponsorshipDisclaimer:
+        "You are about to donate money from your personal wallet to this projects' wallet. This money will eventually be released to the project creator, and this process will be audited by a reviewer.",
 };
 
 export default strings;
