@@ -37,10 +37,13 @@ export default function WithdrawModal(props: Props): React.ReactElement {
     const [walletAddress, setWalletAddress] = useState('');
 
     const [transfering, setTransfering] = useState(false);
+    const [error, setError] = useState(false);
+
     const resetFields = () => {
         setWithdrawAmount('');
         setWalletAddress('');
         setSuccess(false);
+        setError(false);
     };
     const onTransferConfirm = async () => {
         setTransfering(true);
@@ -52,6 +55,8 @@ export default function WithdrawModal(props: Props): React.ReactElement {
         if (result.successful) {
             resetFields();
             setSuccess(true);
+        } else {
+            setError(true);
         }
     };
 
@@ -143,6 +148,7 @@ export default function WithdrawModal(props: Props): React.ReactElement {
                                 setWithdrawAmount(newAmount)
                             }
                             value={withdrawAmount}
+                            error={error}
                         />
                         <TextInput
                             style={{ alignSelf: 'stretch' }}
@@ -152,6 +158,7 @@ export default function WithdrawModal(props: Props): React.ReactElement {
                                 setWalletAddress(newAddress)
                             }
                             value={walletAddress}
+                            error={error}
                         />
                         <View style={styles.buttonsView}>
                             <Button
