@@ -117,6 +117,7 @@ export default function ProjectVisualizationScreen(
                     .map((stage) => stage.cost)
                     .reduce((a, b) => a + b)
             );
+            console.log(project_temp.stages);
             const creatorProfileResponse = await getProfile(
                 project_temp.userId
             );

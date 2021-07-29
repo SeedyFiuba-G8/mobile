@@ -7,7 +7,7 @@
 import * as Linking from 'expo-linking';
 
 export default {
-    prefixes: [Linking.makeUrl('/')],
+    prefixes: [Linking.createURL('/')],
     config: {
         screens: {
             Drawer: {
@@ -32,8 +32,10 @@ export default {
             SingIn: 'singin',
             SingUp: 'singup',
             ReviewerCenter: {
-                ReviewRequests: 'reviewCenter/requests',
-                ReviewingProjects: 'reviewCenter/projects',
+                screens: {
+                    ReviewRequests: 'reviewCenter/requests',
+                    ReviewingProjects: 'reviewCenter/projects',
+                },
             },
             MessageChat: 'chat',
             DonationHistory: 'donations',
