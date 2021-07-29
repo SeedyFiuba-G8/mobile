@@ -24,6 +24,7 @@ import colors from '../constants/colors';
 import { useSelector } from 'react-redux';
 import categories from '../constants/categories';
 import statuses from '../constants/statuses';
+import TagAdder from '../components/Project/TagAdder';
 
 // Image Management
 export default function DashboardScreen({
@@ -52,9 +53,10 @@ export default function DashboardScreen({
         });
     };
 
+    const [tags, setTags] = useState<Array<string>>([]);
     useEffect(() => {
         onRefresh();
-    }, [searchStatus, searchCategory]);
+    }, [searchStatus, searchCategory, tags]);
 
     const onRefresh = async () => {
         setRefreshing(true);
@@ -64,7 +66,8 @@ export default function DashboardScreen({
             searchCategory === 'all' ? undefined : searchCategory;
         const projects = await getAllProjects(
             querySearchStatus,
-            querySearchCategory
+            querySearchCategory,
+            tags
         );
 
         if (projects.successful) {
@@ -122,6 +125,15 @@ export default function DashboardScreen({
                             filter={searchStatus}
                             onChangeFilter={onSearchStatusChange}
                         />
+                        <View
+                            style={{
+                                backgroundColor: '#dddddd',
+                                borderRadius: 5,
+                                marginTop: 10,
+                            }}
+                        >
+                            <TagAdder tags={tags} setTags={setTags} />
+                        </View>
                     </View>
                 ) : null}
                 <ProjectList

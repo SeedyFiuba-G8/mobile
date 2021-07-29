@@ -93,7 +93,7 @@ type ReviewRequestApiResponse = {
 type ProjectRequestPayload =
     | Record<string, never>
     | { userId: string }
-    | { status?: string; type?: string }
+    | { status?: string; type?: string; tags?: Array<string> }
     | { reviewerId: string }
     | { recommended: boolean }
     | { onlyFavorites: boolean };
@@ -147,7 +147,8 @@ type ProjectAdvancePayload = {
 
 const getAllProjects = async (
     status?: string,
-    type?: string
+    type?: string,
+    tags?: Array<string>
 ): Promise<Response<GetProjectsApiResponse>> => {
     const authToken = store.getState().session.token;
     const apiResponse = apiProvider.get<
@@ -155,7 +156,7 @@ const getAllProjects = async (
         ProjectRequestPayload
     >(
         'projects',
-        { type: type, status: status },
+        { type: type, status: status, tags: tags },
         { headers: { Authorization: `Bearer ${authToken}` } }
     );
     return apiResponse;
