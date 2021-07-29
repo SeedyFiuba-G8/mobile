@@ -30,6 +30,7 @@ import {
     fundProject,
     likeProject,
     dislikeProject,
+    rateProject,
 } from '../api/projectsApi';
 import { getProfile, Profile } from '../api/profileApi';
 
@@ -100,8 +101,10 @@ export default function ProjectVisualizationScreen(
     const [processingDonation, setProcessingDonation] = useState(false);
     const [sponsorDisclaimerModalVisible, setSponsorDisclaimerModalVisible] =
         useState(false);
-    const onRefresh = async () => {
-        setLoading(true);
+    const onRefresh = async (loadingScreen: boolean) => {
+        if (loadingScreen) {
+            setLoading(true);
+        }
         const projectResponse = await getProject(props.route.params.projectId);
         if (projectResponse.successful) {
             const project_temp = projectResponse.data;
@@ -123,11 +126,13 @@ export default function ProjectVisualizationScreen(
                 );
             }
         }
-        setLoading(false);
+        if (loadingScreen) {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
-        onRefresh();
+        onRefresh(true);
     }, [props.route.params.projectId]);
 
     const onSponsorProjectPress = () => {
@@ -161,7 +166,7 @@ export default function ProjectVisualizationScreen(
         setProcessingDonation(false);
         if (response.successful) {
             setSponsorDisclaimerModalVisible(false);
-            onRefresh();
+            onRefresh(false);
             updateBalance();
         }
     };
@@ -171,12 +176,20 @@ export default function ProjectVisualizationScreen(
 
         if (project.liked) {
             const result = await dislikeProject(project.id);
-            if (result.successful) onRefresh();
+            if (result.successful) onRefresh(false);
         } else {
             const result = await likeProject(project.id);
-            if (result.successful) onRefresh();
+            if (result.successful) onRefresh(false);
         }
     };
+
+    const onRateProject = async (rating: number) => {
+        if (project === undefined) return;
+
+        const result = await rateProject(project.id, rating);
+        if (result.successful) onRefresh(false);
+    };
+
     console.log(remainingDays);
     return (
         <View style={{ flex: 1 }}>
@@ -193,14 +206,7 @@ export default function ProjectVisualizationScreen(
                             source={{ uri: project?.coverPicUrl }}
                         />
                         <View style={styles.basicInfoView}>
-                            <View
-                                style={{
-                                    alignSelf: 'stretch',
-                                    flexDirection: 'row',
-                                    alignItems: 'center',
-                                    justifyContent: 'space-between',
-                                }}
-                            >
+                            <View style={styles.titleAndLikesView}>
                                 <Title style={styles.title}>
                                     {project?.title}
                                 </Title>
@@ -370,13 +376,31 @@ export default function ProjectVisualizationScreen(
                                 })}
                             </View>
                             <Divider style={styles.divider} />
-                            <Button
-                                onPress={() =>
-                                    console.log('See comments pressed')
-                                }
+                            <View
+                                style={{
+                                    flexDirection: 'row',
+                                    alignSelf: 'stretch',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
                             >
-                                Comments
-                            </Button>
+                                {[1, 2, 3, 4, 5].map((number, index) => {
+                                    return (
+                                        <IconButton
+                                            key={index}
+                                            icon='star'
+                                            color={colors.grey}
+                                            style={{ margin: 0 }}
+                                            onPress={() =>
+                                                onRateProject(number)
+                                            }
+                                        />
+                                    );
+                                })}
+                                <Text style={{ color: colors.darkGrey }}>
+                                    {`${project?.rating.mean} (${project?.rating.samples})`}
+                                </Text>
+                            </View>
                         </View>
                     </>
                 )}
@@ -482,5 +506,11 @@ const styles = StyleSheet.create({
     stageItemTextCompleted: {
         color: colors.primary.light,
         fontSize: 14,
+    },
+    titleAndLikesView: {
+        alignSelf: 'stretch',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
     },
 });

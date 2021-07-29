@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Avatar, Title, IconButton, Button } from 'react-native-paper';
+import {
+    Avatar,
+    Title,
+    IconButton,
+    Button,
+    Snackbar,
+} from 'react-native-paper';
 import Clipboard from 'expo-clipboard';
 
 // Navigation
@@ -19,6 +25,9 @@ import { useSelector } from 'react-redux';
 // Types
 import type { RootState } from '../../reducers';
 import { updateBalance } from '../../util/transactions';
+
+// Components
+import WithdrawModal from '../Wallet/WithdrawModal';
 
 export default function Header({
     ...props
@@ -49,12 +58,28 @@ export default function Header({
         }, 1500);
     };
 
+    const [withdrawModalVisible, setWithdrawModalVisible] = useState(false);
+    const [snackbarVisible, setSnackbarVisible] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+
     useEffect(() => {
         const intervalId = setInterval(updateBalance, 5000);
         return () => {
             clearInterval(intervalId);
         };
     }, []);
+
+    const onWithdrawSuccess = () => {
+        setWithdrawModalVisible(false);
+        setSnackbarMessage('Your transfer was successful!');
+        setSnackbarVisible(true);
+    };
+
+    const onWithdrawFailure = () => {
+        setWithdrawModalVisible(false);
+        setSnackbarMessage('There was an error in your transfer.');
+        setSnackbarVisible(true);
+    };
     return (
         <View style={styles.container}>
             <View style={styles.userInfo}>
@@ -94,7 +119,26 @@ export default function Header({
                     >
                         {copyWalletAddressText}
                     </Button>
+                    <Button
+                        color={colors.primary.light}
+                        icon='arrow-right-circle'
+                        mode='outlined'
+                        onPress={() => setWithdrawModalVisible(true)}
+                        style={{
+                            marginTop: 5,
+                            borderColor: colors.primary.light,
+                        }}
+                    >
+                        Transfer funds
+                    </Button>
                 </View>
+                <WithdrawModal
+                    visible={withdrawModalVisible}
+                    setVisible={setWithdrawModalVisible}
+                    onSuccess={onWithdrawSuccess}
+                    onError={onWithdrawFailure}
+                    onCancelClick={() => setWithdrawModalVisible(false)}
+                />
             </View>
         </View>
     );

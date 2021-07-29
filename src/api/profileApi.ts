@@ -27,6 +27,10 @@ export type UpdateProfilePayload = {
     profilePicUrl?: string;
 };
 
+type TransferFundsPayload = {
+    amount: number;
+};
+
 const getProfile = async (
     userId: string
 ): Promise<Response<GetProfileApiRespose>> => {
@@ -50,8 +54,20 @@ const updateProfile = async (
         payload,
         { headers: { Authorization: `Bearer ${authToken}` } }
     );
-    console.log(apiResponse);
     return apiResponse;
 };
 
-export { getProfile, updateProfile };
+const withdrawFunds = async (
+    amount: number,
+    walletAddress: string
+): Promise<Response<null>> => {
+    const authToken = store.getState().session.token;
+    const apiResponse = apiProvider.post<null, TransferFundsPayload>(
+        `wallets/${walletAddress}/funds`,
+        { amount: amount },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
+export { getProfile, updateProfile, withdrawFunds };

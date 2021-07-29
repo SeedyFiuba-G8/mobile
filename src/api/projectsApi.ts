@@ -9,6 +9,11 @@ export type Stage = {
     cost: number;
 };
 
+export type RatingType = {
+    samples: number;
+    mean: number;
+};
+
 export type Project = {
     id: string;
     title: string;
@@ -48,6 +53,7 @@ export type GetProjectApiResponse = Project & {
     userId: string;
     reviewers: Array<Reviewer>;
     likes: number;
+    rating: RatingType;
 };
 
 type ProjectCreationApiResponse = {
@@ -121,6 +127,10 @@ type ProjectPublishPayload = {
 
 type ReviewershipReplyPayload = {
     status: string;
+};
+
+type RateProjectPayload = {
+    rating: number;
 };
 
 type FundProjectPayload = {
@@ -371,6 +381,19 @@ const dislikeProject = async (projectId: string): Promise<Response<null>> => {
     return apiResponse;
 };
 
+const rateProject = async (
+    projectId: string,
+    rating: number
+): Promise<Response<null>> => {
+    const authToken = store.getState().session.token;
+    const apiResponse = apiProvider.put<null, RateProjectPayload>(
+        `projects/${projectId}/rating`,
+        { rating: rating },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
 const completeProjectStage = async (
     projectId: string,
     stage: number
@@ -405,4 +428,5 @@ export {
     completeProjectStage,
     likeProject,
     dislikeProject,
+    rateProject,
 };
