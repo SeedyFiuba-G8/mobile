@@ -33,6 +33,13 @@ const data: DrawerItemType[] = [
         },
     },
     {
+        label: 'Sponsor History',
+        icon: 'clock',
+        onPress: (props) => {
+            props.navigation.navigate('DonationHistory');
+        },
+    },
+    {
         label: 'Settings',
         icon: 'cog',
         onPress: (props) => {

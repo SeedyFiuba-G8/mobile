@@ -25,6 +25,7 @@ import { RootStackParamList } from '../types';
 import colors from '../constants/colors';
 import { useTheme } from '../contexts/ThemeProvider';
 import MessageChatScreen from '../screens/MessageChatScreen';
+import DonationHistoryScreen from '../screens/DonationHistoryScreen';
 
 // A root stack navigator is often used for displaying modals on top of all other content
 // Read more here: https://reactnavigation.org/docs/modal
@@ -85,6 +86,11 @@ export default function RootNavigator(): React.ReactElement {
                 name='MessagesChat'
                 component={MessageChatScreen}
                 options={({ route }) => ({ title: route.params.name })}
+            />
+            <RootStack.Screen
+                name='DonationHistory'
+                component={DonationHistoryScreen}
+                options={{ title: 'Sponsor History' }}
             />
             <RootStack.Screen
                 name='NotFound'

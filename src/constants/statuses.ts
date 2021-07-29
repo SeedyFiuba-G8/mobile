@@ -1,3 +1,3 @@
-const statuses = ['Draft', 'Funding', 'Finalized'];
+const statuses = ['Funding', 'Completed', 'In Progress'];
 
 export default statuses;

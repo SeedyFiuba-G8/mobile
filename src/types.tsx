@@ -26,6 +26,7 @@ export type RootStackParamList = {
     ProjectVisualization: { projectId: string };
     ReviewerCenter: undefined;
     MessagesChat: { userId: string; name: string };
+    DonationHistory: undefined;
     // Error
     NotFound: undefined;
 };

@@ -16,8 +16,21 @@ export type Profile = {
     balance?: number;
 };
 
+export type Donation = {
+    userId: string;
+    txHash: string;
+    projectId: string;
+    amount: number;
+    date: string;
+    status: string;
+    title: string;
+    type: string;
+};
+
 // Resposes
 type GetProfileApiRespose = Profile;
+
+type GetDonationHistoryApiResponse = Array<Donation>;
 
 // Payload
 export type UpdateProfilePayload = {
@@ -57,6 +70,18 @@ const updateProfile = async (
     return apiResponse;
 };
 
+const getDonationHistory = async (
+    userId: string
+): Promise<Response<GetDonationHistoryApiResponse>> => {
+    const authToken = store.getState().session.token;
+    const apiResponse = apiProvider.get<GetDonationHistoryApiResponse, null>(
+        `users/${userId}/fundings`,
+        null,
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
 const withdrawFunds = async (
     amount: number,
     walletAddress: string
@@ -70,4 +95,4 @@ const withdrawFunds = async (
     return apiResponse;
 };
 
-export { getProfile, updateProfile, withdrawFunds };
+export { getProfile, updateProfile, withdrawFunds, getDonationHistory };

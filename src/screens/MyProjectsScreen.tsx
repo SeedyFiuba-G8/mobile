@@ -115,7 +115,7 @@ export default function DashboardScreen(props: Props): React.ReactElement {
                         filter={filter}
                         onChangeFilter={changeFilter}
                         feature='Status'
-                        options={statuses}
+                        options={[...statuses, 'Draft']}
                     />
                 </View>
                 <View style={styles.container}>

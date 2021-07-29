@@ -32,7 +32,7 @@ export default function FilterBar(props: Props): React.ReactElement {
                     return (
                         <Picker.Item
                             label={option}
-                            value={option}
+                            value={option.toLowerCase().replace(' ', '_')}
                             key={index}
                         />
                     );

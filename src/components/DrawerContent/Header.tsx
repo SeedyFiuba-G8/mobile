@@ -59,8 +59,6 @@ export default function Header({
     };
 
     const [withdrawModalVisible, setWithdrawModalVisible] = useState(false);
-    const [snackbarVisible, setSnackbarVisible] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
 
     useEffect(() => {
         const intervalId = setInterval(updateBalance, 5000);
@@ -71,14 +69,10 @@ export default function Header({
 
     const onWithdrawSuccess = () => {
         setWithdrawModalVisible(false);
-        setSnackbarMessage('Your transfer was successful!');
-        setSnackbarVisible(true);
     };
 
     const onWithdrawFailure = () => {
         setWithdrawModalVisible(false);
-        setSnackbarMessage('There was an error in your transfer.');
-        setSnackbarVisible(true);
     };
     return (
         <View style={styles.container}>
