@@ -54,6 +54,7 @@ export type GetProjectApiResponse = Project & {
     reviewers: Array<Reviewer>;
     likes: number;
     rating: RatingType;
+    rated: number;
 };
 
 type ProjectCreationApiResponse = {

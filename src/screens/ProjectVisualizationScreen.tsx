@@ -108,6 +108,7 @@ export default function ProjectVisualizationScreen(
         const projectResponse = await getProject(props.route.params.projectId);
         if (projectResponse.successful) {
             const project_temp = projectResponse.data;
+            console.log(project_temp);
             setPublishedDate(new Date(project_temp.publishedOn));
             setEndDate(new Date(project_temp.finalizedBy));
             setProject(project_temp);
@@ -389,7 +390,12 @@ export default function ProjectVisualizationScreen(
                                         <IconButton
                                             key={index}
                                             icon='star'
-                                            color={colors.grey}
+                                            color={
+                                                project === undefined ||
+                                                project.rated < number
+                                                    ? colors.grey
+                                                    : colors.yellow
+                                            }
                                             style={{ margin: 0 }}
                                             onPress={() =>
                                                 onRateProject(number)
