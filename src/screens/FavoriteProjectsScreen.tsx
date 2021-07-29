@@ -15,37 +15,23 @@ import FilterBar from '../components/FilterBar';
 // Navigation
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 // Types
-import type { Project } from '../api/projectsApi';
+import {
+    getLikedProjects,
+    getRecommendedProjects,
+    Project,
+} from '../api/projectsApi';
 import type { RootState } from '../reducers';
 
 // APIs
-import { getAllProjects } from '../api/projectsApi';
 import colors from '../constants/colors';
 import { useSelector } from 'react-redux';
-import categories from '../constants/categories';
-import statuses from '../constants/statuses';
 
 // Image Management
-export default function DashboardScreen({
+export default function FavoriteProjectsScreen({
     navigation,
 }: MaterialTopTabBarProps): React.ReactElement {
     const [refreshing, setRefreshing] = React.useState(false);
     const [projects, setProjects] = React.useState<Array<Project>>([]);
-    const searchBarVisible = useSelector(
-        (state: RootState) => state.interface.searchBarVisible
-    );
-
-    const [searchStatus, setSearchStatus] = useState('all');
-    const [searchCategory, setSearchCategory] = useState('all');
-
-    const onSearchStatusChange = (status: string) => {
-        setSearchStatus(status);
-    };
-
-    const onSearchCategoryChange = (category: string) => {
-        setSearchCategory(category);
-    };
-
     const onCreatePress = () => {
         navigation.navigate('ProjectCreation', {
             edition: false,
@@ -54,18 +40,11 @@ export default function DashboardScreen({
 
     useEffect(() => {
         onRefresh();
-    }, [searchStatus, searchCategory]);
+    }, []);
 
     const onRefresh = async () => {
         setRefreshing(true);
-        const querySearchStatus =
-            searchStatus === 'all' ? undefined : searchStatus.toUpperCase();
-        const querySearchCategory =
-            searchCategory === 'all' ? undefined : searchCategory;
-        const projects = await getAllProjects(
-            querySearchStatus,
-            querySearchCategory
-        );
+        const projects = await getLikedProjects();
 
         if (projects.successful) {
             setProjects(
@@ -108,22 +87,6 @@ export default function DashboardScreen({
                 }
                 contentContainerStyle={styles.scrollContainer}
             >
-                {searchBarVisible ? (
-                    <View style={{ marginHorizontal: 20 }}>
-                        <FilterBar
-                            feature='Category'
-                            options={categories}
-                            filter={searchCategory}
-                            onChangeFilter={onSearchCategoryChange}
-                        />
-                        <FilterBar
-                            feature='Status'
-                            options={statuses}
-                            filter={searchStatus}
-                            onChangeFilter={onSearchStatusChange}
-                        />
-                    </View>
-                ) : null}
                 <ProjectList
                     refreshing={refreshing}
                     onRefresh={onRefresh}

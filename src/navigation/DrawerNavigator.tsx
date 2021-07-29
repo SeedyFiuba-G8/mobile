@@ -27,6 +27,7 @@ import ToggleSearchBarAction from '../actions/ToggleSearchBarAction';
 import { updateNameAction } from '../actions/UpdateNameAction';
 import { updateBalanceAction } from '../actions/UpdateBalanceAction';
 import { updateWalletAddressAction } from '../actions/UpdateWalletAddressAction';
+import DashboardTopTabs from './TopTabNavigator';
 
 type DrawerNavigatorNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -68,7 +69,7 @@ export default function DrawerNavigator(props: Props): React.ReactElement {
         >
             <Drawer.Screen
                 name='Dashboard'
-                component={DashboardScreen}
+                component={DashboardTopTabs}
                 options={{
                     title: 'Dashboard',
                     headerRight: () => AddNewProjectButton(props),

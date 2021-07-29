@@ -29,9 +29,11 @@ type Props = {
     totalStages: number;
     myProjectsNavigation?: MyProjectsScreenNavigationProp;
     dashboardNavigation?: MaterialTopTabBarProps['navigation'];
+    blocked: boolean;
 };
 export default function ProjectCard(props: Props): React.ReactElement {
     const onCardPress = () => {
+        if (props.blocked) return;
         if (props.status?.toLowerCase() === 'draft' ?? false) {
             if (props.myProjectsNavigation) {
                 props.myProjectsNavigation.navigate('ProjectCreation', {
@@ -155,7 +157,14 @@ export default function ProjectCard(props: Props): React.ReactElement {
     };
 
     return (
-        <Card style={styles.card} onPress={onCardPress}>
+        <Card
+            style={
+                !props.blocked
+                    ? styles.card
+                    : { ...styles.card, backgroundColor: '#dddddd' }
+            }
+            onPress={onCardPress}
+        >
             {generateStatusText()}
             <Card.Cover
                 style={styles.cover}

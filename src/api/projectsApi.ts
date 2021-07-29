@@ -34,6 +34,7 @@ export type Project = {
     contributors: number;
     contributions: number;
     liked: boolean;
+    blocked: boolean;
 };
 
 // Responses
@@ -93,7 +94,9 @@ type ProjectRequestPayload =
     | Record<string, never>
     | { userId: string }
     | { status?: string; type?: string }
-    | { reviewerId: string };
+    | { reviewerId: string }
+    | { recommended: boolean }
+    | { onlyFavorites: boolean };
 
 type ProjectCreationRequestPayload = {
     title: string;
@@ -153,6 +156,36 @@ const getAllProjects = async (
     >(
         'projects',
         { type: type, status: status },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
+const getRecommendedProjects = async (): Promise<
+    Response<GetProjectsApiResponse>
+> => {
+    const authToken = store.getState().session.token;
+    const apiResponse = apiProvider.get<
+        GetProjectsApiResponse,
+        ProjectRequestPayload
+    >(
+        'projects',
+        { recommended: true },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
+const getLikedProjects = async (): Promise<
+    Response<GetProjectsApiResponse>
+> => {
+    const authToken = store.getState().session.token;
+    const apiResponse = apiProvider.get<
+        GetProjectsApiResponse,
+        ProjectRequestPayload
+    >(
+        'projects',
+        { onlyFavorites: true },
         { headers: { Authorization: `Bearer ${authToken}` } }
     );
     return apiResponse;
@@ -430,4 +463,6 @@ export {
     likeProject,
     dislikeProject,
     rateProject,
+    getRecommendedProjects,
+    getLikedProjects,
 };

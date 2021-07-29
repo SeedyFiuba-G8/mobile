@@ -16,7 +16,6 @@ export type AuthStackParamList = {
 export type RootStackParamList = {
     // Root DrawerNavigator
     Drawer: undefined;
-
     // Modals
     Profile: { userId: string; showNotification?: string };
     Messages: undefined;
@@ -38,10 +37,9 @@ export type DrawerParamList = {
 
 export type TopTabsParamList = {
     // Tabs for Root Dashboard
-    Magic: undefined;
-    Popular: undefined;
-    Newest: undefined;
-    EndingSoon: undefined;
+    Recommended: { type: 'recommended' };
+    All: { type: 'all' };
+    Favorites: { type: 'favorites' };
 };
 
 export type ReviewerCenterTabParamList = {

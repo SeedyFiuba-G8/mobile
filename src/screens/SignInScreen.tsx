@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
+
 import {
     Text,
     Button,
@@ -172,7 +173,10 @@ export default function SignInScreen(props: Props): React.ReactElement {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.logo}>SeedyFiuba</Text>
+            <Image
+                source={require('../assets/images/splash2.png')}
+                style={{ width: 200, height: 200 }}
+            />
 
             <TextInput
                 style={styles.input}

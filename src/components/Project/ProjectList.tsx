@@ -54,6 +54,7 @@ export default function ProjectList(props: Props): React.ReactElement {
                             totalStages={project.stages.length}
                             myProjectsNavigation={props.myProjectsNavigation}
                             dashboardNavigation={props.dashboardNavigation}
+                            blocked={project.blocked}
                         />
                     );
                 })

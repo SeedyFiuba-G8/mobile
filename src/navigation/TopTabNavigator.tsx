@@ -14,6 +14,8 @@ import colors from '../constants/colors';
 
 // Ts types
 import { TopTabsParamList } from '../types';
+import RecommendedProjectsScreen from '../screens/RecommendedProjectsScreen';
+import FavoriteProjectsScreen from '../screens/FavoriteProjectsScreen';
 
 const DashboardTabs = createMaterialTopTabNavigator<TopTabsParamList>();
 
@@ -22,7 +24,7 @@ export default function DashboardTopTabs(): React.ReactElement {
 
     return (
         <DashboardTabs.Navigator
-            initialRouteName='Magic'
+            initialRouteName='Recommended'
             tabBarOptions={{
                 scrollEnabled: true,
                 tabStyle: {
@@ -40,9 +42,22 @@ export default function DashboardTopTabs(): React.ReactElement {
             }}
         >
             <DashboardTabs.Screen
-                name='Magic'
+                name='Recommended'
+                component={RecommendedProjectsScreen}
+                options={{ title: 'Recommended' }}
+                initialParams={{ type: 'recommended' }}
+            />
+            <DashboardTabs.Screen
+                name='All'
                 component={DashboardScreen}
-                options={{ title: 'Magic' }}
+                options={{ title: 'All Projects' }}
+                initialParams={{ type: 'all' }}
+            />
+            <DashboardTabs.Screen
+                name='Favorites'
+                component={FavoriteProjectsScreen}
+                options={{ title: 'Liked' }}
+                initialParams={{ type: 'favorites' }}
             />
         </DashboardTabs.Navigator>
     );
