@@ -14,7 +14,8 @@ export type Response<T> =
 const post = async <T, P>(
     resource: string,
     payload: P,
-    options?: AxiosRequestConfig
+    options?: AxiosRequestConfig,
+    skipTokenCheck = false
 ): Promise<Response<T>> => {
     try {
         const response = await axios.post(`${BASE_URL}/${resource}`, payload, {
@@ -26,7 +27,7 @@ const post = async <T, P>(
             data: data,
         };
     } catch (error) {
-        console.log(error.response);
+        handleError(error, skipTokenCheck);
         return {
             successful: false,
             errorMessage: error.response.data.message,
@@ -38,7 +39,8 @@ const post = async <T, P>(
 const get = async <T, P>(
     resource: string,
     params: P,
-    options?: AxiosRequestConfig
+    options?: AxiosRequestConfig,
+    skipTokenCheck = false
 ): Promise<Response<T>> => {
     try {
         const response = await axios.get(`${BASE_URL}/${resource}`, {
@@ -51,7 +53,7 @@ const get = async <T, P>(
             data: data,
         };
     } catch (error) {
-        console.log(error.response);
+        handleError(error, skipTokenCheck);
         return {
             successful: false,
             errorMessage: error.response.data.message,
@@ -63,7 +65,8 @@ const get = async <T, P>(
 const del = async <T, P>(
     resource: string,
     params: P,
-    options?: AxiosRequestConfig
+    options?: AxiosRequestConfig,
+    skipTokenCheck = false
 ): Promise<Response<T>> => {
     try {
         const response = await axios.delete(`${BASE_URL}/${resource}`, {
@@ -76,7 +79,7 @@ const del = async <T, P>(
             data: data,
         };
     } catch (error) {
-        console.log(error.response);
+        handleError(error, skipTokenCheck);
         return {
             successful: false,
             errorMessage: error.response.data.message,
@@ -88,7 +91,8 @@ const del = async <T, P>(
 const patch = async <T, P>(
     resource: string,
     payload: P,
-    options?: AxiosRequestConfig
+    options?: AxiosRequestConfig,
+    skipTokenCheck = false
 ): Promise<Response<T>> => {
     try {
         const response = await axios.patch(
@@ -104,7 +108,7 @@ const patch = async <T, P>(
             data: data,
         };
     } catch (error) {
-        console.log(error.response);
+        handleError(error, skipTokenCheck);
         return {
             successful: false,
             errorMessage: error.response.data.message,
@@ -116,7 +120,8 @@ const patch = async <T, P>(
 const put = async <T, P>(
     resource: string,
     payload: P,
-    options?: AxiosRequestConfig
+    options?: AxiosRequestConfig,
+    skipTokenCheck = false
 ): Promise<Response<T>> => {
     try {
         const response = await axios.put(`${BASE_URL}/${resource}`, payload, {
@@ -128,7 +133,7 @@ const put = async <T, P>(
             data: data,
         };
     } catch (error) {
-        console.log(error.response);
+        handleError(error, skipTokenCheck);
         return {
             successful: false,
             errorMessage: error.response.data.message,

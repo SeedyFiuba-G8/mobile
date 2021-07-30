@@ -39,12 +39,17 @@ const createSession = async (
 const deleteSession = async (): Promise<Response<null>> => {
     const authToken = store.getState().session.token;
     const expoToken = store.getState().expoToken.expoToken;
-    const apiResponse = apiProvider.del<null, null>('users/session', null, {
-        headers: {
-            Authorization: `Bearer ${authToken}`,
-            ['expo-token']: expoToken,
+    const apiResponse = apiProvider.del<null, null>(
+        'users/session',
+        null,
+        {
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+                ['expo-token']: expoToken,
+            },
         },
-    });
+        true
+    );
     return apiResponse;
 };
 

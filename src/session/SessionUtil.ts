@@ -1,9 +1,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { updateBalanceAction } from '../actions/UpdateBalanceAction';
+import {
+    LoggingInFlowState,
+    updateLoginStatusAction,
+} from '../actions/UpdateLoginStatusAction';
 import { updateNameAction } from '../actions/UpdateNameAction';
 import { updateWalletAddressAction } from '../actions/UpdateWalletAddressAction';
 import { getProfile } from '../api/profileApi';
+import { deleteSession } from '../api/sessionApi';
 import store from '../stores/MainStore';
+
+const logout = async () => {
+    deleteSession();
+
+    await clearSessionData();
+    store.dispatch(updateLoginStatusAction(LoggingInFlowState.NotLoggedIn));
+};
 
 const persistSessionData = async (
     id: string,
@@ -71,4 +83,5 @@ export {
     clearSessionData,
     retrieveSessionData,
     updateProfileInfo,
+    logout,
 };
