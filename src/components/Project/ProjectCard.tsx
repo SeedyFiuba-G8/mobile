@@ -1,12 +1,9 @@
-import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useState } from 'react';
-import { StyleSheet, View, DeviceEventEmitter } from 'react-native';
-import { baseProps } from 'react-native-gesture-handler/lib/typescript/handlers/gestureHandlers';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { Text, Card, ProgressBar } from 'react-native-paper';
 import colors from '../../constants/colors';
-import Navigation from '../../navigation';
 import { RootStackParamList } from '../../types';
 type MyProjectsScreenNavigationProp = StackNavigationProp<
     RootStackParamList,

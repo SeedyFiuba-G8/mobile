@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, FlatList, SafeAreaView } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { countries } from 'countries-list';
 
@@ -8,19 +8,11 @@ import {
     Modal,
     TextInput,
     Button,
-    Divider,
     Text,
     Avatar,
 } from 'react-native-paper';
 import colors from '../constants/colors';
-import { color } from 'react-native-reanimated';
 import { useEffect } from 'react';
-
-type Category = {
-    tag: string;
-    interested: boolean;
-    setInterested: (interested: boolean) => void;
-};
 
 type Props = {
     visible: boolean;
@@ -73,9 +65,7 @@ export default function LocationPicker(props: Props): React.ReactElement {
                 <Picker
                     style={styles.categorySelector}
                     selectedValue={countryTemp}
-                    onValueChange={(itemValue, itemIndex) =>
-                        setCountryTemp(itemValue)
-                    }
+                    onValueChange={(itemValue) => setCountryTemp(itemValue)}
                     mode='dropdown'
                     dropdownIconColor={colors.primary.light}
                 >

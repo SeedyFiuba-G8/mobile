@@ -73,7 +73,7 @@ export default function MessageChatScreen(props: Props): React.ReactElement {
         }
 
         if (chatExistenceChecked) return;
-        //setChatExistenceChecked(true);
+        setChatExistenceChecked(true);
 
         // Check for my existing chats
         const existingChatRefs = firebase
@@ -117,7 +117,6 @@ export default function MessageChatScreen(props: Props): React.ReactElement {
     };
 
     useEffect(() => {
-        const db = firebase.firestore();
         firebase
             .database()
             .ref('chat/' + chatId)
@@ -167,16 +166,6 @@ export default function MessageChatScreen(props: Props): React.ReactElement {
     );
 }
 
-const dummyMessages = [
-    {
-        message: 'hola',
-        sentByMe: true,
-    },
-    {
-        message: 'adios',
-        sentByMe: false,
-    },
-];
 const styles = StyleSheet.create({
     scrollableContainer: {
         alignSelf: 'stretch',

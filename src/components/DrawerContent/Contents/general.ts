@@ -1,12 +1,18 @@
 // Types
 import { DrawerItemType } from './contentTypes';
 import store from '../../../stores/MainStore';
+import {
+    DrawerContentComponentProps,
+    DrawerContentOptions,
+} from '@react-navigation/drawer';
 
 const data: DrawerItemType[] = [
     {
         label: 'Profile',
         icon: 'account',
-        onPress: (props) => {
+        onPress: (
+            props: DrawerContentComponentProps<DrawerContentOptions>
+        ): void => {
             const myUserId = store.getState().session.id;
             props.navigation.navigate('Profile', { userId: myUserId });
         },
@@ -14,36 +20,37 @@ const data: DrawerItemType[] = [
     {
         label: 'Messages',
         icon: 'message-text',
-        onPress: (props) => {
+        onPress: (
+            props: DrawerContentComponentProps<DrawerContentOptions>
+        ): void => {
             props.navigation.navigate('Messages');
         },
     },
     {
         label: 'My projects',
         icon: 'briefcase',
-        onPress: (props) => {
+        onPress: (
+            props: DrawerContentComponentProps<DrawerContentOptions>
+        ): void => {
             props.navigation.navigate('MyProjects');
         },
     },
     {
         label: 'Reviewer center',
         icon: 'shield-account',
-        onPress: (props) => {
+        onPress: (
+            props: DrawerContentComponentProps<DrawerContentOptions>
+        ): void => {
             props.navigation.navigate('ReviewerCenter');
         },
     },
     {
         label: 'Sponsor History',
         icon: 'clock',
-        onPress: (props) => {
+        onPress: (
+            props: DrawerContentComponentProps<DrawerContentOptions>
+        ): void => {
             props.navigation.navigate('DonationHistory');
-        },
-    },
-    {
-        label: 'Settings',
-        icon: 'cog',
-        onPress: (props) => {
-            props.navigation.navigate('Settings');
         },
     },
 ];

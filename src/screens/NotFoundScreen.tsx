@@ -11,10 +11,10 @@ import { RootStackParamList } from '../types';
 
 export default function NotFoundScreen({
     navigation,
-}: StackScreenProps<RootStackParamList, 'NotFound'>) {
+}: StackScreenProps<RootStackParamList, 'NotFound'>): React.ReactElement {
     return (
         <View style={styles.container}>
-            <Title>This screen doesn't exist.</Title>
+            <Title>{"This screen doesn't exist."}</Title>
             <TouchableOpacity
                 onPress={() => navigation.replace('Drawer')}
                 style={styles.link}

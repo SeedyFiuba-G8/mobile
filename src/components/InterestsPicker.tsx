@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList, SafeAreaView } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import {
     Portal,
     Modal,
@@ -48,7 +48,7 @@ const Item = (props: Category) => {
 export default function Picker(props: Props): React.ReactElement {
     const hideModal = () => props.setVisible(false);
 
-    const categoriesTemp = categories.map((category, index) => {
+    const categoriesTemp = categories.map((category) => {
         const [interested, setInterested] = useState<boolean>(
             props.interests.includes(category)
         );
@@ -63,14 +63,14 @@ export default function Picker(props: Props): React.ReactElement {
         resetCategories();
     }, [props.visible]);
     const resetCategories = () => {
-        categoriesTemp.forEach((category, index) => {
+        categoriesTemp.forEach((category) => {
             category.setInterested(props.interests.includes(category.tag));
         });
     };
     const onOkButtonPress = () => {
         const categories = categoriesTemp
-            .filter((category, index) => category.interested)
-            .map((category, index) => category.tag);
+            .filter((category) => category.interested)
+            .map((category) => category.tag);
         props.onOkClick(categories);
     };
     return (

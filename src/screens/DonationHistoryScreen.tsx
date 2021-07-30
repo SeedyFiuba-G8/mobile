@@ -2,19 +2,10 @@ import React, { useEffect } from 'react';
 import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native';
 
 // Components
-import {
-    Avatar,
-    Card,
-    IconButton,
-    Snackbar,
-    Subheading,
-    Text,
-    Title,
-} from 'react-native-paper';
+import { Avatar, Card, Text } from 'react-native-paper';
 import FilterBar from '../components/FilterBar';
 
 // Types
-import type { Project } from '../api/projectsApi';
 import type { RootState } from '../reducers/index';
 import type { Donation } from '../api/profileApi';
 
@@ -26,27 +17,10 @@ import { useSelector } from 'react-redux';
 
 // Constant
 import colors from '../constants/colors';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../types';
-import { RouteProp } from '@react-navigation/native';
 import statuses from '../constants/statuses';
 import { useState } from 'react';
 
-type MyProjectsScreenNavigationProp = StackNavigationProp<
-    RootStackParamList,
-    'MyProjects'
->;
-
-type MyProjectsScreenRouteProp = RouteProp<RootStackParamList, 'MyProjects'>;
-
-type Props = {
-    route: MyProjectsScreenRouteProp;
-    navigation: MyProjectsScreenNavigationProp;
-};
-
-export default function DonationHistoryScreen(
-    props: Props
-): React.ReactElement {
+export default function DonationHistoryScreen(): React.ReactElement {
     const [refreshing, setRefreshing] = React.useState(false);
     const myUserId = useSelector((state: RootState) => state.session.id);
 
@@ -99,7 +73,7 @@ export default function DonationHistoryScreen(
                 </View>
                 {donations
                     .filter(
-                        (donation, index) =>
+                        (donation) =>
                             donation.status.toLowerCase() === filter ||
                             filter === 'all'
                     )
@@ -121,7 +95,7 @@ export default function DonationHistoryScreen(
                                             icon='hand-heart'
                                         />
                                     )}
-                                    right={(props) => (
+                                    right={() => (
                                         <Text
                                             style={{
                                                 color: colors.grey,

@@ -11,26 +11,13 @@ import {
 // Contents
 import DrawerList from './DrawerList';
 import general from './Contents/general';
-import collections from './Contents/collections';
-import categories from './Contents/categories';
-
-//Hooks
-import { useDispatch } from 'react-redux';
-
-//Actions
-import {
-    updateLoginStatusAction,
-    LoggingInFlowState,
-} from '../../actions/UpdateLoginStatusAction';
 
 //Other
-import { clearSessionData, logout } from '../../session/SessionUtil';
-
-import { deleteSession } from '../../api/sessionApi';
+import { logout } from '../../session/SessionUtil';
 
 export default function Content({
     ...props
-}: DrawerContentComponentProps): React.ReactNode {
+}: DrawerContentComponentProps): React.ReactElement {
     const onLogoutClick = async () => {
         logout();
     };
@@ -45,15 +32,6 @@ export default function Content({
             <Drawer.Section>
                 <DrawerList data={general} props={props} />
             </Drawer.Section>
-
-            {/*
-            <Drawer.Section title='Collections'>
-                <DrawerList data={collections} props={props} />
-            </Drawer.Section>
-
-            <Drawer.Section title='Categories'>
-                <DrawerList data={categories} props={props} />
-            </Drawer.Section>*/}
 
             <Drawer.Section>
                 <DrawerItem

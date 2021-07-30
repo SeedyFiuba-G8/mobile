@@ -3,7 +3,6 @@ import { ScrollView, RefreshControl, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
 
 // Types
-import type { Project } from '../../api/projectsApi';
 import colors from '../../constants/colors';
 import ReviewRequestCard from './ReviewRequestCard';
 import type { ReviewRequest } from '../../api/projectsApi';
@@ -62,5 +61,3 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 });
-
-const randomImageIds = [1031, 1, 10, 100, 1002, 1010, 1011];

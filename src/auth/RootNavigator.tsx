@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 // Navigation
 import { createStackNavigator } from '@react-navigation/stack';

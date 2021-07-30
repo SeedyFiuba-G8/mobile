@@ -14,7 +14,6 @@ import {
 } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import colors from '../constants/colors';
-import { DatePickerModal } from 'react-native-paper-dates';
 //Components
 import TagAdder from '../components/Project/TagAdder';
 import FundDeadlineSelector from '../components/Project/FundDeadlineSelector';
@@ -22,7 +21,6 @@ import ReviewerList from '../components/Project/ReviewerList';
 import uuid from 'react-native-uuid';
 
 // Contexts
-import { useTheme } from '../contexts/ThemeProvider';
 
 // API
 import {
@@ -33,10 +31,8 @@ import {
     publishProject,
 } from '../api/projectsApi';
 // Hooks
-import { useSelector } from 'react-redux';
 
 // Types
-import type { RootState } from '../reducers/index';
 import { countries } from 'countries-list';
 import { RootStackParamList } from '../types';
 import { RouteProp } from '@react-navigation/native';
@@ -219,7 +215,7 @@ export default function ProjectCreationScreen(
                 setTags(project_temp.tags);
                 setReviewers(project_temp.reviewers);
                 setStages(
-                    project_temp.stages.map((stage, index) => {
+                    project_temp.stages.map((stage) => {
                         return {
                             cost: stage.cost.toString(),
                             description: stage.description,
@@ -259,8 +255,8 @@ export default function ProjectCreationScreen(
             city,
             date.toJSON(),
             tags,
-            reviewers.map((reviewer, index) => reviewer.email),
-            stages.map((stage, index) => {
+            reviewers.map((reviewer) => reviewer.email),
+            stages.map((stage) => {
                 return {
                     cost: parseFloat(stage.cost),
                     description: stage.description,
@@ -294,8 +290,8 @@ export default function ProjectCreationScreen(
                 date.toJSON(),
                 tags,
                 reviewers
-                    .filter((reviewer, index) => reviewer.status === 'PENDING')
-                    .map((reviewer, index) => reviewer.email),
+                    .filter((reviewer) => reviewer.status === 'PENDING')
+                    .map((reviewer) => reviewer.email),
                 new_image_uri ?? image?.uri
             );
             if (result.successful) {
@@ -384,7 +380,7 @@ export default function ProjectCreationScreen(
     };
 
     const isPublishable = reviewers.some(
-        (reviewer, index) => reviewer.status === 'ACCEPTED'
+        (reviewer) => reviewer.status === 'ACCEPTED'
     );
     return (
         <ScrollView
@@ -486,7 +482,7 @@ export default function ProjectCreationScreen(
                         <Picker
                             style={styles.categorySelector}
                             selectedValue={category}
-                            onValueChange={(itemValue, itemIndex) =>
+                            onValueChange={(itemValue) =>
                                 setCategory(itemValue)
                             }
                             mode='dropdown'
@@ -553,7 +549,7 @@ export default function ProjectCreationScreen(
                         <Picker
                             style={styles.categorySelector}
                             selectedValue={country}
-                            onValueChange={(itemValue, itemIndex) =>
+                            onValueChange={(itemValue) =>
                                 setCountry(itemValue)
                             }
                             mode='dropdown'

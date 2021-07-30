@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 // Firebase
-import firebase from 'firebase/app';
 import 'firebase/database';
 
 // Navigation
@@ -12,18 +11,15 @@ import ReviewerCenterNavigator from './ReviewerCenterNavigator';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import MessagesScreen from '../screens/MessagesScreen';
-import SettingsScreen from '../screens/SettingsScreen';
 import ProjectCreationScreen from '../screens/ProjectCreationScreen';
 import MyProjectsScreen from '../screens/MyProjectsScreen';
 import ProjectVisualizationScreen from '../screens/ProjectVisualizationScreen';
-import ReviewRequestsScreen from '../screens/ReviewRequestsScreen';
 
 // Ts types
 import { RootStackParamList } from '../types';
 
 // Constants
 import colors from '../constants/colors';
-import { useTheme } from '../contexts/ThemeProvider';
 import MessageChatScreen from '../screens/MessageChatScreen';
 import DonationHistoryScreen from '../screens/DonationHistoryScreen';
 
@@ -32,8 +28,6 @@ import DonationHistoryScreen from '../screens/DonationHistoryScreen';
 const RootStack = createStackNavigator<RootStackParamList>();
 
 export default function RootNavigator(): React.ReactElement {
-    const { isDarkTheme } = useTheme();
-
     return (
         <RootStack.Navigator
             mode='modal'
@@ -42,9 +36,7 @@ export default function RootNavigator(): React.ReactElement {
                 headerShown: true,
                 headerTintColor: colors.white,
                 headerStyle: {
-                    backgroundColor: isDarkTheme
-                        ? colors.primary.dark
-                        : colors.primary.light,
+                    backgroundColor: colors.primary.light,
                 },
                 headerBackTitleVisible: false,
             }}
@@ -57,7 +49,6 @@ export default function RootNavigator(): React.ReactElement {
 
             <RootStack.Screen name='Profile' component={ProfileScreen} />
             <RootStack.Screen name='Messages' component={MessagesScreen} />
-            <RootStack.Screen name='Settings' component={SettingsScreen} />
             <RootStack.Screen
                 name='ProjectCreation'
                 component={ProjectCreationScreen}

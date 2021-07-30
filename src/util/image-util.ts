@@ -1,5 +1,4 @@
 import * as ImagePicker from 'expo-image-picker';
-import ImageResizer from 'react-native-image-resizer';
 
 export type loadUserImageResult = {
     blob?: Blob;

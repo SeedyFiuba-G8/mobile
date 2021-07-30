@@ -7,9 +7,6 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import ReviewRequestsScreen from '../screens/ReviewRequestsScreen';
 import ReviewedProjectsScreen from '../screens/ReviewedProjectsScreen';
 
-// Theme
-import { useTheme } from '../contexts/ThemeProvider';
-
 // Constants
 import colors from '../constants/colors';
 

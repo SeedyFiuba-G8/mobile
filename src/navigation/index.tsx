@@ -1,8 +1,7 @@
 import React from 'react';
 import * as Notifications from 'expo-notifications';
 // Theming
-import { DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { useTheme } from '../contexts/ThemeProvider';
+import { DefaultTheme } from '@react-navigation/native';
 
 // Navigation
 import LinkingConfiguration from './LinkingConfiguration';
@@ -45,15 +44,13 @@ const genDeepLink = (notifType: string) => {
 };
 
 export default function Navigation(): React.ReactElement {
-    const { isDarkTheme } = useTheme();
-    const navigationTheme = isDarkTheme ? DarkTheme : DefaultTheme;
     const loginState = useSelector(
         (state: RootState) => state.login.loggedInState
     );
 
     return (
         <NavigationContainer
-            theme={navigationTheme}
+            theme={DefaultTheme}
             linking={{
                 ...LinkingConfiguration,
                 subscribe(listener) {

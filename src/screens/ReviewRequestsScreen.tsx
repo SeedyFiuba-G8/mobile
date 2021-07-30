@@ -4,29 +4,9 @@ import { StyleSheet, View } from 'react-native';
 import ReviewRequestList from '../components/ReviewRequest/ReviewRequestList';
 import { getReviewRequests } from '../api/projectsApi';
 
-import { ReviewerCenterTabParamList } from '../types';
 import type { ReviewRequest } from '../api/projectsApi';
 
-import { MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
-import { RouteProp } from '@react-navigation/native';
-
-type ReviewRequestsScreenNavigationProp = MaterialTopTabNavigationProp<
-    ReviewerCenterTabParamList,
-    'ReviewRequests'
->;
-type ReviewRequestsScreenRouteProp = RouteProp<
-    ReviewerCenterTabParamList,
-    'ReviewRequests'
->;
-
-type Props = {
-    route: ReviewRequestsScreenRouteProp;
-    navigation: ReviewRequestsScreenNavigationProp;
-};
-
-export default function ReviewRequestsScreen(
-    props: Props
-): React.ReactElement {
+export default function ReviewRequestsScreen(): React.ReactElement {
     const [refreshing, setRefreshing] = useState(false);
     const [reviewRequests, setReviewRequests] = useState<Array<ReviewRequest>>(
         []
@@ -38,7 +18,7 @@ export default function ReviewRequestsScreen(
             console.log(reviewRequestResponse.data.requests);
             setReviewRequests(
                 reviewRequestResponse.data.requests.filter(
-                    (request, index) => request.status === 'PENDING'
+                    (request) => request.status === 'PENDING'
                 )
             );
         }

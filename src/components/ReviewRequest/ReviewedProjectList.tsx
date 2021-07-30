@@ -64,5 +64,3 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 });
-
-const randomImageIds = [1031, 1, 10, 100, 1002, 1010, 1011];

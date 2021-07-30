@@ -10,7 +10,7 @@ import { getProfile } from '../api/profileApi';
 import { deleteSession } from '../api/sessionApi';
 import store from '../stores/MainStore';
 
-const logout = async () => {
+const logout = async (): Promise<void> => {
     deleteSession();
 
     await clearSessionData();

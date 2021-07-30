@@ -1,7 +1,6 @@
-import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import MessageCard from '../components/Messages/MessageCard';
 import { RootStackParamList } from '../types';
 
@@ -14,7 +13,6 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../reducers';
 import { getProfile } from '../api/profileApi';
-import { ActivityIndicator } from 'react-native-paper';
 
 type ProfileScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -57,7 +55,7 @@ export default function MessagesScreen(props: Props): React.ReactElement {
         const profiles = [] as Array<ChatEntry>;
 
         await Promise.all(
-            (myChats as Array<string>).map(async (userId, index) => {
+            (myChats as Array<string>).map(async (userId) => {
                 const profile = await getProfile(userId);
                 if (profile.successful) {
                     console.log(`Pushing data for ${profile.data.firstName}`);

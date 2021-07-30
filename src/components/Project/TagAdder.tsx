@@ -5,13 +5,10 @@ import {
     TextInput,
     Portal,
     Dialog,
-    Paragraph,
     Button,
     Chip,
 } from 'react-native-paper';
 import colors from '../../constants/colors';
-
-import { useTheme } from '../../contexts/ThemeProvider';
 
 type Props = {
     tags: Array<string>;
@@ -19,12 +16,6 @@ type Props = {
 };
 
 export default function TagAdder(props: Props): React.ReactElement {
-    const { isDarkTheme } = useTheme();
-    const styles = React.useMemo(
-        () => createThemedStyles(isDarkTheme),
-        [isDarkTheme]
-    );
-
     const [dialogVisible, setDialogVisible] = React.useState(false);
     const showDialog = () => setDialogVisible(true);
     const hideDialog = () => setDialogVisible(false);
@@ -77,23 +68,20 @@ export default function TagAdder(props: Props): React.ReactElement {
     );
 }
 
-const createThemedStyles = (isDarkTheme: boolean) => {
-    const styles = StyleSheet.create({
-        container: {
-            flexDirection: 'row',
-            alignContent: 'center',
-            alignItems: 'center',
-            padding: 2,
-            flexWrap: 'wrap',
-        },
-        input: {
-            alignSelf: 'stretch',
-            marginVertical: 10,
-            marginTop: 0,
-            backgroundColor: 'transparent',
-            fontWeight: '300',
-        },
-        tags: { height: 35, marginHorizontal: 1 },
-    });
-    return styles;
-};
+const styles = StyleSheet.create({
+    container: {
+        flexDirection: 'row',
+        alignContent: 'center',
+        alignItems: 'center',
+        padding: 2,
+        flexWrap: 'wrap',
+    },
+    input: {
+        alignSelf: 'stretch',
+        marginVertical: 10,
+        marginTop: 0,
+        backgroundColor: 'transparent',
+        fontWeight: '300',
+    },
+    tags: { height: 35, marginHorizontal: 1 },
+});

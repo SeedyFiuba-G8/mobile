@@ -1,6 +1,5 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { Avatar } from 'react-native-paper';
 
 // Types
@@ -19,7 +18,7 @@ interface DrawerListProps {
 
 export default function DrawerList(
     args: React.PropsWithChildren<DrawerListProps>
-) {
+): React.ReactElement {
     const { data, props } = args;
     return (
         <View>
@@ -28,7 +27,7 @@ export default function DrawerList(
                     <DrawerItem
                         key={key}
                         label={value.label}
-                        icon={({ color, size }) => (
+                        icon={({ color }) => (
                             <Avatar.Icon
                                 style={{ backgroundColor: 'transparent' }}
                                 icon={value.icon}

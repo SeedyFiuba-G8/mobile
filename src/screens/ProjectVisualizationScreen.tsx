@@ -12,7 +12,6 @@ import {
     ProgressBar,
     Chip,
     ActivityIndicator,
-    Button,
     IconButton,
 } from 'react-native-paper';
 import SponsorProjectModal from '../components/Sponsor/SponsorProjectModal';
@@ -22,7 +21,6 @@ import StageItem from '../components/Project/StageItem';
 import type { GetProjectApiResponse } from '../api/projectsApi';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import type { Stage } from '../api/projectsApi';
 
 // APIs
 import {
@@ -32,7 +30,7 @@ import {
     dislikeProject,
     rateProject,
 } from '../api/projectsApi';
-import { getProfile, Profile } from '../api/profileApi';
+import { getProfile } from '../api/profileApi';
 
 // Hooks
 import { RootStackParamList } from '../types';
@@ -41,7 +39,6 @@ import SponsorDisclaimerModal from '../components/Sponsor/SponsorDisclaimerModal
 
 // Util
 import { updateBalance } from '../util/transactions';
-import ProfileScreen from './ProfileScreen';
 
 type ProjectVisualizationScreenNavigationProp = StackNavigationProp<
     RootStackParamList,

@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, FlatList, ScrollView } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { Portal, Modal, Button, Text, Avatar } from 'react-native-paper';
 import colors from '../../constants/colors';
-import { useEffect } from 'react';
 import strings from '../../constants/strings';
 
 type Props = {

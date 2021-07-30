@@ -2,7 +2,6 @@ import { apiProvider } from './utilities/provider';
 import type { Response } from './utilities/provider';
 
 import store from '../stores/MainStore';
-import ReviewershipModal from '../components/Profile/ReviewershipModal';
 
 export type Stage = {
     description: string;

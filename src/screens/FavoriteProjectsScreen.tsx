@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
     StyleSheet,
     View,
@@ -10,21 +10,14 @@ import { FAB } from 'react-native-paper';
 
 // Components
 import ProjectList from '../components/Project/ProjectList';
-import FilterBar from '../components/FilterBar';
 
 // Navigation
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 // Types
-import {
-    getLikedProjects,
-    getRecommendedProjects,
-    Project,
-} from '../api/projectsApi';
-import type { RootState } from '../reducers';
+import { getLikedProjects, Project } from '../api/projectsApi';
 
 // APIs
 import colors from '../constants/colors';
-import { useSelector } from 'react-redux';
 
 // Image Management
 export default function FavoriteProjectsScreen({
@@ -49,8 +42,7 @@ export default function FavoriteProjectsScreen({
         if (projects.successful) {
             setProjects(
                 projects.data.projects.filter(
-                    (project, index) =>
-                        project.status.toLowerCase() !== 'draft'
+                    (project) => project.status.toLowerCase() !== 'draft'
                 )
             );
         }

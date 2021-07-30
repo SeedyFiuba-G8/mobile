@@ -9,10 +9,8 @@ import {
     Snackbar,
 } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { DeviceEventEmitter } from 'react-native';
 
 // Contexts
-import { useTheme } from '../contexts/ThemeProvider';
 
 // Hooks
 import { useSelector, useDispatch } from 'react-redux';

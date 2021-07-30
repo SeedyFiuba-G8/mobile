@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, DeviceEventEmitter } from 'react-native';
-import {
-    Text,
-    Card,
-    ProgressBar,
-    Button,
-    IconButton,
-} from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Text, Card, Button, IconButton } from 'react-native-paper';
 import colors from '../../constants/colors';
 
 import {

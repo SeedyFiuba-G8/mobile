@@ -9,8 +9,7 @@ import {
 
 // Components
 import ProjectList from '../components/Project/ProjectList';
-import { Text, Avatar, Snackbar } from 'react-native-paper';
-import { Picker } from '@react-native-picker/picker';
+import { Snackbar } from 'react-native-paper';
 import FilterBar from '../components/FilterBar';
 
 // Types
@@ -26,10 +25,9 @@ import { useSelector } from 'react-redux';
 // Constant
 import colors from '../constants/colors';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { DrawerParamList, RootStackParamList } from '../types';
+import { RootStackParamList } from '../types';
 import { RouteProp } from '@react-navigation/native';
 import statuses from '../constants/statuses';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
 
 type MyProjectsScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
@@ -123,7 +121,7 @@ export default function DashboardScreen(props: Props): React.ReactElement {
                         refreshing={refreshing}
                         onRefresh={onRefresh}
                         projects={projects.filter(
-                            (project, index) =>
+                            (project) =>
                                 filter === 'all' ||
                                 project.status.toLowerCase() === filter
                         )}

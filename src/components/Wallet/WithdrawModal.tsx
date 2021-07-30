@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, FlatList, ScrollView } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import {
     Portal,
     Modal,
@@ -7,7 +7,6 @@ import {
     Text,
     Avatar,
     TextInput,
-    Divider,
     HelperText,
 } from 'react-native-paper';
 import colors from '../../constants/colors';
@@ -15,10 +14,8 @@ import colors from '../../constants/colors';
 import { useSelector } from 'react-redux';
 
 import type { RootState } from '../../reducers';
-import { Icon } from 'react-native-paper/lib/typescript/components/Avatar/Avatar';
 
 import { withdrawFunds } from '../../api/profileApi';
-import { likeProject } from '../../api/projectsApi';
 
 type Props = {
     visible: boolean;

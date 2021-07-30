@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, RefreshControl, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import ProjectCard from './ProjectCard';
 import { Text } from 'react-native-paper';
 
@@ -77,5 +77,3 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 });
-
-const randomImageIds = [1031, 1, 10, 100, 1002, 1010, 1011];

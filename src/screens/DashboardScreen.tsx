@@ -73,8 +73,7 @@ export default function DashboardScreen({
         if (projects.successful) {
             setProjects(
                 projects.data.projects.filter(
-                    (project, index) =>
-                        project.status.toLowerCase() !== 'draft'
+                    (project) => project.status.toLowerCase() !== 'draft'
                 )
             );
         }

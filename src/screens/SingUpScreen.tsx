@@ -1,11 +1,8 @@
 import * as React from 'react';
 
-import { StyleSheet, View, DeviceEventEmitter } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Text, Button, TextInput, HelperText } from 'react-native-paper';
 import { register } from '../api/registerApi';
-
-// Contexts
-import { useTheme } from '../contexts/ThemeProvider';
 
 // Constants
 import colors from '../constants/colors';
@@ -24,12 +21,6 @@ type Props = {
 };
 
 export default function SignInScreen(props: Props): React.ReactElement {
-    const { isDarkTheme } = useTheme();
-    const styles = React.useMemo(
-        () => createThemedStyles(isDarkTheme),
-        [isDarkTheme]
-    );
-
     const [signUpData, setSignUpData] = React.useState({
         email: '',
         firstname: '',
@@ -82,7 +73,6 @@ export default function SignInScreen(props: Props): React.ReactElement {
                         });
                     }}
                     label='Email'
-                    theme={createThemedTextInputTheme(isDarkTheme)}
                     error={emailAlreadyUsed}
                     keyboardType='email-address'
                 />
@@ -105,7 +95,6 @@ export default function SignInScreen(props: Props): React.ReactElement {
                     });
                 }}
                 label='First name'
-                theme={createThemedTextInputTheme(isDarkTheme)}
                 error={loginWasNotSuccesful()}
             />
             <TextInput
@@ -118,7 +107,6 @@ export default function SignInScreen(props: Props): React.ReactElement {
                     });
                 }}
                 label='Last name'
-                theme={createThemedTextInputTheme(isDarkTheme)}
                 error={loginWasNotSuccesful()}
             />
             <TextInput
@@ -132,7 +120,6 @@ export default function SignInScreen(props: Props): React.ReactElement {
                     });
                 }}
                 label='Password'
-                theme={createThemedTextInputTheme(isDarkTheme)}
                 error={!passwordsMatch()}
             />
             <View style={styles.inputWithHelperTextView}>
@@ -147,7 +134,6 @@ export default function SignInScreen(props: Props): React.ReactElement {
                         });
                     }}
                     label='Confirm password'
-                    theme={createThemedTextInputTheme(isDarkTheme)}
                     error={!passwordsMatch()}
                 />
                 <HelperText
@@ -172,57 +158,43 @@ export default function SignInScreen(props: Props): React.ReactElement {
     );
 }
 
-const createThemedStyles = (isDarkTheme: boolean) => {
-    const styles = StyleSheet.create({
-        container: {
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: isDarkTheme ? colors.black : colors.white,
-        },
-        button: {
-            justifyContent: 'center',
-            alignSelf: 'stretch',
-            paddingVertical: 12,
-            paddingHorizontal: 32,
-            marginTop: 10,
-            marginHorizontal: 32,
-            borderRadius: 6,
-        },
-        input: {
-            alignSelf: 'stretch',
-            marginHorizontal: 32,
-            marginTop: 20,
-            backgroundColor: isDarkTheme ? colors.white : '#EEEEEE',
-            fontWeight: '300',
-        },
-        inputWithHelperTextView: {
-            alignSelf: 'stretch',
-        },
-        inputText: {
-            fontSize: 20,
-            fontWeight: '200',
-        },
-        logo: {
-            fontSize: 40,
-            fontWeight: '300',
-            margin: 32,
-            color: isDarkTheme ? colors.white : colors.black,
-        },
-        helperText: {
-            marginHorizontal: 20,
-        },
-    });
-    return styles;
-};
-
-const createThemedTextInputTheme = (isDarkTheme: boolean) => {
-    const theme = {
-        colors: {
-            placeholder: colors.grey,
-            primary: isDarkTheme ? colors.primary.dark : colors.primary.light,
-            text: colors.black,
-        },
-    };
-    return theme;
-};
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: colors.white,
+    },
+    button: {
+        justifyContent: 'center',
+        alignSelf: 'stretch',
+        paddingVertical: 12,
+        paddingHorizontal: 32,
+        marginTop: 10,
+        marginHorizontal: 32,
+        borderRadius: 6,
+    },
+    input: {
+        alignSelf: 'stretch',
+        marginHorizontal: 32,
+        marginTop: 20,
+        backgroundColor: '#EEEEEE',
+        fontWeight: '300',
+    },
+    inputWithHelperTextView: {
+        alignSelf: 'stretch',
+    },
+    inputText: {
+        fontSize: 20,
+        fontWeight: '200',
+    },
+    logo: {
+        fontSize: 40,
+        fontWeight: '300',
+        margin: 32,
+        color: colors.black,
+    },
+    helperText: {
+        marginHorizontal: 20,
+    },
+});

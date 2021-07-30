@@ -23,7 +23,6 @@ import { useEffect } from 'react';
 
 // Types
 import type { RootState } from '../reducers/index';
-import ReviewershipModal from '../components/Profile/ReviewershipModal';
 
 // Firebase
 import firebase from 'firebase';
@@ -31,7 +30,6 @@ import firebaseConfig from '../firebase/config';
 import 'firebase/storage';
 
 // Image Picker
-import * as ImagePicker from 'expo-image-picker';
 import { updateNameAction } from '../actions/UpdateNameAction';
 
 // Util
@@ -56,14 +54,10 @@ export default function ProfileScreen(props: Props): React.ReactElement {
     }
     const [interestPickerVisible, setInterestPickerVisible] = useState(false);
     const [locationPickerVisible, setLocationPickerVisible] = useState(false);
-    const [reviewershipModalVisible, setReviewershipModalVisible] =
-        useState(false);
-
     const [name, setName] = useState('');
     const [interests, setInterests] = useState<Array<string>>([]);
     const myUserId = useSelector((state: RootState) => state.session.id);
     const editable = myUserId === props.route.params.userId;
-    const enableReviewership = false;
 
     const [loading, setLoading] = useState(false);
 
@@ -73,7 +67,6 @@ export default function ProfileScreen(props: Props): React.ReactElement {
 
     const [country, setCountry] = useState('');
     const [city, setCity] = useState('');
-    const [isReviewer, setIsReviewer] = useState(false);
     const [statusBarVisible, setStatusBarVisible] = useState(false);
     const [statusBarText, setStatusBarText] = useState('');
 
@@ -249,65 +242,6 @@ export default function ProfileScreen(props: Props): React.ReactElement {
                                 </Text>
                             </View>
                         </ProfileInfoSection>
-                        {editable && enableReviewership ? (
-                            <>
-                                <Divider style={styles.divider} />
-                                <ProfileInfoSection
-                                    title='Reviewership'
-                                    icon='shield-account'
-                                    editable={true}
-                                    onEditPress={() =>
-                                        setReviewershipModalVisible(true)
-                                    }
-                                >
-                                    <View
-                                        style={
-                                            styles.profileInfoSectionContentView
-                                        }
-                                    >
-                                        {isReviewer ? (
-                                            <Text
-                                                style={{
-                                                    color: colors.primary
-                                                        .light,
-                                                    fontWeight: 'bold',
-                                                }}
-                                            >
-                                                {'You are a project reviewer.'}
-                                            </Text>
-                                        ) : (
-                                            <Text
-                                                style={{
-                                                    color: colors.darkerGrey,
-                                                }}
-                                            >
-                                                {
-                                                    'You are not a project reviewer.'
-                                                }
-                                            </Text>
-                                        )}
-                                    </View>
-                                    <ReviewershipModal
-                                        isReviewer={isReviewer}
-                                        visible={reviewershipModalVisible}
-                                        setVisible={
-                                            setReviewershipModalVisible
-                                        }
-                                        onOkClick={() => {
-                                            setReviewershipModalVisible(false);
-                                            setIsReviewer(true);
-                                        }}
-                                        onRevokeClick={() => {
-                                            setReviewershipModalVisible(false);
-                                            setIsReviewer(false);
-                                        }}
-                                        onCancelClick={() =>
-                                            setReviewershipModalVisible(false)
-                                        }
-                                    />
-                                </ProfileInfoSection>
-                            </>
-                        ) : null}
                     </>
                 )}
             </ScrollView>
