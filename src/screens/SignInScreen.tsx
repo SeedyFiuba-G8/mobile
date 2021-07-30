@@ -41,6 +41,7 @@ import { updateBalanceAction } from '../actions/UpdateBalanceAction';
 import { updateWalletAddressAction } from '../actions/UpdateWalletAddressAction';
 import { RouteProp } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
+import { sanitizeEmail } from '../util/inputUtil';
 
 type SignInScreenNavigationProp = StackNavigationProp<
     AuthStackParamList,
@@ -101,7 +102,11 @@ export default function SignInScreen(props: Props): React.ReactElement {
         dispatch(
             updateLoginStatusAction(LoggingInFlowState.WaitingForAuthResponse)
         );
-        const loginResult = await createSession(email, password, expoToken);
+        const loginResult = await createSession(
+            sanitizeEmail(email),
+            password,
+            expoToken
+        );
 
         if (loginResult.successful) {
             persistSessionData(loginResult.data.id, loginResult.data.token);
@@ -189,6 +194,7 @@ export default function SignInScreen(props: Props): React.ReactElement {
                 label='Email'
                 mode='outlined'
                 error={loginWasNotSuccesful()}
+                keyboardType='email-address'
             />
 
             <TextInput

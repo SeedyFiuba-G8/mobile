@@ -12,6 +12,7 @@ import colors from '../constants/colors';
 import { useState } from 'react';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../types';
+import { sanitizeEmail } from '../util/inputUtil';
 
 type SignUpScreenNavigationProp = StackNavigationProp<
     AuthStackParamList,
@@ -44,7 +45,7 @@ export default function SignInScreen(props: Props): React.ReactElement {
         setEmailAlreadyUsed(false);
         setCreatingAccount(true);
         const registerResult = await register(
-            signUpData.email,
+            sanitizeEmail(signUpData.email),
             signUpData.password,
             signUpData.firstname,
             signUpData.lastname
@@ -83,6 +84,7 @@ export default function SignInScreen(props: Props): React.ReactElement {
                     label='Email'
                     theme={createThemedTextInputTheme(isDarkTheme)}
                     error={emailAlreadyUsed}
+                    keyboardType='email-address'
                 />
 
                 <HelperText

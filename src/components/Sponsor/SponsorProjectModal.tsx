@@ -8,6 +8,7 @@ import {
     Avatar,
     TextInput,
     Divider,
+    HelperText,
 } from 'react-native-paper';
 import colors from '../../constants/colors';
 
@@ -30,6 +31,7 @@ export default function SponsorProjectModal(props: Props): React.ReactElement {
     );
     const affix = <TextInput.Affix text='ETH' />;
     const [donation, setDonation] = useState('');
+    const insufficientFunds = () => parseFloat(donation) > currentBalance;
     return (
         <Portal>
             <Modal
@@ -75,7 +77,13 @@ export default function SponsorProjectModal(props: Props): React.ReactElement {
                     right={affix}
                     onChangeText={(newDonation) => setDonation(newDonation)}
                     value={donation}
+                    error={insufficientFunds()}
                 />
+                {insufficientFunds() ? (
+                    <HelperText type='error'>
+                        {"You don't have enough funds"}
+                    </HelperText>
+                ) : null}
                 <View style={styles.buttonsView}>
                     <Button
                         style={styles.cancelButton}
@@ -87,6 +95,9 @@ export default function SponsorProjectModal(props: Props): React.ReactElement {
                     </Button>
                     <Button
                         style={styles.sponsorButton}
+                        color={colors.primary.light}
+                        mode='contained'
+                        disabled={insufficientFunds()}
                         onPress={() => props.onOkClick(donation)}
                     >
                         <Text
@@ -127,7 +138,6 @@ const styles = StyleSheet.create({
     },
     sponsorButton: {
         alignSelf: 'flex-end',
-        backgroundColor: colors.primary.light,
     },
     cancelButton: {
         alignSelf: 'flex-start',

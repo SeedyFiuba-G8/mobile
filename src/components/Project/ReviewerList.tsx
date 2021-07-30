@@ -10,6 +10,7 @@ import {
 import { View } from 'react-native';
 
 import colors from '../../constants/colors';
+import { sanitizeEmail } from '../../util/inputUtil';
 
 type Reviewer = {
     email: string;
@@ -30,7 +31,7 @@ export default function ReviewerList(props: Props): React.ReactElement {
         setDialogVisible(false);
         props.setReviewers([
             ...props.reviewers,
-            { email: reviewerInput, status: 'PENDING' },
+            { email: sanitizeEmail(reviewerInput), status: 'PENDING' },
         ]);
     };
 

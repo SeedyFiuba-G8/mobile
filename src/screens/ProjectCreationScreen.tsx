@@ -177,7 +177,6 @@ export default function ProjectCreationScreen(
     } else {
         firebase.app();
     }
-    const { isDarkTheme } = useTheme();
     const [category, setCategory] = useState('');
     const [tags, setTags] = useState<Array<string>>([]);
     const [date, setDate] = React.useState<Date>(new Date());
@@ -198,6 +197,9 @@ export default function ProjectCreationScreen(
     const [loading, setLoading] = useState(false);
     parseInt;
     const [creating, setCreating] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [publishing, setPublishing] = useState(false);
 
     const onEditProjectLoad = async () => {
         setLoading(true);
@@ -232,6 +234,15 @@ export default function ProjectCreationScreen(
         setLoading(false);
     };
 
+    const showAlert = (message?: string) => {
+        if (message) {
+            setStatusBarText(message);
+        } else {
+            setStatusBarText('Unexpected error.');
+        }
+        setStatusBarVisible(true);
+    };
+
     useEffect(() => {
         onEditProjectLoad();
     }, [props.route.params.edition]);
@@ -257,16 +268,19 @@ export default function ProjectCreationScreen(
             }),
             coverImageURL
         );
+        setCreating(false);
         if (projectCreationResponse.successful) {
-            setCreating(false);
             props.navigation.replace('MyProjects', {
                 showNotification: 'Project created successfully!',
                 projectId: projectCreationResponse.data.id,
             });
+        } else {
+            showAlert(projectCreationResponse.errorMessage);
         }
     };
 
     const onConfirmChangesButtonPress = async () => {
+        setSaving(true);
         const new_image_uri = await uploadImage();
         if (props.route.params.edition) {
             const result = await updateProject(
@@ -289,9 +303,11 @@ export default function ProjectCreationScreen(
                 setStatusBarVisible(true);
             }
         }
+        setSaving(false);
     };
 
     const onDeleteButtonPress = async () => {
+        setDeleting(true);
         if (props.route.params.edition) {
             const result = await deleteProject(props.route.params.projectId);
             if (result.successful) {
@@ -302,9 +318,11 @@ export default function ProjectCreationScreen(
                 });
             }
         }
+        setDeleting(false);
     };
 
     const onPublishButtonPress = async () => {
+        setPublishing(true);
         if (props.route.params.edition) {
             const result = await publishProject(props.route.params.projectId);
             if (result.successful) {
@@ -315,6 +333,7 @@ export default function ProjectCreationScreen(
                 });
             }
         }
+        setPublishing(false);
     };
     const onModifyStageTitle = (index: number, title: string) => {
         const stage_modified = [...stages];
@@ -575,24 +594,23 @@ export default function ProjectCreationScreen(
                             style={styles.button}
                             onPress={onCreateButtonPress}
                             loading={creating}
-                            color='white'
+                            color={colors.primary.light}
                             disabled={creating}
                             icon='lightbulb'
+                            mode='contained'
                         >
                             <Text style={{ color: 'white' }}>Create</Text>
                         </Button>
                     ) : (
                         <>
                             <Button
-                                style={
-                                    isPublishable
-                                        ? styles.publishButton
-                                        : styles.publishButtonDisabled
-                                }
-                                disabled={!isPublishable}
+                                style={styles.publishButton}
+                                disabled={!isPublishable || publishing}
+                                loading={publishing}
                                 icon='send'
-                                color='white'
+                                color={colors.primary.light}
                                 onPress={onPublishButtonPress}
+                                mode='contained'
                             >
                                 <Text
                                     style={{
@@ -608,15 +626,24 @@ export default function ProjectCreationScreen(
                                     style={styles.confirmChangesButton}
                                     onPress={onConfirmChangesButtonPress}
                                     icon='content-save'
-                                    color='white'
+                                    color={colors.primary.light}
+                                    mode='contained'
+                                    disabled={saving}
+                                    loading={saving}
                                 >
-                                    <Text style={{ color: 'white' }}>Save</Text>
+                                    <Text style={{ color: 'white' }}>
+                                        Save
+                                    </Text>
                                 </Button>
                                 <Button
                                     style={styles.deleteProjectButon}
                                     onPress={onDeleteButtonPress}
                                     icon='delete'
-                                    color='white'
+                                    color={colors.red}
+                                    mode='contained'
+                                    labelStyle={{ color: 'white' }}
+                                    disabled={deleting}
+                                    loading={deleting}
                                 >
                                     <Text style={{ color: 'white' }}>
                                         Delete
@@ -647,7 +674,6 @@ const styles = StyleSheet.create({
         backgroundColor: colors.white,
     },
     button: {
-        backgroundColor: colors.primary.light,
         justifyContent: 'center',
         height: 50,
         borderRadius: 6,
@@ -753,7 +779,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     confirmChangesButton: {
-        backgroundColor: colors.primary.light,
         justifyContent: 'center',
         height: 50,
         borderRadius: 6,
@@ -762,7 +787,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     deleteProjectButon: {
-        backgroundColor: colors.red,
         justifyContent: 'center',
         height: 50,
         borderRadius: 6,
@@ -778,7 +802,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 36,
     },
     publishButton: {
-        backgroundColor: colors.primary.darkerLight,
         justifyContent: 'center',
         height: 50,
         borderRadius: 6,

@@ -8,6 +8,7 @@ import {
     Avatar,
     TextInput,
     Divider,
+    HelperText,
 } from 'react-native-paper';
 import colors from '../../constants/colors';
 
@@ -66,6 +67,9 @@ export default function WithdrawModal(props: Props): React.ReactElement {
         resetFields();
         hideModal();
     };
+
+    const insufficientFunds = () =>
+        parseFloat(withdrawAmount) > currentBalance;
 
     return (
         <Portal>
@@ -148,8 +152,13 @@ export default function WithdrawModal(props: Props): React.ReactElement {
                                 setWithdrawAmount(newAmount)
                             }
                             value={withdrawAmount}
-                            error={error}
+                            error={error || insufficientFunds()}
                         />
+                        {insufficientFunds() ? (
+                            <HelperText type='error'>
+                                {"You don't have enough funds"}
+                            </HelperText>
+                        ) : null}
                         <TextInput
                             style={{ alignSelf: 'stretch' }}
                             mode='outlined'
@@ -172,7 +181,7 @@ export default function WithdrawModal(props: Props): React.ReactElement {
                             <Button
                                 style={styles.sponsorButton}
                                 onPress={onTransferConfirm}
-                                disabled={transfering}
+                                disabled={transfering || insufficientFunds()}
                                 loading={transfering}
                                 color={colors.primary.light}
                                 mode='contained'
