@@ -24,20 +24,15 @@ import {
 } from '../../actions/UpdateLoginStatusAction';
 
 //Other
-import { clearSessionData } from '../../session/SessionUtil';
+import { clearSessionData, logout } from '../../session/SessionUtil';
 
 import { deleteSession } from '../../api/sessionApi';
 
 export default function Content({
     ...props
 }: DrawerContentComponentProps): React.ReactNode {
-    const dispatch = useDispatch();
     const onLogoutClick = async () => {
-        // Hope for the best
-        deleteSession();
-
-        await clearSessionData();
-        dispatch(updateLoginStatusAction(LoggingInFlowState.NotLoggedIn));
+        logout();
     };
 
     return (
