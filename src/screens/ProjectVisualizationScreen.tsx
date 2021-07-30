@@ -174,9 +174,11 @@ export default function ProjectVisualizationScreen(
         if (project === undefined) return;
 
         if (project.liked) {
+            setProject({ ...project, liked: false });
             const result = await dislikeProject(project.id);
             if (result.successful) onRefresh(false);
         } else {
+            setProject({ ...project, liked: true });
             const result = await likeProject(project.id);
             if (result.successful) onRefresh(false);
         }
@@ -184,7 +186,7 @@ export default function ProjectVisualizationScreen(
 
     const onRateProject = async (rating: number) => {
         if (project === undefined) return;
-
+        setProject({ ...project, rated: rating });
         const result = await rateProject(project.id, rating);
         if (result.successful) onRefresh(false);
     };
