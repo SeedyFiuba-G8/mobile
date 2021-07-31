@@ -1,26 +1,7 @@
-# SeedyFiuba Mobile App
+# SeedyFiuba
+Mobile app for Android
 
-## Description :book:
+![sf](https://user-images.githubusercontent.com/3434572/127722526-12e9889c-901b-4528-bbeb-cd0895e8604f.png)
 
-Seedy Fiuba Mobile App, built in React Native (using expo-cli).
 
-## Previous requirements :ballot_box_with_check:
-
-- [Node.JS](https://nodejs.org/es/download/)
-- [npm](https://nodejs.org/es/download/)
-
-## Usage :computer:
-
-First, install package dependencies:
-
-```bash
-npm install
-```
-
-Then, start expo bundler with:
-
-```bash
-npm start
-```
-
-Use expo bundler to connect with Web Browser, Android/iOS simulator, or even a real physical device.
+## Screenshots
