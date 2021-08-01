@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { Text, Button, TextInput, HelperText } from 'react-native-paper';
 import { register } from '../api/registerApi';
 
@@ -59,7 +59,10 @@ export default function SignInScreen(props: Props): React.ReactElement {
 
     const loginWasNotSuccesful = () => false;
     return (
-        <View style={styles.container}>
+        <ScrollView
+            style={{ alignSelf: 'stretch' }}
+            contentContainerStyle={styles.container}
+        >
             <Text style={styles.logo}>Register</Text>
 
             <View style={styles.inputWithHelperTextView}>
@@ -154,7 +157,7 @@ export default function SignInScreen(props: Props): React.ReactElement {
             >
                 <Text style={{ color: 'white' }}>Create account</Text>
             </Button>
-        </View>
+        </ScrollView>
     );
 }
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { Snackbar } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -41,7 +41,10 @@ export default function SignInScreen(props: Props): React.ReactElement {
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView
+            style={{ alignSelf: 'stretch' }}
+            contentContainerStyle={styles.container}
+        >
             <SignInScreenLogoHeader />
             <SignInScreenUserInputSection
                 onCreateNewAccountPress={onCreateNewAccountPress}
@@ -53,7 +56,7 @@ export default function SignInScreen(props: Props): React.ReactElement {
             >
                 Registered successfully!
             </Snackbar>
-        </View>
+        </ScrollView>
     );
 }
 
