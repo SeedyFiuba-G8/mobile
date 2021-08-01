@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
 import { Snackbar } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';

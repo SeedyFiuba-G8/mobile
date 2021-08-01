@@ -264,9 +264,7 @@ export default function ProjectVisualizationScreen(
 
                             <Divider style={styles.divider} />
 
-                            <Title style={styles.objectiveTitle}>
-                                Funding
-                            </Title>
+                            <Title style={styles.objectiveTitle}>Funding</Title>
                             <IconLabel
                                 icon='calendar'
                                 text={`Published on ${publishedDate.getDate()}/${publishedDate.getMonth()}/${publishedDate.getFullYear()}`}
@@ -293,13 +291,17 @@ export default function ProjectVisualizationScreen(
                                             ...styles.statTextMain,
                                             color: colors.primary.light,
                                         }}
-                                    >{`ETH ${project?.totalFunded}`}</Text>
+                                    >{`ETH ${project?.totalFunded.toFixed(
+                                        5
+                                    )}`}</Text>
                                     <Text
                                         style={{
                                             ...styles.statTextSecondary,
                                             color: colors.primary.light,
                                         }}
-                                    >{`out of ETH ${totalGoal}`}</Text>
+                                    >{`out of ETH ${totalGoal.toFixed(
+                                        5
+                                    )}`}</Text>
                                 </View>
                                 <View
                                     style={{
@@ -404,7 +406,9 @@ export default function ProjectVisualizationScreen(
                                     );
                                 })}
                                 <Text style={{ color: colors.darkGrey }}>
-                                    {`${project?.rating.mean} (${project?.rating.samples})`}
+                                    {`${project?.rating.mean.toFixed(2)} (${
+                                        project?.rating.samples
+                                    })`}
                                 </Text>
                             </View>
                         </View>
