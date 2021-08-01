@@ -4,11 +4,11 @@
     "slug": "SeedyFiuba",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/icons/icon.png",
-    "scheme": "myapp",
+    "icon": "./src/assets/icons/icon2.png",
+    "scheme": "seedyfiuba",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./src/assets/images/splash.png",
+      "image": "./src/assets/images/splash2.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -22,13 +22,18 @@
       "supportsTablet": true
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.seedyfiuba"
     },
     "web": {
       "favicon": "./src/assets/icons/favicon.png"
-    }
+    },
+    "facebookScheme": "fb513914706402789",
+    "facebookAppId": "513914706402789",
+    "facebookDisplayName": "SeedyFiubaG8"
   }
 }

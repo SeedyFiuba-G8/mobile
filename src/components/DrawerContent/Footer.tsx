@@ -1,52 +1,21 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-
-// Navigation
-import { DrawerContentComponentProps } from '@react-navigation/drawer';
-
+import { StyleSheet, View } from 'react-native';
 // Constants
 import colors from '../../constants/colors';
 import values from '../../constants/values';
 
-// Contexts
-import { useTheme } from '../../contexts/ThemeProvider';
-
-export default function Footer({ ...props }: DrawerContentComponentProps) {
-	const { isDarkTheme, toggleTheme } = useTheme();
-
-	const styles = React.useMemo(() => createThemedStyles(isDarkTheme), [
-		isDarkTheme,
-	]);
-
-	return (
-		<View style={styles.container}>
-			<TouchableOpacity onPress={() => toggleTheme()}>
-				<Ionicons
-					name={isDarkTheme ? 'sunny-outline' : 'moon-outline'}
-					size={40}
-					color={isDarkTheme ? colors.white : colors.black}
-					style={styles.icon}
-				/>
-			</TouchableOpacity>
-		</View>
-	);
+export default function Footer(): React.ReactElement {
+    return <View style={styles.container}></View>;
 }
 
-const createThemedStyles = (isDarkTheme: boolean) => {
-	const styles = StyleSheet.create({
-		container: {
-			alignItems: 'flex-end',
-			borderTopColor: isDarkTheme
-				? colors.separator.dark
-				: colors.separator.light,
-			borderTopWidth: values.drawer.separatorWeight,
-		},
-		icon: {
-			paddingRight: 20,
-			paddingVertical: 10,
-		},
-	});
-
-	return styles;
-};
+const styles = StyleSheet.create({
+    container: {
+        alignItems: 'flex-end',
+        borderTopColor: colors.separator.light,
+        borderTopWidth: values.drawer.separatorWeight,
+    },
+    icon: {
+        paddingRight: 20,
+        paddingVertical: 10,
+    },
+});

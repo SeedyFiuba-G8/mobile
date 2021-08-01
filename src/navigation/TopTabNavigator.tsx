@@ -6,59 +6,50 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 // Screens
 import DashboardScreen from '../screens/DashboardScreen';
 
-// Theme
-import { useTheme } from '../contexts/ThemeProvider';
-
 // Constants
 import colors from '../constants/colors';
 
 // Ts types
 import { TopTabsParamList } from '../types';
+import RecommendedProjectsScreen from '../screens/RecommendedProjectsScreen';
+import FavoriteProjectsScreen from '../screens/FavoriteProjectsScreen';
 
 const DashboardTabs = createMaterialTopTabNavigator<TopTabsParamList>();
 
-export default function DashboardTopTabs() {
-	const { isDarkTheme } = useTheme();
-
-	return (
-		<DashboardTabs.Navigator
-			initialRouteName="Magic"
-			tabBarOptions={{
-				scrollEnabled: true,
-				tabStyle: {
-					// here we should try the labels not to wrap, maybe?
-				},
-				activeTintColor: isDarkTheme
-					? colors.primary.dark
-					: colors.primary.light,
-				inactiveTintColor: isDarkTheme ? colors.white : colors.black,
-				indicatorStyle: {
-					backgroundColor: isDarkTheme
-						? colors.primary.dark
-						: colors.primary.light,
-				},
-			}}
-		>
-			<DashboardTabs.Screen
-				name="Magic"
-				component={DashboardScreen}
-				options={{ title: 'Magic' }}
-			/>
-			<DashboardTabs.Screen
-				name="Popular"
-				component={DashboardScreen}
-				options={{ title: 'Popular' }}
-			/>
-			<DashboardTabs.Screen
-				name="Newest"
-				component={DashboardScreen}
-				options={{ title: 'Newest' }}
-			/>
-			<DashboardTabs.Screen
-				name="EndingSoon"
-				component={DashboardScreen}
-				options={{ title: 'Ending Soon' }}
-			/>
-		</DashboardTabs.Navigator>
-	);
+export default function DashboardTopTabs(): React.ReactElement {
+    return (
+        <DashboardTabs.Navigator
+            initialRouteName='Recommended'
+            tabBarOptions={{
+                scrollEnabled: true,
+                tabStyle: {
+                    // here we should try the labels not to wrap, maybe?
+                },
+                activeTintColor: colors.primary.light,
+                inactiveTintColor: colors.black,
+                indicatorStyle: {
+                    backgroundColor: colors.primary.light,
+                },
+            }}
+        >
+            <DashboardTabs.Screen
+                name='Recommended'
+                component={RecommendedProjectsScreen}
+                options={{ title: 'Recommended' }}
+                initialParams={{ type: 'recommended' }}
+            />
+            <DashboardTabs.Screen
+                name='All'
+                component={DashboardScreen}
+                options={{ title: 'All Projects' }}
+                initialParams={{ type: 'all' }}
+            />
+            <DashboardTabs.Screen
+                name='Favorites'
+                component={FavoriteProjectsScreen}
+                options={{ title: 'Liked' }}
+                initialParams={{ type: 'favorites' }}
+            />
+        </DashboardTabs.Navigator>
+    );
 }
