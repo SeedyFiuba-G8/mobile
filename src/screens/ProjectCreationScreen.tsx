@@ -8,7 +8,6 @@ import {
     Divider,
     Snackbar,
     Title,
-    Avatar,
     ActivityIndicator,
     IconButton,
 } from 'react-native-paper';
@@ -50,6 +49,8 @@ import type { loadUserImageResult } from '../util/image-util';
 import firebase from 'firebase';
 import 'firebase/storage';
 import firebaseConfig from '../firebase/config';
+import IconSubtitle from '../components/Project/IconSubtitle';
+import StageItemInput from '../components/Project/StageItemInput';
 type ProjectCreationScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     'ProjectCreation'
@@ -68,96 +69,6 @@ type Props = {
 type Stage = {
     description: string;
     cost: string;
-};
-const IconSubtitle = (props: { icon: string; text: string }) => {
-    return (
-        <View style={styles.labelTitleView}>
-            <Avatar.Icon
-                icon={props.icon}
-                color={colors.primary.light}
-                style={styles.icon}
-                size={35}
-            />
-            <Title style={styles.titleSecondary}>{props.text}</Title>
-        </View>
-    );
-};
-
-const StageItem = (props: {
-    index: number;
-    totalItems: number;
-    onModifyGoal: (index: number, title: string) => void;
-    onModifyTitle: (index: number, title: string) => void;
-    onDeleteStagePress: (index: number) => void;
-    stage: Stage;
-}) => {
-    const affix = <TextInput.Affix text='ETH' />;
-    return (
-        <>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.stageText}>{`Stage ${
-                    props.index + 1
-                }`}</Text>
-                {props.totalItems > 1 ? (
-                    <IconButton
-                        icon='close-circle'
-                        style={{ margin: 0 }}
-                        color={colors.grey}
-                        size={25}
-                        onPress={() => props.onDeleteStagePress(props.index)}
-                    />
-                ) : null}
-            </View>
-            <View
-                style={{
-                    flexDirection: 'row',
-                    flex: 1,
-                    alignSelf: 'stretch',
-                    alignItems: 'center',
-                    marginRight: 32,
-                }}
-            >
-                <View
-                    style={{
-                        flexDirection: 'column',
-                        flex: 1,
-                    }}
-                >
-                    <View style={styles.goalStageView}>
-                        <TextInput
-                            style={styles.goalInput}
-                            label='Title'
-                            mode='outlined'
-                            onChangeText={(text) =>
-                                props.onModifyTitle(props.index, text)
-                            }
-                            value={props.stage.description}
-                        />
-                    </View>
-                    <View style={styles.goalStageView}>
-                        <TextInput
-                            style={styles.goalInput}
-                            mode='outlined'
-                            keyboardType='numeric'
-                            right={affix}
-                            label='Goal'
-                            onChangeText={(text) =>
-                                props.onModifyGoal(props.index, text)
-                            }
-                            value={props.stage.cost.toString()}
-                        />
-                    </View>
-                </View>
-            </View>
-            <View
-                style={{
-                    borderWidth: 0.25,
-                    height: 25,
-                    borderColor: colors.grey,
-                }}
-            ></View>
-        </>
-    );
 };
 
 type Reviewer = {
@@ -390,7 +301,7 @@ export default function ProjectCreationScreen(
             {loading ? (
                 <ActivityIndicator size='large' animating={true} />
             ) : (
-                <>
+                <View style={{ alignSelf: 'stretch', alignItems: 'center' }}>
                     <Title style={styles.titlePrimary}>Project Title</Title>
                     <TextInput
                         style={styles.input}
@@ -513,7 +424,7 @@ export default function ProjectCreationScreen(
                     <IconSubtitle icon='currency-usd' text='Goal' />
                     {stages.map((stage, index) => {
                         return (
-                            <StageItem
+                            <StageItemInput
                                 key={index}
                                 index={index}
                                 onModifyGoal={onModifyStageGoal}
@@ -549,9 +460,7 @@ export default function ProjectCreationScreen(
                         <Picker
                             style={styles.categorySelector}
                             selectedValue={country}
-                            onValueChange={(itemValue) =>
-                                setCountry(itemValue)
-                            }
+                            onValueChange={(itemValue) => setCountry(itemValue)}
                             mode='dropdown'
                             dropdownIconColor={colors.primary.light}
                         >
@@ -627,9 +536,7 @@ export default function ProjectCreationScreen(
                                     disabled={saving}
                                     loading={saving}
                                 >
-                                    <Text style={{ color: 'white' }}>
-                                        Save
-                                    </Text>
+                                    <Text style={{ color: 'white' }}>Save</Text>
                                 </Button>
                                 <Button
                                     style={styles.deleteProjectButon}
@@ -656,7 +563,7 @@ export default function ProjectCreationScreen(
                     >
                         {statusBarText}
                     </Snackbar>
-                </>
+                </View>
             )}
         </ScrollView>
     );
@@ -742,14 +649,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: colors.primary.light,
     },
-    icon: {
-        backgroundColor: 'transparent',
-    },
-    labelTitleView: {
-        flexDirection: 'row',
-        marginLeft: 30,
-        alignSelf: 'flex-start',
-    },
     subsection: {
         alignSelf: 'stretch',
         marginHorizontal: 32,
@@ -804,31 +703,6 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         marginVertical: 10,
         marginHorizontal: 36,
-    },
-    goalStageView: {
-        alignSelf: 'stretch',
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginLeft: 32,
-    },
-    goalInput: {
-        alignSelf: 'stretch',
-        flex: 1,
-        marginVertical: 10,
-        marginTop: 0,
-        backgroundColor: colors.white,
-        fontWeight: '300',
-    },
-    stageText: {
-        fontWeight: 'bold',
-        color: colors.darkGrey,
-        fontSize: 16,
-    },
-    stageItemText: {
-        color: colors.darkGrey,
-        marginRight: 4,
     },
     coverImagePreview: {
         alignSelf: 'center',
