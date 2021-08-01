@@ -5,6 +5,7 @@ import {
     DrawerContentComponentProps,
     DrawerContentOptions,
 } from '@react-navigation/drawer';
+import { logout } from '../../../session/SessionUtil';
 
 const data: DrawerItemType[] = [
     {
@@ -51,6 +52,13 @@ const data: DrawerItemType[] = [
             props: DrawerContentComponentProps<DrawerContentOptions>
         ): void => {
             props.navigation.navigate('DonationHistory');
+        },
+    },
+    {
+        label: 'Log out',
+        icon: 'logout',
+        onPress: (): void => {
+            logout();
         },
     },
 ];

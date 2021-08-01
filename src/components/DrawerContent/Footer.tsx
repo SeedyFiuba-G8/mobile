@@ -1,21 +1,26 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { Title } from 'react-native-paper';
 // Constants
 import colors from '../../constants/colors';
 import values from '../../constants/values';
 
 export default function Footer(): React.ReactElement {
-    return <View style={styles.container}></View>;
+    return (
+        <View style={styles.container}>
+            <Title style={styles.title}>SeedyFiuba</Title>
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
     container: {
-        alignItems: 'flex-end',
+        alignItems: 'center',
         borderTopColor: colors.separator.light,
         borderTopWidth: values.drawer.separatorWeight,
+        padding: 15,
     },
-    icon: {
-        paddingRight: 20,
-        paddingVertical: 10,
+    title: {
+        color: colors.darkGrey,
     },
 });
