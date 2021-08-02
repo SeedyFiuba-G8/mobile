@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { handleError, handleResponse } from './response';
 
-const BASE_URL = 'https://sf-tdp2-gateway-dev.herokuapp.com';
+const BASE_URL = 'https://sf-tdp2-gateway.herokuapp.com';
 
 export type Response<T> =
     | {
