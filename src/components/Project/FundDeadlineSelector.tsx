@@ -11,9 +11,7 @@ type Props = {
     setDate: (newDate: Date) => void;
 };
 
-export default function FundDeadlineSelector(
-    props: Props
-): React.ReactElement {
+export default function FundDeadlineSelector(props: Props): React.ReactElement {
     const [modalOpen, setOpen] = React.useState(false);
 
     const onModalDismiss = React.useCallback(() => {
@@ -46,7 +44,9 @@ export default function FundDeadlineSelector(
                 date={props.date}
                 onConfirm={onConfirm}
                 validRange={{
-                    startDate: new Date(),
+                    startDate: new Date(
+                        new Date().getTime() + 7 * 24 * 60 * 60 * 1000
+                    ),
                 }}
                 label='Select project funding deadline'
             />

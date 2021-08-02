@@ -8,7 +8,7 @@ import values from '../../constants/values';
 export default function Footer(): React.ReactElement {
     return (
         <View style={styles.container}>
-            <Title style={styles.title}>SeedyFiuba</Title>
+            <Title style={styles.title}>Seedy FIUBA</Title>
         </View>
     );
 }
