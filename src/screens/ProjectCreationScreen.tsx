@@ -88,7 +88,9 @@ export default function ProjectCreationScreen(
     }
     const [category, setCategory] = useState('');
     const [tags, setTags] = useState<Array<string>>([]);
-    const [date, setDate] = React.useState<Date>(new Date());
+    const [date, setDate] = React.useState<Date>(
+        new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
+    );
     const [title, setTitle] = React.useState('');
     const [description, setDescription] = React.useState('');
     const [objective, setObjective] = React.useState('');

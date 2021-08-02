@@ -147,6 +147,13 @@ export default function ProfileScreen(props: Props): React.ReactElement {
             setStatusBarVisible(true);
         }
     }, []);
+
+    const makeCityAndCountry = (): string | null => {
+        if (city && country) {
+            return `${city}, ${country}`;
+        }
+        return null;
+    };
     return (
         <View style={{ flex: 1 }}>
             <ScrollView contentContainerStyle={styles.container}>
@@ -238,7 +245,7 @@ export default function ProfileScreen(props: Props): React.ReactElement {
                                     country={country}
                                 />
                                 <Text style={styles.contentText}>
-                                    {`${city}, ${country}`}
+                                    {makeCityAndCountry()}
                                 </Text>
                             </View>
                         </ProfileInfoSection>
