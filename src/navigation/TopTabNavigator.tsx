@@ -20,7 +20,7 @@ const DashboardTabs = createMaterialTopTabNavigator<TopTabsParamList>();
 export default function DashboardTopTabs(): React.ReactElement {
     return (
         <DashboardTabs.Navigator
-            initialRouteName='Recommended'
+            initialRouteName='All'
             tabBarOptions={{
                 scrollEnabled: true,
                 tabStyle: {
@@ -34,16 +34,16 @@ export default function DashboardTopTabs(): React.ReactElement {
             }}
         >
             <DashboardTabs.Screen
-                name='Recommended'
-                component={RecommendedProjectsScreen}
-                options={{ title: 'Recommended' }}
-                initialParams={{ type: 'recommended' }}
-            />
-            <DashboardTabs.Screen
                 name='All'
                 component={DashboardScreen}
                 options={{ title: 'All Projects' }}
                 initialParams={{ type: 'all' }}
+            />
+            <DashboardTabs.Screen
+                name='Recommended'
+                component={RecommendedProjectsScreen}
+                options={{ title: 'Recommended' }}
+                initialParams={{ type: 'recommended' }}
             />
             <DashboardTabs.Screen
                 name='Near'
