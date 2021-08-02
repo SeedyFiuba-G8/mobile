@@ -12,8 +12,6 @@ type MyProjectsScreenNavigationProp = StackNavigationProp<
 
 type Props = {
     title: string;
-    city: string;
-    country: string;
     cover_image_uri?: string;
     description: string;
     progress: number;
@@ -27,6 +25,7 @@ type Props = {
     myProjectsNavigation?: MyProjectsScreenNavigationProp;
     dashboardNavigation?: MaterialTopTabBarProps['navigation'];
     blocked: boolean;
+    type: string;
 };
 export default function ProjectCard(props: Props): React.ReactElement {
     const onCardPress = () => {
@@ -124,25 +123,19 @@ export default function ProjectCard(props: Props): React.ReactElement {
                     );
                 case 'funding':
                     return (
-                        <View
-                            style={{ backgroundColor: colors.primary.light }}
-                        >
+                        <View style={{ backgroundColor: colors.primary.light }}>
                             <Text style={styles.statusText}>Funding</Text>
                         </View>
                     );
                 case 'completed':
                     return (
-                        <View
-                            style={{ backgroundColor: colors.primary.light }}
-                        >
+                        <View style={{ backgroundColor: colors.primary.light }}>
                             <Text style={styles.statusText}>Finished</Text>
                         </View>
                     );
                 case 'in_progress':
                     return (
-                        <View
-                            style={{ backgroundColor: colors.primary.light }}
-                        >
+                        <View style={{ backgroundColor: colors.primary.light }}>
                             <Text style={styles.statusText}>In Progress</Text>
                         </View>
                     );
@@ -167,10 +160,7 @@ export default function ProjectCard(props: Props): React.ReactElement {
                 style={styles.cover}
                 source={{ uri: props.cover_image_uri }}
             />
-            <Card.Title
-                title={props.title}
-                subtitle={`${props.city}, ${props.country}`}
-            />
+            <Card.Title title={props.title} subtitle={`${props.type}`} />
             <Card.Content>
                 <Text>{props.description}</Text>
             </Card.Content>

@@ -11,8 +11,7 @@ import ProjectStagesModal from './ProjectStagesModal';
 
 type Props = {
     title: string;
-    city: string;
-    country: string;
+    type: string;
     cover_image_uri?: string;
     description: string;
     projectId: string;
@@ -56,10 +55,7 @@ export default function ReviewedProjectCard(props: Props): React.ReactElement {
                 style={styles.cover}
                 source={{ uri: props.cover_image_uri }}
             />
-            <Card.Title
-                title={props.title}
-                subtitle={`${props.city}, ${props.country}`}
-            />
+            <Card.Title title={props.title} subtitle={`${props.type}`} />
             <Card.Content>
                 <Text>{props.description}</Text>
                 <View
@@ -88,9 +84,9 @@ export default function ReviewedProjectCard(props: Props): React.ReactElement {
                                 }}
                             >
                                 {!projectIsFinished
-                                    ? `Stage ${
-                                          props.currentStage + 1
-                                      } out of ${props.stages.length}`
+                                    ? `Stage ${props.currentStage + 1} out of ${
+                                          props.stages.length
+                                      }`
                                     : 'Project Finished'}
                             </Text>
                             {!allStagesReleased && !projectIsFinished ? (

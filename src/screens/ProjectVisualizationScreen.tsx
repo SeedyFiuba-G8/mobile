@@ -238,10 +238,6 @@ export default function ProjectVisualizationScreen(
                                     />
                                 </View>
                             </View>
-                            <IconLabel
-                                icon='map-marker'
-                                text={`Created in ${project?.city}, ${project?.country}`}
-                            />
                             <IconLabel icon='tag' text={project?.type ?? ''} />
                             <IconLabel
                                 icon='account'

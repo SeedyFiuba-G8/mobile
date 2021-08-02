@@ -30,8 +30,6 @@ export default function ReviewedProjectList(props: Props): React.ReactElement {
                         <ReviewedProjectCard
                             key={index}
                             title={project.title}
-                            city={project.city}
-                            country={project.country}
                             cover_image_uri={project.coverPicUrl}
                             description={project.description}
                             projectId={project.id}
@@ -40,6 +38,7 @@ export default function ReviewedProjectList(props: Props): React.ReactElement {
                             currentStage={project.currentStage}
                             approvedStage={project.approvedStage}
                             status={project.status}
+                            type={project.type}
                         />
                     );
                 })

@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-    StyleSheet,
-    View,
-    ScrollView,
-    RefreshControl,
-    DeviceEventEmitter,
-} from 'react-native';
+import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native';
 import { FAB } from 'react-native-paper';
 
 // Components
@@ -83,20 +77,6 @@ export default function DashboardScreen({
     useEffect(() => {
         onRefresh();
     }, []);
-
-    useEffect(() => {
-        DeviceEventEmitter.addListener(
-            'viewProject',
-            (data: { projectId: string }) => {
-                navigation.navigate('ProjectVisualization', {
-                    projectId: data.projectId,
-                });
-            }
-        );
-        return () => {
-            DeviceEventEmitter.removeAllListeners('viewProject');
-        };
-    });
 
     return (
         <View style={styles.container}>

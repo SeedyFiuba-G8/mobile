@@ -13,6 +13,7 @@ import colors from '../constants/colors';
 import { TopTabsParamList } from '../types';
 import RecommendedProjectsScreen from '../screens/RecommendedProjectsScreen';
 import FavoriteProjectsScreen from '../screens/FavoriteProjectsScreen';
+import NearProjectsScreen from '../screens/NearProjectsScreen';
 
 const DashboardTabs = createMaterialTopTabNavigator<TopTabsParamList>();
 
@@ -43,6 +44,12 @@ export default function DashboardTopTabs(): React.ReactElement {
                 component={DashboardScreen}
                 options={{ title: 'All Projects' }}
                 initialParams={{ type: 'all' }}
+            />
+            <DashboardTabs.Screen
+                name='Near'
+                component={NearProjectsScreen}
+                options={{ title: 'Near you' }}
+                initialParams={{ type: 'near' }}
             />
             <DashboardTabs.Screen
                 name='Favorites'

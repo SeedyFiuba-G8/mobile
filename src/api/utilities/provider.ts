@@ -95,13 +95,9 @@ const patch = async <T, P>(
     skipTokenCheck = false
 ): Promise<Response<T>> => {
     try {
-        const response = await axios.patch(
-            `${BASE_URL}/${resource}`,
-            payload,
-            {
-                ...options,
-            }
-        );
+        const response = await axios.patch(`${BASE_URL}/${resource}`, payload, {
+            ...options,
+        });
         const data = handleResponse<T>(response);
         return {
             successful: true,

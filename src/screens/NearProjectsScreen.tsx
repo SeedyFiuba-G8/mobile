@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native';
-import { FAB } from 'react-native-paper';
+import { FAB, Text } from 'react-native-paper';
 
 // Components
 import ProjectList from '../components/Project/ProjectList';
@@ -8,13 +8,14 @@ import ProjectList from '../components/Project/ProjectList';
 // Navigation
 import { MaterialTopTabBarProps } from '@react-navigation/material-top-tabs';
 // Types
-import { getLikedProjects, Project } from '../api/projectsApi';
+import { getNearProjects, Project } from '../api/projectsApi';
 
 // APIs
 import colors from '../constants/colors';
+import * as Location from 'expo-location';
 
 // Image Management
-export default function FavoriteProjectsScreen({
+export default function NearProjectsScreen({
     navigation,
 }: MaterialTopTabBarProps): React.ReactElement {
     const [refreshing, setRefreshing] = React.useState(false);
@@ -24,6 +25,7 @@ export default function FavoriteProjectsScreen({
             edition: false,
         });
     };
+    const [locationGranted, setLocationGranted] = useState(false);
 
     useEffect(() => {
         onRefresh();
@@ -31,7 +33,20 @@ export default function FavoriteProjectsScreen({
 
     const onRefresh = async () => {
         setRefreshing(true);
-        const projects = await getLikedProjects();
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            setLocationGranted(false);
+            setRefreshing(false);
+            return;
+        }
+        setLocationGranted(true);
+
+        const location = await Location.getCurrentPositionAsync();
+        const projects = await getNearProjects(
+            location.coords.latitude,
+            location.coords.longitude,
+            50
+        );
 
         if (projects.successful) {
             setProjects(
@@ -59,14 +74,27 @@ export default function FavoriteProjectsScreen({
                 }
                 contentContainerStyle={styles.scrollContainer}
             >
-                <ProjectList
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                    projects={projects}
-                    showStatus={false}
-                    showAdvanceStageButton={false}
-                    dashboardNavigation={navigation}
-                />
+                {locationGranted ? (
+                    <ProjectList
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        projects={projects}
+                        showStatus={false}
+                        showAdvanceStageButton={false}
+                        dashboardNavigation={navigation}
+                    />
+                ) : (
+                    <View
+                        style={{
+                            margin: 20,
+                        }}
+                    >
+                        <Text style={{ color: colors.darkGrey }}>
+                            SeedyFiuba needs access to your location to show you
+                            projects near you.
+                        </Text>
+                    </View>
+                )}
             </ScrollView>
             <FAB
                 style={styles.fab}

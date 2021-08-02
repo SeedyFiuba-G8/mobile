@@ -19,9 +19,9 @@ export type Project = {
     description: string;
     type: string;
     objective: string;
-    country: string;
-    city: string;
     publishedOn: string;
+    lat: number;
+    long: number;
     finalizedBy: string;
     tags: Array<string>;
     status: string;
@@ -76,8 +76,6 @@ export type ReviewRequest = {
     description: string;
     type: string;
     objective: string;
-    country: string;
-    city: string;
     publishedOn: string;
     finalizedBy: string;
     status: string;
@@ -95,15 +93,16 @@ type ProjectRequestPayload =
     | { status?: string; type?: string; tags?: Array<string> }
     | { reviewerId: string }
     | { recommended: boolean }
-    | { onlyFavorites: boolean };
+    | { onlyFavorites: boolean }
+    | { lat: number; long: number; radius: number };
 
 type ProjectCreationRequestPayload = {
     title: string;
     description: string;
     type: string;
     objective: string;
-    country: string;
-    city: string;
+    lat?: number;
+    long?: number;
     finalizedBy: string;
     tags: Array<string>;
     reviewers: Array<string>;
@@ -116,8 +115,6 @@ type ProjectEditionRequestPayload = {
     description: string;
     type: string;
     objective: string;
-    country: string;
-    city: string;
     finalizedBy: string;
     tags: Array<string>;
     reviewers: Array<string>;
@@ -191,6 +188,23 @@ const getLikedProjects = async (): Promise<
     return apiResponse;
 };
 
+const getNearProjects = async (
+    lat: number,
+    long: number,
+    radius: number
+): Promise<Response<GetProjectsApiResponse>> => {
+    const authToken = store.getState().session.token;
+    const apiResponse = apiProvider.get<
+        GetProjectsApiResponse,
+        ProjectRequestPayload
+    >(
+        'projects',
+        { lat: lat, long: long, radius: radius },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+    );
+    return apiResponse;
+};
+
 const getUserProjects = async (
     userId: string
 ): Promise<Response<GetProjectsApiResponse>> => {
@@ -226,12 +240,12 @@ const createProject = async (
     description: string,
     type: string,
     objective: string,
-    country: string,
-    city: string,
     finalizedBy: string,
     tags: Array<string>,
     reviewers: Array<string>,
     stages: Array<Stage>,
+    lat?: number,
+    long?: number,
     coverPicUrl?: string
 ): Promise<Response<ProjectCreationApiResponse>> => {
     const authToken = store.getState().session.token;
@@ -245,13 +259,13 @@ const createProject = async (
             description: description,
             type: type,
             objective: objective,
-            country: country,
-            city: city,
             finalizedBy: finalizedBy,
             tags: tags,
             reviewers: reviewers,
             coverPicUrl: coverPicUrl,
             stages: stages,
+            lat: lat,
+            long: long,
         },
         { headers: { Authorization: `Bearer ${authToken}` } }
     );
@@ -264,8 +278,6 @@ const updateProject = async (
     description: string,
     type: string,
     objective: string,
-    country: string,
-    city: string,
     finalizedBy: string,
     tags: Array<string>,
     reviewers: Array<string>,
@@ -282,8 +294,6 @@ const updateProject = async (
             description: description,
             type: type,
             objective: objective,
-            country: country,
-            city: city,
             finalizedBy: finalizedBy,
             tags: tags,
             reviewers: reviewers,
@@ -465,4 +475,5 @@ export {
     rateProject,
     getRecommendedProjects,
     getLikedProjects,
+    getNearProjects,
 };

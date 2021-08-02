@@ -40,6 +40,7 @@ export type TopTabsParamList = {
     Recommended: { type: 'recommended' };
     All: { type: 'all' };
     Favorites: { type: 'favorites' };
+    Near: { type: 'near' };
 };
 
 export type ReviewerCenterTabParamList = {
