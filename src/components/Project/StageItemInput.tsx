@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { IconButton, Text, TextInput } from 'react-native-paper';
 import colors from '../../constants/colors';
@@ -18,8 +18,6 @@ type Props = {
 
 export default function StageItem(props: Props): React.ReactElement {
     const affix = <TextInput.Affix text='ETH' />;
-    const [error, setError] = useState(false);
-
     const hasError = () => parseFloat(props.stage.cost) === 0;
     return (
         <>
