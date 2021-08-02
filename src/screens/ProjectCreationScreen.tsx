@@ -8,7 +8,6 @@ import {
     Divider,
     Snackbar,
     Title,
-    Avatar,
     ActivityIndicator,
     IconButton,
 } from 'react-native-paper';
@@ -33,7 +32,6 @@ import {
 // Hooks
 
 // Types
-import { countries } from 'countries-list';
 import { RootStackParamList } from '../types';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -50,6 +48,11 @@ import type { loadUserImageResult } from '../util/image-util';
 import firebase from 'firebase';
 import 'firebase/storage';
 import firebaseConfig from '../firebase/config';
+import IconSubtitle from '../components/Project/IconSubtitle';
+import StageItemInput from '../components/Project/StageItemInput';
+import * as Location from 'expo-location';
+import { LocationObject } from 'expo-location';
+
 type ProjectCreationScreenNavigationProp = StackNavigationProp<
     RootStackParamList,
     'ProjectCreation'
@@ -68,96 +71,6 @@ type Props = {
 type Stage = {
     description: string;
     cost: string;
-};
-const IconSubtitle = (props: { icon: string; text: string }) => {
-    return (
-        <View style={styles.labelTitleView}>
-            <Avatar.Icon
-                icon={props.icon}
-                color={colors.primary.light}
-                style={styles.icon}
-                size={35}
-            />
-            <Title style={styles.titleSecondary}>{props.text}</Title>
-        </View>
-    );
-};
-
-const StageItem = (props: {
-    index: number;
-    totalItems: number;
-    onModifyGoal: (index: number, title: string) => void;
-    onModifyTitle: (index: number, title: string) => void;
-    onDeleteStagePress: (index: number) => void;
-    stage: Stage;
-}) => {
-    const affix = <TextInput.Affix text='ETH' />;
-    return (
-        <>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={styles.stageText}>{`Stage ${
-                    props.index + 1
-                }`}</Text>
-                {props.totalItems > 1 ? (
-                    <IconButton
-                        icon='close-circle'
-                        style={{ margin: 0 }}
-                        color={colors.grey}
-                        size={25}
-                        onPress={() => props.onDeleteStagePress(props.index)}
-                    />
-                ) : null}
-            </View>
-            <View
-                style={{
-                    flexDirection: 'row',
-                    flex: 1,
-                    alignSelf: 'stretch',
-                    alignItems: 'center',
-                    marginRight: 32,
-                }}
-            >
-                <View
-                    style={{
-                        flexDirection: 'column',
-                        flex: 1,
-                    }}
-                >
-                    <View style={styles.goalStageView}>
-                        <TextInput
-                            style={styles.goalInput}
-                            label='Title'
-                            mode='outlined'
-                            onChangeText={(text) =>
-                                props.onModifyTitle(props.index, text)
-                            }
-                            value={props.stage.description}
-                        />
-                    </View>
-                    <View style={styles.goalStageView}>
-                        <TextInput
-                            style={styles.goalInput}
-                            mode='outlined'
-                            keyboardType='numeric'
-                            right={affix}
-                            label='Goal'
-                            onChangeText={(text) =>
-                                props.onModifyGoal(props.index, text)
-                            }
-                            value={props.stage.cost.toString()}
-                        />
-                    </View>
-                </View>
-            </View>
-            <View
-                style={{
-                    borderWidth: 0.25,
-                    height: 25,
-                    borderColor: colors.grey,
-                }}
-            ></View>
-        </>
-    );
 };
 
 type Reviewer = {
@@ -185,8 +98,6 @@ export default function ProjectCreationScreen(
 
     const [statusBarVisible, setStatusBarVisible] = useState(false);
     const [statusBarText, setStatusBarText] = useState('');
-    const [city, setCity] = useState('');
-    const [country, setCountry] = useState('');
     const [reviewers, setReviewers] = useState<Array<Reviewer>>([]);
 
     const [image, setImage] = useState<loadUserImageResult>();
@@ -196,6 +107,8 @@ export default function ProjectCreationScreen(
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [publishing, setPublishing] = useState(false);
+
+    const [location, setLocation] = useState<LocationObject>();
 
     const onEditProjectLoad = async () => {
         setLoading(true);
@@ -210,8 +123,6 @@ export default function ProjectCreationScreen(
                 setObjective(project_temp.objective);
                 setDate(new Date(project_temp.finalizedBy));
                 setCategory(project_temp.type);
-                setCity(project_temp.city);
-                setCountry(project_temp.country);
                 setTags(project_temp.tags);
                 setReviewers(project_temp.reviewers);
                 setStages(
@@ -243,6 +154,23 @@ export default function ProjectCreationScreen(
         onEditProjectLoad();
     }, [props.route.params.edition]);
 
+    useEffect(() => {
+        const getLocation = async () => {
+            const { status } =
+                await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                setStatusBarText(
+                    'SeedyFiuba has no access to your location. Your project will not be listed in geographic searches.'
+                );
+                setStatusBarVisible(true);
+                return;
+            }
+            const location = await Location.getCurrentPositionAsync();
+            setLocation(location);
+        };
+        getLocation();
+    }, []);
+
     const onCreateButtonPress = async () => {
         setCreating(true);
         const coverImageURL = await uploadImage();
@@ -251,8 +179,6 @@ export default function ProjectCreationScreen(
             description,
             category,
             objective,
-            country,
-            city,
             date.toJSON(),
             tags,
             reviewers.map((reviewer) => reviewer.email),
@@ -262,6 +188,8 @@ export default function ProjectCreationScreen(
                     description: stage.description,
                 };
             }),
+            location?.coords.latitude,
+            location?.coords.longitude,
             coverImageURL
         );
         setCreating(false);
@@ -285,8 +213,6 @@ export default function ProjectCreationScreen(
                 description,
                 category,
                 objective,
-                country,
-                city,
                 date.toJSON(),
                 tags,
                 reviewers
@@ -383,282 +309,255 @@ export default function ProjectCreationScreen(
         (reviewer) => reviewer.status === 'ACCEPTED'
     );
     return (
-        <ScrollView
-            style={{ flex: 1 }}
-            contentContainerStyle={styles.container}
-        >
-            {loading ? (
-                <ActivityIndicator size='large' animating={true} />
-            ) : (
-                <>
-                    <Title style={styles.titlePrimary}>Project Title</Title>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={(newTitle) => setTitle(newTitle)}
-                        value={title}
-                        mode='outlined'
-                        placeholder='Give your project a name'
-                    />
-                    <IconSubtitle icon='bullseye-arrow' text='Objective' />
-                    <TextInput
-                        style={styles.descriptionInput}
-                        multiline={true}
-                        onChangeText={(newObjective) =>
-                            setObjective(newObjective)
-                        }
-                        mode='outlined'
-                        placeholder='Briefly describe what you hope to accomplish'
-                        numberOfLines={5}
-                        value={objective}
-                    />
-
-                    <IconSubtitle icon='text' text='Description' />
-                    <TextInput
-                        style={styles.descriptionInput}
-                        multiline={true}
-                        onChangeText={(newDescription) =>
-                            setDescription(newDescription)
-                        }
-                        mode='outlined'
-                        placeholder='Give a more detailed description of your project'
-                        numberOfLines={10}
-                        value={description}
-                    />
-
-                    <IconSubtitle icon='image' text='Cover Image' />
+        <>
+            <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={styles.container}
+            >
+                {loading ? (
+                    <ActivityIndicator size='large' animating={true} />
+                ) : (
                     <View
-                        style={{
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            alignSelf: 'stretch',
-                            marginHorizontal: 28,
-                            flexDirection: 'row',
-                        }}
+                        style={{ alignSelf: 'stretch', alignItems: 'center' }}
                     >
-                        {!image ? (
-                            <>
-                                <Button
-                                    icon='image-plus'
-                                    color={colors.darkerGrey}
-                                    onPress={onSelectCoverImagePress}
-                                    labelStyle={{ fontSize: 14 }}
-                                >
-                                    Add Image
-                                </Button>
-                            </>
-                        ) : (
-                            <>
-                                <Button
-                                    icon='image-edit'
-                                    color={colors.darkerGrey}
-                                    labelStyle={{ fontSize: 14 }}
-                                    onPress={onSelectCoverImagePress}
-                                >
-                                    Change
-                                </Button>
-                                <Button
-                                    icon='image-remove'
-                                    color={colors.red}
-                                    labelStyle={{ fontSize: 14 }}
-                                    onPress={onRemoveImagePress}
-                                >
-                                    Remove
-                                </Button>
-                            </>
-                        )}
-                    </View>
-                    {image ? (
-                        <Image
-                            source={{
-                                uri: image.uri,
-                            }}
-                            style={styles.coverImagePreview}
+                        <Title style={styles.titlePrimary}>Project Title</Title>
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(newTitle) => setTitle(newTitle)}
+                            value={title}
+                            mode='outlined'
+                            placeholder='Give your project a name'
                         />
-                    ) : null}
-
-                    <Divider style={styles.divider} />
-                    <IconSubtitle icon='shape' text='Category' />
-                    <View style={styles.subsection}>
-                        <Picker
-                            style={styles.categorySelector}
-                            selectedValue={category}
-                            onValueChange={(itemValue) =>
-                                setCategory(itemValue)
+                        <IconSubtitle icon='bullseye-arrow' text='Objective' />
+                        <TextInput
+                            style={styles.descriptionInput}
+                            multiline={true}
+                            onChangeText={(newObjective) =>
+                                setObjective(newObjective)
                             }
-                            mode='dropdown'
+                            mode='outlined'
+                            placeholder='Briefly describe what you hope to accomplish'
+                            numberOfLines={5}
+                            value={objective}
+                        />
+
+                        <IconSubtitle icon='text' text='Description' />
+                        <TextInput
+                            style={styles.descriptionInput}
+                            multiline={true}
+                            onChangeText={(newDescription) =>
+                                setDescription(newDescription)
+                            }
+                            mode='outlined'
+                            placeholder='Give a more detailed description of your project'
+                            numberOfLines={10}
+                            value={description}
+                        />
+
+                        <IconSubtitle icon='image' text='Cover Image' />
+                        <View
+                            style={{
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                alignSelf: 'stretch',
+                                marginHorizontal: 28,
+                                flexDirection: 'row',
+                            }}
                         >
-                            {categories.map((category, index) => {
-                                return (
-                                    <Picker.Item
-                                        label={category}
-                                        value={category}
-                                        key={index}
-                                    />
-                                );
-                            })}
-                        </Picker>
-                    </View>
-
-                    <IconSubtitle icon='tag' text='Tags' />
-                    <View style={styles.subsection}>
-                        <TagAdder tags={tags} setTags={setTags} />
-                    </View>
-
-                    <Divider
-                        style={{
-                            alignSelf: 'stretch',
-                            margin: 10,
-                        }}
-                    />
-                    <IconSubtitle icon='currency-usd' text='Goal' />
-                    {stages.map((stage, index) => {
-                        return (
-                            <StageItem
-                                key={index}
-                                index={index}
-                                onModifyGoal={onModifyStageGoal}
-                                onModifyTitle={onModifyStageTitle}
-                                totalItems={stages.length}
-                                onDeleteStagePress={onDeleteStagePress}
-                                stage={stages[index]}
+                            {!image ? (
+                                <>
+                                    <Button
+                                        icon='image-plus'
+                                        color={colors.darkerGrey}
+                                        onPress={onSelectCoverImagePress}
+                                        labelStyle={{ fontSize: 14 }}
+                                    >
+                                        Add Image
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Button
+                                        icon='image-edit'
+                                        color={colors.darkerGrey}
+                                        labelStyle={{ fontSize: 14 }}
+                                        onPress={onSelectCoverImagePress}
+                                    >
+                                        Change
+                                    </Button>
+                                    <Button
+                                        icon='image-remove'
+                                        color={colors.red}
+                                        labelStyle={{ fontSize: 14 }}
+                                        onPress={onRemoveImagePress}
+                                    >
+                                        Remove
+                                    </Button>
+                                </>
+                            )}
+                        </View>
+                        {image ? (
+                            <Image
+                                source={{
+                                    uri: image.uri,
+                                }}
+                                style={styles.coverImagePreview}
                             />
-                        );
-                    })}
-                    <IconButton
-                        icon='plus-circle-outline'
-                        color={colors.darkGrey}
-                        size={30}
-                        onPress={onAddStagePress}
-                    />
+                        ) : null}
 
-                    <Divider
-                        style={{
-                            alignSelf: 'stretch',
-                            margin: 10,
-                        }}
-                    />
-                    <IconSubtitle icon='calendar' text='Deadline' />
-                    <View style={styles.subsection}>
-                        <FundDeadlineSelector date={date} setDate={setDate} />
-                    </View>
-
-                    <Divider style={styles.divider} />
-                    <IconSubtitle icon='map-marker' text='Location' />
-                    <View style={styles.subsection}>
-                        <Text style={styles.subtitle}>Country</Text>
-                        <Picker
-                            style={styles.categorySelector}
-                            selectedValue={country}
-                            onValueChange={(itemValue) =>
-                                setCountry(itemValue)
-                            }
-                            mode='dropdown'
-                            dropdownIconColor={colors.primary.light}
-                        >
-                            {Object.values(countries)
-                                .sort((a, b) => (a.name > b.name ? 1 : -1))
-                                .map((country, index) => {
+                        <Divider style={styles.divider} />
+                        <IconSubtitle icon='shape' text='Category' />
+                        <View style={styles.subsection}>
+                            <Picker
+                                style={styles.categorySelector}
+                                selectedValue={category}
+                                onValueChange={(itemValue) =>
+                                    setCategory(itemValue)
+                                }
+                                mode='dropdown'
+                            >
+                                {categories.map((category, index) => {
                                     return (
                                         <Picker.Item
-                                            label={country.name}
-                                            value={country.name}
+                                            label={category}
+                                            value={category}
                                             key={index}
                                         />
                                     );
                                 })}
-                        </Picker>
-                    </View>
+                            </Picker>
+                        </View>
 
-                    <TextInput
-                        style={styles.input}
-                        label='City'
-                        mode='outlined'
-                        onChangeText={(city) => setCity(city)}
-                        value={city}
-                    />
-                    <Divider style={styles.divider} />
-                    <IconSubtitle icon='shield-account' text='Reviewers' />
-                    <View style={{ ...styles.subsection, padding: 5 }}>
-                        <ReviewerList
-                            reviewers={reviewers}
-                            setReviewers={setReviewers}
-                            showStatus={props.route.params.edition}
+                        <IconSubtitle icon='tag' text='Tags' />
+                        <View style={styles.subsection}>
+                            <TagAdder tags={tags} setTags={setTags} />
+                        </View>
+
+                        <Divider
+                            style={{
+                                alignSelf: 'stretch',
+                                margin: 10,
+                            }}
                         />
-                    </View>
-                    {!props.route.params.edition ? (
-                        <Button
-                            style={styles.button}
-                            onPress={onCreateButtonPress}
-                            loading={creating}
-                            color={colors.primary.light}
-                            disabled={creating}
-                            icon='lightbulb'
-                            mode='contained'
-                        >
-                            <Text style={{ color: 'white' }}>Create</Text>
-                        </Button>
-                    ) : (
-                        <>
+                        <IconSubtitle icon='currency-usd' text='Goal' />
+                        {stages.map((stage, index) => {
+                            return (
+                                <StageItemInput
+                                    key={index}
+                                    index={index}
+                                    onModifyGoal={onModifyStageGoal}
+                                    onModifyTitle={onModifyStageTitle}
+                                    totalItems={stages.length}
+                                    onDeleteStagePress={onDeleteStagePress}
+                                    stage={stages[index]}
+                                />
+                            );
+                        })}
+                        <IconButton
+                            icon='plus-circle-outline'
+                            color={colors.darkGrey}
+                            size={30}
+                            onPress={onAddStagePress}
+                        />
+
+                        <Divider
+                            style={{
+                                alignSelf: 'stretch',
+                                margin: 10,
+                            }}
+                        />
+                        <IconSubtitle icon='calendar' text='Deadline' />
+                        <View style={styles.subsection}>
+                            <FundDeadlineSelector
+                                date={date}
+                                setDate={setDate}
+                            />
+                        </View>
+
+                        <Divider style={styles.divider} />
+                        <IconSubtitle icon='shield-account' text='Reviewers' />
+                        <View style={{ ...styles.subsection, padding: 5 }}>
+                            <ReviewerList
+                                reviewers={reviewers}
+                                setReviewers={setReviewers}
+                                showStatus={props.route.params.edition}
+                            />
+                        </View>
+                        {!props.route.params.edition ? (
                             <Button
-                                style={styles.publishButton}
-                                disabled={!isPublishable || publishing}
-                                loading={publishing}
-                                icon='send'
+                                style={styles.button}
+                                onPress={onCreateButtonPress}
+                                loading={creating}
                                 color={colors.primary.light}
-                                onPress={onPublishButtonPress}
+                                disabled={creating}
+                                icon='lightbulb'
                                 mode='contained'
                             >
-                                <Text
-                                    style={{
-                                        color: 'white',
-                                        fontWeight: 'bold',
-                                    }}
-                                >
-                                    Publish
-                                </Text>
+                                <Text style={{ color: 'white' }}>Create</Text>
                             </Button>
-                            <View style={styles.editButtonView}>
+                        ) : (
+                            <>
                                 <Button
-                                    style={styles.confirmChangesButton}
-                                    onPress={onConfirmChangesButtonPress}
-                                    icon='content-save'
+                                    style={styles.publishButton}
+                                    disabled={!isPublishable || publishing}
+                                    loading={publishing}
+                                    icon='send'
                                     color={colors.primary.light}
+                                    onPress={onPublishButtonPress}
                                     mode='contained'
-                                    disabled={saving}
-                                    loading={saving}
                                 >
-                                    <Text style={{ color: 'white' }}>
-                                        Save
+                                    <Text
+                                        style={{
+                                            color: 'white',
+                                            fontWeight: 'bold',
+                                        }}
+                                    >
+                                        Publish
                                     </Text>
                                 </Button>
-                                <Button
-                                    style={styles.deleteProjectButon}
-                                    onPress={onDeleteButtonPress}
-                                    icon='delete'
-                                    color={colors.red}
-                                    mode='contained'
-                                    labelStyle={{ color: 'white' }}
-                                    disabled={deleting}
-                                    loading={deleting}
-                                >
-                                    <Text style={{ color: 'white' }}>
-                                        Delete
-                                    </Text>
-                                </Button>
-                            </View>
-                        </>
-                    )}
-                    <Snackbar
-                        visible={statusBarVisible}
-                        onDismiss={() => {
-                            setStatusBarVisible(false);
-                        }}
-                    >
-                        {statusBarText}
-                    </Snackbar>
-                </>
-            )}
-        </ScrollView>
+                                <View style={styles.editButtonView}>
+                                    <Button
+                                        style={styles.confirmChangesButton}
+                                        onPress={onConfirmChangesButtonPress}
+                                        icon='content-save'
+                                        color={colors.primary.light}
+                                        mode='contained'
+                                        disabled={saving}
+                                        loading={saving}
+                                    >
+                                        <Text style={{ color: 'white' }}>
+                                            Save
+                                        </Text>
+                                    </Button>
+                                    <Button
+                                        style={styles.deleteProjectButon}
+                                        onPress={onDeleteButtonPress}
+                                        icon='delete'
+                                        color={colors.red}
+                                        mode='contained'
+                                        labelStyle={{ color: 'white' }}
+                                        disabled={deleting}
+                                        loading={deleting}
+                                    >
+                                        <Text style={{ color: 'white' }}>
+                                            Delete
+                                        </Text>
+                                    </Button>
+                                </View>
+                            </>
+                        )}
+                    </View>
+                )}
+            </ScrollView>
+            <Snackbar
+                visible={statusBarVisible}
+                onDismiss={() => {
+                    setStatusBarVisible(false);
+                }}
+            >
+                {statusBarText}
+            </Snackbar>
+        </>
     );
 }
 
@@ -742,14 +641,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: colors.primary.light,
     },
-    icon: {
-        backgroundColor: 'transparent',
-    },
-    labelTitleView: {
-        flexDirection: 'row',
-        marginLeft: 30,
-        alignSelf: 'flex-start',
-    },
     subsection: {
         alignSelf: 'stretch',
         marginHorizontal: 32,
@@ -804,31 +695,6 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         marginVertical: 10,
         marginHorizontal: 36,
-    },
-    goalStageView: {
-        alignSelf: 'stretch',
-        flex: 1,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginLeft: 32,
-    },
-    goalInput: {
-        alignSelf: 'stretch',
-        flex: 1,
-        marginVertical: 10,
-        marginTop: 0,
-        backgroundColor: colors.white,
-        fontWeight: '300',
-    },
-    stageText: {
-        fontWeight: 'bold',
-        color: colors.darkGrey,
-        fontSize: 16,
-    },
-    stageItemText: {
-        color: colors.darkGrey,
-        marginRight: 4,
     },
     coverImagePreview: {
         alignSelf: 'center',

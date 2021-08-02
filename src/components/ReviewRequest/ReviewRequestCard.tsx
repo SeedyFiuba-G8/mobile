@@ -13,8 +13,6 @@ import type { Stage } from '../../api/projectsApi';
 
 type Props = {
     title: string;
-    city: string;
-    country: string;
     cover_image_uri: string;
     description: string;
     projectId: string;
@@ -56,10 +54,7 @@ export default function ReviewRequestCard(props: Props): React.ReactElement {
                 style={styles.cover}
                 source={{ uri: props.cover_image_uri }}
             />
-            <Card.Title
-                title={props.title}
-                subtitle={`${props.city}, ${props.country}`}
-            />
+            <Card.Title title={props.title} />
             <Card.Content>
                 <Text>{props.description}</Text>
             </Card.Content>

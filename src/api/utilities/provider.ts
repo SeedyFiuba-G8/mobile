@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { handleError, handleResponse } from './response';
 
-const BASE_URL = 'https://sf-tdp2-gateway-dev.herokuapp.com';
+const BASE_URL = 'https://sf-tdp2-gateway.herokuapp.com';
 
 export type Response<T> =
     | {
@@ -95,13 +95,9 @@ const patch = async <T, P>(
     skipTokenCheck = false
 ): Promise<Response<T>> => {
     try {
-        const response = await axios.patch(
-            `${BASE_URL}/${resource}`,
-            payload,
-            {
-                ...options,
-            }
-        );
+        const response = await axios.patch(`${BASE_URL}/${resource}`, payload, {
+            ...options,
+        });
         const data = handleResponse<T>(response);
         return {
             successful: true,

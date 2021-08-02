@@ -17,10 +17,7 @@ const logout = async (): Promise<void> => {
     store.dispatch(updateLoginStatusAction(LoggingInFlowState.NotLoggedIn));
 };
 
-const persistSessionData = async (
-    id: string,
-    token: string
-): Promise<void> => {
+const persistSessionData = async (id: string, token: string): Promise<void> => {
     try {
         await AsyncStorage.setItem('id', id);
         await AsyncStorage.setItem('token', token);

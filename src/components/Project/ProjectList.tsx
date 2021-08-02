@@ -38,8 +38,6 @@ export default function ProjectList(props: Props): React.ReactElement {
                         <ProjectCard
                             key={index}
                             title={project.title}
-                            city={project.city}
-                            country={project.country}
                             cover_image_uri={project.coverPicUrl}
                             description={project.description}
                             progress={project.totalFunded / totalFunds}
@@ -55,6 +53,7 @@ export default function ProjectList(props: Props): React.ReactElement {
                             myProjectsNavigation={props.myProjectsNavigation}
                             dashboardNavigation={props.dashboardNavigation}
                             blocked={project.blocked}
+                            type={project.type}
                         />
                     );
                 })

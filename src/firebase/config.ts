@@ -1,5 +1,5 @@
 const firebaseConfig = {
-    apiKey: 'AIzaSyALZca6YXuhuSGh5SA9bOOCHWSfRwgSNEg',
+    apiKey: process.env.FIREBASE_KEY,
     authDomain: 'seedyfiubag8-81297.firebaseapp.com',
     projectId: 'seedyfiubag8-81297',
     storageBucket: 'seedyfiubag8-81297.appspot.com',

@@ -30,8 +30,6 @@ export default function ReviewRequestList(props: Props): React.ReactElement {
                         <ReviewRequestCard
                             key={index}
                             title={reviewRequest.title}
-                            city={reviewRequest.city}
-                            country={reviewRequest.country}
                             cover_image_uri={reviewRequest.coverPicUrl}
                             description={reviewRequest.description}
                             projectId={reviewRequest.projectId}
