@@ -163,7 +163,8 @@ export default function SignInScreen(props: Props): React.ReactElement {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        paddingTop: 70,
+        paddingBottom: 100,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: colors.white,

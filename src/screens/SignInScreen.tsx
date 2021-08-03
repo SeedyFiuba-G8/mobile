@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { Snackbar } from 'react-native-paper';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -62,7 +62,9 @@ export default function SignInScreen(props: Props): React.ReactElement {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        paddingBottom: 100,
+        paddingTop: 70,
+        alignSelf: 'stretch',
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: colors.white,
