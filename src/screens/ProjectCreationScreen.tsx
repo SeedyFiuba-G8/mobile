@@ -86,7 +86,7 @@ export default function ProjectCreationScreen(
     } else {
         firebase.app();
     }
-    const [category, setCategory] = useState('');
+    const [category, setCategory] = useState(categories[0]);
     const [tags, setTags] = useState<Array<string>>([]);
     const [date, setDate] = React.useState<Date>(
         new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000)
@@ -322,7 +322,9 @@ export default function ProjectCreationScreen(
                     <View
                         style={{ alignSelf: 'stretch', alignItems: 'center' }}
                     >
-                        <Title style={styles.titlePrimary}>Project Title</Title>
+                        <Title style={styles.titlePrimary}>
+                            Project Title
+                        </Title>
                         <TextInput
                             style={styles.input}
                             onChangeText={(newTitle) => setTitle(newTitle)}
